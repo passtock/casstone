@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>실험 프로토콜 및 데이터 파이프라인 슬라이드</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0b1120 0%, #0f172a 50%, #1e293b 100%);
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --card-hover-border: rgba(56, 189, 248, 0.4);
+      --primary-cyan: #38bdf8;
+      --primary-blue: #3b82f6;
+      --accent-green: #10b981;
+      --accent-purple: #a855f7;
+      --accent-amber: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      background: #020617;
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* 16:9 Slide Canvas (1920x1080 scaled) */
+    .slide-container {
+      width: 1600px;
+      height: 900px;
+      background: var(--bg-gradient);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 40px rgba(56, 189, 248, 0.1);
+      padding: 40px 48px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Decorative background glowing orbs */
+    .glow-orb-1 {
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(0,0,0,0) 70%);
+      pointer-events: none;
+    }
+    .glow-orb-2 {
+      position: absolute;
+      bottom: -150px;
+      left: -100px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(0,0,0,0) 70%);
+      pointer-events: none;
+    }
+
+    /* Header */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 16px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .header-left .tag {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--primary-cyan);
+      background: rgba(56, 189, 248, 0.12);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .header-left h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-left h1 span {
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-right {
+      text-align: right;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .header-right .lab-info {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* Main Grid: 2 Columns (Left 42%, Right 58%) */
+    .main-content {
+      display: grid;
+      grid-template-columns: 1.05fr 1.35fr;
+      gap: 24px;
+      flex: 1;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .card-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #ffffff;
+    }
+
+    .card-title .icon {
+      font-size: 18px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .badge-blue { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .badge-green { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-purple { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+
+    /* Left Column Subgrid (Stacked 2 cards) */
+    .left-column {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 20px;
+    }
+
+    /* Setup Items List */
+    .setup-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .setup-item {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .setup-item .label {
+      font-size: 12px;
+      color: var(--primary-cyan);
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .setup-item .desc {
+      font-size: 13px;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.35;
+    }
+
+    .setup-item .sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* Target Comparison (Control vs Patient) */
+    .cohort-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .cohort-box {
+      border-radius: 10px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .cohort-box.control {
+      background: linear-gradient(145deg, rgba(16, 185, 129, 0.1) 0%, rgba(15, 23, 42, 0.8) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    .cohort-box.patient {
+      background: linear-gradient(145deg, rgba(59, 130, 246, 0.12) 0%, rgba(15, 23, 42, 0.8) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+    }
+
+    .cohort-title {
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .control .cohort-title { color: #34d399; }
+    .patient .cohort-title { color: #60a5fa; }
+
+    .cohort-list {
+      list-style: none;
+      font-size: 12px;
+      color: #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .cohort-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      line-height: 1.35;
+    }
+
+    .cohort-list li::before {
+      content: "•";
+      color: var(--primary-cyan);
+      font-weight: bold;
+    }
+
+    /* Right Column (Protocol Flow & Data Output) */
+    .right-column {
+      display: grid;
+      grid-template-rows: 1.25fr 0.95fr;
+      gap: 20px;
+    }
+
+    /* Protocol Timeline Tracks */
+    .protocol-tracks {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .track-row {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      padding: 12px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .track-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .track-name {
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .track-steps {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-box {
+      flex: 1;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 8px 10px;
+      text-align: center;
+      position: relative;
+    }
+
+    .step-box.highlight {
+      background: linear-gradient(145deg, rgba(56, 189, 248, 0.2) 0%, rgba(30, 41, 59, 0.9) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+    }
+
+    .step-box .step-num {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--primary-cyan);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .step-box .step-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .step-box .step-detail {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+
+    .step-arrow {
+      color: var(--text-dim);
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    /* Bottom Outputs: 3 Columns */
+    .output-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .output-card {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 10px;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .output-header {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary-cyan);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .output-body {
+      font-size: 11.5px;
+      color: #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .metric-pill {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .metric-pill span.val {
+      color: #38bdf8;
+      font-size: 11px;
+    }
+
+    /* Footer Notes */
+    .slide-footer {
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-dim);
+      position: relative;
+      z-index: 10;
+    }
+
+    .key-points {
+      display: flex;
+      gap: 16px;
+    }
+
+    .key-point-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .key-point-item strong {
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+<div class="slide-container">
+  <div class="glow-orb-1"></div>
+  <div class="glow-orb-2"></div>
+
+  <!-- Slide Header -->
+  <header class="slide-header">
+    <div class="header-left">
+      <div class="tag">Experimental Protocol & Data Architecture</div>
+      <h1>공압장갑 Master-Slave 기반 <span>물리적 미러테라피 실험 프로토콜</span></h1>
+    </div>
+    <div class="header-right">
+      <div class="lab-info">한동대학교 기계제어공학 / Human Robotics Lab</div>
+      <div>편마비 환자 대상 재활 중재 및 AI 기능 평가 연구</div>
+    </div>
+  </header>
+
+  <!-- Main Content Grid -->
+  <div class="main-content">
+    
+    <!-- Left Column: Setup & Subjects -->
+    <div class="left-column">
+      
+      <!-- Card 1: Experimental Setup -->
+      <div class="card">
+        <div class="card-title-row">
+          <div class="card-title"><span class="icon">⚙️</span> 측정 장비 및 실험 환경</div>
+          <span class="badge badge-blue">Hardware Setup</span>
+        </div>
+        <div class="setup-grid">
+          <div class="setup-item">
+            <div class="label">📷 3D 비전 측정 시스템</div>
+            <div class="desc">3-멀티카메라 리그 (Top/L/R)</div>
+            <div class="sub">MediaPipe 21개 랜드마크 삼각측량</div>
+          </div>
+          <div class="setup-item">
+            <div class="label">🤖 Master-Slave 공압장갑</div>
+            <div class="desc">건측 Master ➔ 환측 Slave</div>
+            <div class="sub">벤딩센서 피드백 & 환자 개별 ROM 제한</div>
+          </div>
+          <div class="setup-item">
+            <div class="label">🎯 파지 평가 대상 물체</div>
+            <div class="desc">원통형 (ø 5cm) / 구형 (ø 7cm)</div>
+            <div class="sub">각 8회 반복 (총 16회 파지 태스크)</div>
+          </div>
+          <div class="setup-item">
+            <div class="label">🛡️ 노이즈 저감 & 안전장치</div>
+            <div class="desc">IMU 융합 + One-Euro Filter</div>
+            <div class="sub">비상정지(E-Stop) 및 최대 공압 리미터</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Subject Cohort -->
+      <div class="card">
+        <div class="card-title-row">
+          <div class="card-title"><span class="icon">👥</span> 연구 대상자 정의 및 조건</div>
+          <span class="badge badge-green">Subjects</span>
+        </div>
+        <div class="cohort-grid">
+          <div class="cohort-box control">
+            <div class="cohort-title">
+              <span>일반인 대조군 (Healthy)</span>
+              <span class="badge badge-green">N = 20~30</span>
+            </div>
+            <ul class="cohort-list">
+              <li><strong>기준:</strong> 만 20~65세, 상지 질환 이력 없음</li>
+              <li><strong>상태:</strong> 장갑 미착용 (Bare-hand)</li>
+              <li><strong>목적:</strong> 양손 협응 정상 기준 모델 구축 (Normative Reference)</li>
+            </ul>
+          </div>
+          <div class="cohort-box patient">
+            <div class="cohort-title">
+              <span>편마비 환자군 (Stroke)</span>
+              <span class="badge badge-blue">N = 10~15</span>
+            </div>
+            <ul class="cohort-list">
+              <li><strong>기준:</strong> Brunnstrom 4~5단계, 인지 정상</li>
+              <li><strong>상태:</strong> Pre/Post(미착용) vs 중재(착용)</li>
+              <li><strong>목적:</strong> 손 기능 저하 정량 판별 & 물리적 미러테라피 즉각 효과 검증</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Protocol Flow & Analysis -->
+    <div class="right-column">
+      
+      <!-- Card 3: Protocol Flow (Two Tracks) -->
+      <div class="card">
+        <div class="card-title-row">
+          <div class="card-title"><span class="icon">🔄</span> 실험 절차 및 중재 프로토콜 (Protocol Flow)</div>
+          <span class="badge badge-purple">Standard Pipeline</span>
+        </div>
+
+        <div class="protocol-tracks">
+          <!-- Control Track -->
+          <div class="track-row">
+            <div class="track-header">
+              <div class="track-name" style="color: #34d399;">🟢 일반인 대조군 트랙 (단일 세션)</div>
+              <span style="font-size: 11px; color: var(--text-muted);">장갑 미착용 양손 파지</span>
+            </div>
+            <div class="track-steps">
+              <div class="step-box">
+                <div class="step-num">Step 1</div>
+                <div class="step-name">캘리브레이션</div>
+                <div class="step-detail">Rest / Open / Closed</div>
+              </div>
+              <div class="step-arrow">➔</div>
+              <div class="step-box">
+                <div class="step-num">Step 2</div>
+                <div class="step-name">양손 파지 태스크</div>
+                <div class="step-detail">원통 8회 + 구 8회 (16회)</div>
+              </div>
+              <div class="step-arrow">➔</div>
+              <div class="step-box highlight">
+                <div class="step-num">Outcome</div>
+                <div class="step-name">정상 기준 모델 도출</div>
+                <div class="step-detail">관절각도 오차 분포선</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Patient Track -->
+          <div class="track-row">
+            <div class="track-header">
+              <div class="track-name" style="color: #60a5fa;">🔵 편마비 환자군 트랙 (4단계 순차 진행 / 세션당 ~35분)</div>
+              <span style="font-size: 11px; color: var(--primary-cyan);">물리적 미러테라피 중재 전후 비교</span>
+            </div>
+            <div class="track-steps">
+              <div class="step-box">
+                <div class="step-num">Step 1</div>
+                <div class="step-name">FMA-UE 평가</div>
+                <div class="step-detail">치료사 임상 기준선</div>
+              </div>
+              <div class="step-arrow">➔</div>
+              <div class="step-box">
+                <div class="step-num">Step 2 (Pre)</div>
+                <div class="step-name">사전 테스트</div>
+                <div class="step-detail">미착용 파지 16회</div>
+              </div>
+              <div class="step-arrow">➔</div>
+              <div class="step-box highlight" style="border-color: #3b82f6; background: rgba(59, 130, 246, 0.25);">
+                <div class="step-num" style="color: #93c5fd;">Step 3 (중재)</div>
+                <div class="step-name">Master-Slave 중재</div>
+                <div class="step-detail">파지-이완 10회 × 3세트</div>
+              </div>
+              <div class="step-arrow">➔</div>
+              <div class="step-box">
+                <div class="step-num">Step 4 (Post)</div>
+                <div class="step-name">사후 테스트</div>
+                <div class="step-detail">미착용 파지 16회</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Collected Data & AI Outputs -->
+      <div class="card">
+        <div class="card-title-row">
+          <div class="card-title"><span class="icon">📊</span> 수집 데이터 항목 및 AI 분석 산출물</div>
+          <span class="badge badge-blue">Data & AI Analytics</span>
+        </div>
+        <div class="output-grid">
+          
+          <div class="output-card">
+            <div class="output-header">📈 수집 생체역학 데이터</div>
+            <div class="output-body">
+              <div class="metric-pill">3D 관절 각도 <span class="val">MCP/PIP/DIP/손목</span></div>
+              <div class="metric-pill">좌우/건환측 오차 <span class="val">MAE / RMSE</span></div>
+              <div class="metric-pill">동작 파라미터 <span class="val">MGA, 파지완료시간</span></div>
+              <div class="metric-pill">임상 지표 <span class="val">FMA-UE 세부점수</span></div>
+            </div>
+          </div>
+
+          <div class="output-card">
+            <div class="output-header">🤖 AI 모델링 및 판별</div>
+            <div class="output-body">
+              <div class="metric-pill">정상 vs 환자 분류 <span class="val">SVM, RF, XGBoost</span></div>
+              <div class="metric-pill">분류 성능 목표 <span class="val">AUC ≥ 0.85 (LOSO-CV)</span></div>
+              <div class="metric-pill">손상 관절 국소화 <span class="val">SHAP 히트맵 시각화</span></div>
+              <div class="metric-pill">이상 탐지 <span class="val">One-Class SVM</span></div>
+            </div>
+          </div>
+
+          <div class="output-card">
+            <div class="output-header">🎯 중재 효과 검증 (Outcome)</div>
+            <div class="output-body">
+              <div class="metric-pill">즉각적 효과 <span class="val">Pre vs Post ΔError</span></div>
+              <div class="metric-pill">통계 유의성 <span class="val">Paired t-test (p < .05)</span></div>
+              <div class="metric-pill">효과 크기 <span class="val">Cohen's d 병기</span></div>
+              <div class="metric-pill">기기 사용성 <span class="val">SUS 설문 만족도</span></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Slide Footer -->
+  <footer class="slide-footer">
+    <div class="key-points">
+      <div class="key-point-item"><strong>💡 핵심 차별성:</strong> 기존 시각적 미러테라피 한계를 극복한 공압 Master-Slave 체성감각 물리 피드백 제공</div>
+      <div class="key-point-item"><strong>🛡️ 안전성:</strong> 세트 간 2~3분 휴식, 손가락별 사전 ROM 제한값 적용 및 E-Stop 구비</div>
+    </div>
+    <div>Capstone Project 2026</div>
+  </footer>
+</div>
+
+</body>
+</html>
