@@ -223,10 +223,13 @@ class PairedVideoWriter:
                 ok, first = reader.read()
                 if not reader.isOpened() or not ok or count != part_frames or first.shape != self.shape:
                     raise RuntimeError(f'{name} 영상 프레임 검증 실패 ({count}/{part_frames})')
-                reader.set(self.cv.CAP_PROP_POS_FRAMES, part_frames - 1)
-                ok, last = reader.read()
-                if not ok or last.shape != self.shape:
-                    raise RuntimeError(f'{name} 영상 마지막 프레임을 읽을 수 없습니다.')
+                if part_frames == 1:
+                    last = first
+                else:
+                    reader.set(self.cv.CAP_PROP_POS_FRAMES, part_frames - 1)
+                    ok, last = reader.read()
+                    if not ok or last.shape != self.shape:
+                        raise RuntimeError(f'{name} 영상 마지막 프레임을 읽을 수 없습니다.')
             finally:
                 reader.release()
         for name in names:
