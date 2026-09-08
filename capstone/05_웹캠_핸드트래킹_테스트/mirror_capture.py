@@ -117,10 +117,15 @@ class PairedVideoWriter:
     Stored videos use an unmirrored, fixed 30 FPS playback timeline. Source
     timestamps and the exact mapped video frame index remain in frames.csv.
     """
-    def __init__(self, folder, fps=30.0, part_bytes=1024**3):
+    def __init__(self, folder, fps=30.0, part_bytes=1024**3, part_seconds=60.0):
         import cv2
         self.cv = cv2
         self.folder, self.fps = Path(folder), float(fps)
+        if not np.isfinite(self.fps) or self.fps <= 0:
+            raise ValueError('fps must be finite and positive')
+        if not np.isfinite(part_seconds) or part_seconds <= 0 or part_bytes <= 0:
+            raise ValueError('part limits must be positive')
+        self.part_seconds = float(part_seconds)
         self.writers = []
         self.names = ('original', 'mediapipe')
         self.frames = 0
@@ -131,6 +136,8 @@ class PairedVideoWriter:
         self.parts = []
         self.part_start = 0
         self.jpeg_encodes = 0
+        self.resampled_sources = 0
+        self.source_in_video = False
 
     def _names(self):
         suffix = '' if not self.parts else f'_part{len(self.parts)+1:03d}'
@@ -143,9 +150,10 @@ class PairedVideoWriter:
         self.part_start = self.frames
 
     def _append(self, packets):
-        if self.writers and self.frames > self.part_start and any(
+        if self.writers and self.frames > self.part_start and (
+                (self.frames - self.part_start) / self.fps >= self.part_seconds or any(
                 writer.projected_size(packet) > self.part_bytes
-                for writer, packet in zip(self.writers, packets)):
+                for writer, packet in zip(self.writers, packets))):
             self._close_part()
         if not self.writers:
             self._open_part()
@@ -154,6 +162,8 @@ class PairedVideoWriter:
         self.frames += 1
 
     def write(self, captured, original, annotated):
+        if not np.isfinite(captured):
+            raise ValueError('영상 프레임 시각이 유효하지 않습니다.')
         if original.shape != annotated.shape or original.ndim != 3 or original.shape[2] != 3:
             raise ValueError('두 영상의 크기와 채널이 일치하지 않습니다.')
         if original.dtype != np.uint8 or annotated.dtype != np.uint8:
@@ -168,7 +178,14 @@ class PairedVideoWriter:
             self.first_time = captured
         if original.shape != self.shape:
             raise ValueError('녹화 도중 카메라 해상도가 변경되었습니다.')
-        target = max(self.frames, int(round((captured - self.first_time) * self.fps)))
+        target = max(0, int(round((captured - self.first_time) * self.fps)))
+        self.source_in_video = target >= self.frames
+        if not self.source_in_video:
+            # More than one source can fall in a 30-Hz playback slot. Retain
+            # every source in NPZ, but never lengthen playback to fit them all.
+            self.resampled_sources += 1
+            self.last_time = captured
+            return self.frames - 1
         # Encode a source image ONCE. Gap frames reuse the compressed packet,
         # preserving elapsed time without repeatedly doing full JPEG encoding.
         packets = []
@@ -226,6 +243,8 @@ class PairedVideoWriter:
                        timing='Previous frame repeated between captures; exact sample index in frames.csv',
                        files=[name for part in self.parts for name in part['files']],
                        parts=self.parts, jpeg_encodes=self.jpeg_encodes,
+                       resampled_sources=self.resampled_sources,
+                       part_seconds=self.part_seconds, part_bytes=self.part_bytes,
                        verified=bool(self.frames))
         if not self.frames:
             return summary
@@ -239,7 +258,17 @@ class RawFrameWriter:
     Manifest rows are written only after the corresponding NPZ is complete.
     No Qt, camera or GUI objects cross into the writer thread.
     """
-    def __init__(self, folder, max_pending=8, record_videos=False):
+    def __init__(self, folder, max_pending=8, record_videos=False, *, compression='stored',
+                 video_part_seconds=60.0):
+        if compression not in ('stored', 'deflated'):
+            raise ValueError('compression must be stored or deflated')
+        if max_pending <= 0:
+            raise ValueError('max_pending must be positive')
+        self.compression = compression
+        self.video_part_seconds = video_part_seconds
+        self.archive_bytes = 0
+        self.write_seconds_total = self.write_seconds_max = 0.0
+        self.queue_high_water = 0
         self.folder = Path(folder)
         self.folder.mkdir(parents=True, exist_ok=False)
         self.queue = queue.Queue(maxsize=max_pending)
@@ -259,6 +288,10 @@ class RawFrameWriter:
                     pending=max(0, self.received - self.written), capacity=self.queue.maxsize,
                     backpressure=self.queue.full(), error=self.error,
                     write_fps=self.written / max(time.perf_counter() - self.started, .001),
+                    compression=self.compression, archive_bytes=self.archive_bytes,
+                    write_seconds_total=self.write_seconds_total,
+                    write_seconds_max=self.write_seconds_max,
+                    queue_high_water=self.queue_high_water,
                     last_write_monotonic_s=self.last_write)
 
     def ready(self):
@@ -276,6 +309,7 @@ class RawFrameWriter:
         try:
             self.queue.put_nowait((dict(info), arrays))
             self.received += 1
+            self.queue_high_water = max(self.queue_high_water, self.queue.qsize())
         except queue.Full as exc:
             self.error = '원본 저장 속도가 촬영을 따라가지 못했습니다. 세션을 중단합니다.'
             raise RuntimeError(self.error) from exc
@@ -285,31 +319,39 @@ class RawFrameWriter:
         self._thread.join()
         if self.received != self.written and not self.error:
             self.error = f'원본 프레임 수 불일치: 저장 {self.written} / 수신 {self.received}'
+        if not self.written and not self.error:
+            self.error = '수신·저장된 원본 프레임이 없습니다. 카메라 연결을 확인해주세요.'
+        if self.record_videos and not self.video_summary.get('verified') and not self.error:
+            self.error = '재생용 영상 검증이 완료되지 않았습니다.'
         return dict(format='per_frame_lossless_npz', written_frames=self.written,
                     received_frames=self.received,
+                    diagnostics=self.status(),
                     videos=self.video_summary, error=self.error, complete=self.error is None)
 
     @staticmethod
-    def _write_archive(out, arrays, info):
+    def _write_archive(out, arrays, info, compression='stored'):
         # Stored NPY arrays remain bit-exact. No per-frame zlib CPU spikes.
-        with zipfile.ZipFile(out, 'w', allowZip64=True) as archive:
+        method = zipfile.ZIP_STORED if compression == 'stored' else zipfile.ZIP_DEFLATED
+        with zipfile.ZipFile(out, 'w', allowZip64=True, compression=method,
+                             compresslevel=1 if compression == 'deflated' else None) as archive:
             for name, array in dict(arrays, metadata_json=np.array(json.dumps(info, ensure_ascii=False))).items():
                 if name == 'overlay_bgr':
                     continue  # Already retained in the separate playable video.
                 data = io.BytesIO()
                 np.save(data, array, allow_pickle=False)
-                archive.writestr(f'{name}.npy', data.getvalue(), compress_type=zipfile.ZIP_STORED)
+                archive.writestr(f'{name}.npy', data.getvalue())
 
     def _run(self):
         video = None
         try:
             if self.record_videos:
-                video = PairedVideoWriter(self.folder.parent)
+                video = PairedVideoWriter(self.folder.parent, part_seconds=self.video_part_seconds)
             with (self.folder / 'frames.csv').open('x', newline='', encoding='utf-8-sig') as fp:
                 fields = ['frame_id', 'capture_monotonic_s', 'capture_unix_s',
                           'color_frame_number', 'color_timestamp_ms', 'color_timestamp_domain',
                           'depth_frame_number', 'depth_timestamp_ms', 'depth_timestamp_domain',
-                          'video_frame_index', 'video_part', 'video_part_frame_index', 'file']
+                          'video_frame_index', 'video_part', 'video_part_frame_index',
+                          'video_source_present', 'file']
                 writer = csv.DictWriter(fp, fields, extrasaction='ignore')
                 writer.writeheader()
                 while not self._closing.is_set() or not self.queue.empty():
@@ -317,16 +359,18 @@ class RawFrameWriter:
                         info, arrays = self.queue.get(timeout=0.1)
                     except queue.Empty:
                         continue
+                    write_started = time.perf_counter()
                     if video:
                         info['video_frame_index'] = video.write(info['capture_monotonic_s'],
                                                                 arrays['color_bgr'], arrays['overlay_bgr'])
                         info['video_part'] = len(video.parts) + 1
                         info['video_part_frame_index'] = info['video_frame_index'] - video.part_start
+                        info['video_source_present'] = int(video.source_in_video)
                     name = f"frame_{info['frame_id']:08d}.npz"
                     path = self.folder / name
                     temporary = self.folder / (name + '.partial')
                     with temporary.open('xb') as out:
-                        self._write_archive(out, arrays, info)
+                        self._write_archive(out, arrays, info, self.compression)
                     os.replace(temporary, path)
                     writer.writerow(dict(info, file=name))
                     self.written += 1
@@ -334,6 +378,10 @@ class RawFrameWriter:
                     if self.written % 8 == 0 or self.queue.empty():
                         fp.flush()
                     self.last_write = time.perf_counter()
+                    elapsed = self.last_write - write_started
+                    self.write_seconds_total += elapsed
+                    self.write_seconds_max = max(self.write_seconds_max, elapsed)
+                    self.archive_bytes += path.stat().st_size
         except Exception as exc:
             self.error = f'원본 저장 실패: {exc}'
         finally:

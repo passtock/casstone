@@ -16,6 +16,7 @@ import numpy as np
 import mediapipe as mp
 from mirror_capture import (RawFrameWriter, measure_hand, contiguous_segments,
                             MAX_FRAME_GAP_S, DEPTH_MIN_M, DEPTH_MAX_M, DEPTH_EDGE_M)
+from mirror_quality import assess_hand_identity, sparc_segment, gap_plot_arrays
 
 try:
     import pyrealsense2 as rs
@@ -30,7 +31,7 @@ from PyQt6.QtWidgets import (
     QLabel, QLineEdit, QComboBox, QSpinBox, QRadioButton, QButtonGroup,
     QPushButton, QGroupBox, QFrame, QCheckBox, QProgressBar,
     QTableWidget, QTableWidgetItem, QHeaderView, QScrollArea, QSizePolicy,
-    QTabWidget, QLayout)
+    QTabWidget, QLayout, QSplitter)
 
 import matplotlib
 matplotlib.use('QtAgg')
@@ -150,27 +151,28 @@ class LandmarkSmoother:
 
 
 class AngleFilter:
-    """각도용: 스파이크 클램프 + One-Euro + 가려짐 홀딩."""
+    """Optional legacy spike limit; missing geometry is never invented."""
 
-    def __init__(self, init_val=180.0):
-        self.last = float(init_val)
+    def __init__(self, init_val=180.0, limit_deg=None):
+        self.last = float(init_val) if init_val is not None and np.isfinite(init_val) else None
+        self.limit_deg = limit_deg
+        self.quality = 'uninitialized'
         self.missing = 0
-        self.euro = OneEuro(x0=init_val, min_cutoff=0.7, beta=0.015, t0=0.0)
+        self.euro = OneEuro(x0=self.last or 0.0, min_cutoff=0.7, beta=0.015)
 
     def update(self, t, v, hold=False):
-        if hold:
+        if v is None or not np.isfinite(v):
+            self.quality = 'invalid_geometry'
+            return None
+        if hold and self.last is not None:
+            self.quality = 'motion_hold'
             self.euro.t = t
             return self.last
-        if v is None or not np.isfinite(v) or v <= 0.0:
-            self.missing += 1
-            if self.missing > 12:
-                self.last = 0.95 * self.last + 0.05 * 160.0
-            return self.last
-        self.missing = 0
-        d = v - self.last
-        if abs(d) > 30.0:
-            v = self.last + math.copysign(30.0, d)
-        self.last = min(180.0, max(0.0, self.euro.filter(t, v)))
+        self.quality = 'smoothed'
+        if self.limit_deg is not None and self.last is not None and abs(v - self.last) > self.limit_deg:
+            v = self.last + math.copysign(self.limit_deg, v - self.last)
+            self.quality = 'clamped'
+        self.last = self.euro.filter(t, float(v))
         return self.last
 
 
@@ -186,9 +188,8 @@ class ApertureFilter:
 
     def update(self, t, v):
         if v is None or not np.isfinite(v):
-            return self.last
-        v = min(self.vmax, max(0.0, float(v)))
-        self.last = min(self.vmax, max(0.0, self.euro.filter(t, v)))
+            return None
+        self.last = self.euro.filter(t, float(v))
         return self.last
 
 
@@ -196,8 +197,8 @@ class ApertureFilter:
 def angle3(a, b, c):
     ba, bc = a - b, c - b
     n1, n2 = np.linalg.norm(ba), np.linalg.norm(bc)
-    if n1 < 1e-7 or n2 < 1e-7:
-        return 180.0
+    if not np.isfinite([n1, n2]).all() or n1 < 1e-7 or n2 < 1e-7:
+        return None
     return float(np.degrees(np.arccos(np.clip(np.dot(ba, bc) / (n1 * n2), -1, 1))))
 
 
@@ -317,9 +318,13 @@ class VideoWorker(QThread):
         self.camera_index, self.running = camera_index, True
         self.mirror_mode = self.hold_motion = False
         self.use_filter = self.enable_3d = True
+        self.angle_limit = False
+        self.compression = 'stored'
+        self.identity_previous, self.identity_previous_time = {}, None
         self.smooth_3d = LM_SMOOTH_DEFAULT
         self.view_mode, self.source_name = VIEW_COLOR, "webcam"
         self.filters, self.ap_filters, self.smoothers, self.prev_px = {}, {}, {}, {}
+        self.last_seen = {}
         self.depth_scale, self.latest_depth, self.depth_filters = 1.0, None, None
         self.palm_calib_mm = 0.0
         self.t0 = time.perf_counter()
@@ -351,6 +356,20 @@ class VideoWorker(QThread):
 
     def _reset_state(self):
         self.filters, self.ap_filters, self.smoothers, self.prev_px = {}, {}, {}, {}
+        self.last_seen = {}
+
+    def _prepare_hand(self, hand, t):
+        previous = self.last_seen.get(hand)
+        if previous is not None and (self.frame_id != previous[0] + 1 or t <= previous[1]):
+            # Reset after an observed tracking loss, not merely slow storage.
+            prefix = hand + '_'
+            for filters in (self.filters, self.ap_filters):
+                for key in list(filters):
+                    if key.startswith(prefix):
+                        del filters[key]
+            self.smoothers.pop(hand, None)
+            self.prev_px.pop(hand, None)
+        self.last_seen[hand] = (self.frame_id, t)
 
     def set_mirror_mode(self, v):
         self.commands.put(('setting', 'mirror_mode', bool(v)))
@@ -373,8 +392,8 @@ class VideoWorker(QThread):
     def set_hold_motion(self, v):
         self.commands.put(('setting', 'hold_motion', bool(v)))
 
-    def begin_recording(self, session_id, folder):
-        self.commands.put(('start', session_id, folder))
+    def begin_recording(self, session_id, folder, compression='stored'):
+        self.commands.put(('start', session_id, folder, compression))
 
     def end_recording(self):
         self.commands.put(('stop',))
@@ -423,19 +442,21 @@ class VideoWorker(QThread):
             if command[0] == 'setting':
                 _, key, value = command
                 setattr(self, key, value)
-                if key in ('smooth_3d', 'use_filter', 'hold_motion'):
+                if key in ('smooth_3d', 'use_filter', 'hold_motion', 'angle_limit'):
                     self._reset_state()
             elif command[0] == 'start':
                 self._end_recording()
-                _, self.session_id, folder = command
+                _, self.session_id, folder, *options = command
+                self.compression = options[0] if options else 'stored'
                 try:
-                    self.recorder = RawFrameWriter(os.path.join(folder, 'raw_frames'), record_videos=True)
+                    self.recorder = RawFrameWriter(os.path.join(folder, 'raw_frames'), record_videos=True,
+                                                   compression=self.compression)
                 except Exception as exc:
                     self.recording_failed.emit(str(exc))
                     self._end_recording(error=str(exc))
                     continue
                 self.saving_recorder = None
-                self._reset_state()
+                # Recording must not change the live filtering pipeline.
             elif command[0] == 'stop':
                 self._end_recording()
 
@@ -457,11 +478,13 @@ class VideoWorker(QThread):
     # ---------------- RealSense ----------------
     def _open_realsense(self):
         if rs is None:
+            self.camera_info['fallback_reason'] = 'pyrealsense2 미설치'
             print("[안내] pyrealsense2 미설치 → 웹캠으로 동작합니다.")
             return None
         pipe = None
         try:
             if len(rs.context().query_devices()) == 0:
+                self.camera_info['fallback_reason'] = 'RealSense 장치 미검출'
                 print("[안내] RealSense 장치 없음 → 웹캠으로 폴백합니다.")
                 return None
             pipe, cfg = rs.pipeline(), rs.config()
@@ -479,6 +502,11 @@ class VideoWorker(QThread):
                 depth_intrinsics=self._intrinsics_dict(dp.get_intrinsics()),
                 depth_to_color=dict(rotation=list(extr.rotation), translation=list(extr.translation)),
                 color_fps=cp.fps(), depth_fps=dp.fps())
+            for name in ('name', 'serial_number', 'usb_type_descriptor'):
+                try:
+                    self.camera_info[name] = prof.get_device().get_info(getattr(rs.camera_info, name))
+                except Exception:
+                    self.camera_info[name] = None
             try:
                 if sensor.supports(rs.option.visual_preset):
                     sensor.set_option(rs.option.visual_preset,
@@ -494,6 +522,7 @@ class VideoWorker(QThread):
             print(f"[RealSense] 연결됨 | color {RS_W}x{RS_H} / depth {RS_DW}x{RS_DH}")
             return pipe, rs.align(rs.stream.color)
         except Exception as e:
+            self.camera_info['fallback_reason'] = str(e)
             if pipe is not None:
                 try:
                     pipe.stop()
@@ -533,17 +562,21 @@ class VideoWorker(QThread):
             pts, mode = raw, '원본 3D'
 
         canon, R, palm_len = palm_frame(pts)
+        if not np.isfinite(palm_len) or palm_len < 1e-7:
+            return None  # A collapsed palm has no valid display scale.
         angles = joint_angles(canon)
         angles['Grip_Aperture_pctPalm'] = float(np.linalg.norm(canon[4] - canon[8]) * 100)
         pab, rab = thumb_abduction(canon)
         angles['Thumb_PalmarAbd'] = pab
         angles['Thumb_RadialAbd'] = rab
-        # 표시용은 R.T로 카메라 정렬로 되돌린다 (R이 상쇄되어 (pts-손목)/손길이와 같음)
-        disp = (R.T @ canon.T).T
+        # Draw the same MP points after translation and uniform normalization.
+        disp = (pts - pts[0]) / palm_len
         if not np.all(np.isfinite(disp)):
             return None
 
         palm_mm, ap_mm = palm_len * 1000.0, float(np.linalg.norm(pts[4] - pts[8]) * 1000)
+        delta_mm = (disp[8] - disp[4]) * palm_mm
+        display_ap_mm = float(np.linalg.norm(delta_mm))
         # 모델의 손 크기는 '평균적인 손'이라 절대 mm로 보기 어렵다 -> 실측 손 길이로 보정
         ap_cal = (ap_mm * self.palm_calib_mm / palm_mm
                   if self.palm_calib_mm > 0 and palm_mm > 1e-6 else None)
@@ -551,6 +584,9 @@ class VideoWorker(QThread):
         return {'points': disp, 'canon': canon, 'angles': angles, 'mode': mode,
                 'metrics': {'mode': mode, 'wrist_dist_m': wrist_depth,
                             'aperture_mm': ap_mm, 'aperture_mm_cal': ap_cal,
+                            'display_aperture_mm': display_ap_mm,
+                            'tip_delta_mm': delta_mm.tolist(),
+                            'display_smoothed': self.smooth_3d,
                             'aperture_pct_palm': angles['Grip_Aperture_pctPalm'],
                             'palm_len_mm': palm_mm,
                             'thumb_palmar_abd': pab, 'thumb_radial_abd': rab}}
@@ -580,7 +616,8 @@ class VideoWorker(QThread):
                     raise RuntimeError(f"카메라 {self.camera_index}번을 열 수 없습니다.")
                 cap.set(cv2.CAP_PROP_FRAME_WIDTH, RS_W)
                 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, RS_H)
-                self.camera_info = dict(source='webcam', depth_scale_m=None)
+                self.camera_info = dict(source='webcam', depth_scale_m=None,
+                                        fallback_reason=self.camera_info.get('fallback_reason'))
 
             mp_hands, draw, styles = (mp.solutions.hands, mp.solutions.drawing_utils,
                                       mp.solutions.drawing_styles)
@@ -588,16 +625,21 @@ class VideoWorker(QThread):
                                    min_tracking_confidence=0.55)
             prev_t = last_received = time.perf_counter()
             last_camera_notice = 0.0
+            pacing_wait_s = 0.0
             while self.running:
                 # Only this thread mutates camera/filter/recorder state.
                 self._apply_commands()
                 if not self._recording_ready():
                     # Pace acquisition BEFORE receiving another source frame.
                     # Stop/settings commands remain responsive under disk load.
+                    wait_start = time.perf_counter()
                     time.sleep(.005)
+                    pacing_wait_s += time.perf_counter() - wait_start
                     last_received = time.perf_counter()
                     continue
-                capture = dict(session_id=self.session_id)
+                capture = dict(session_id=self.session_id, storage_wait_ms=pacing_wait_s * 1000)
+                pacing_wait_s = 0.0
+                acquisition_started = time.perf_counter()
                 arrays, intr = {}, None
                 if pipe is not None:
                     try:
@@ -652,6 +694,7 @@ class VideoWorker(QThread):
                     capture_time, unix_time = time.perf_counter(), time.time()
                     self.latest_depth = None
                 last_received = capture_time
+                capture['camera_wait_ms'] = (capture_time - acquisition_started) * 1000
                 self.frame_id += 1
                 capture.update(frame_id=self.frame_id, capture_monotonic_s=capture_time,
                                capture_unix_s=unix_time, source=self.source_name,
@@ -662,7 +705,9 @@ class VideoWorker(QThread):
 
                 rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 rgb.flags.writeable = False
+                inference_started = time.perf_counter()
                 res = hands.process(rgb)
+                capture['mp_processing_ms'] = (time.perf_counter() - inference_started) * 1000
                 has_depth = self.latest_depth is not None
                 mode = self.view_mode if has_depth else VIEW_COLOR
                 dvis = self._colorize_depth(self.latest_depth) if has_depth and mode != VIEW_COLOR else None
@@ -673,6 +718,9 @@ class VideoWorker(QThread):
                 angles_out, depths_out, hands3d, measurements = {}, {}, {}, {}
                 overlays = []
                 n_hands = len(res.multi_hand_landmarks or [])
+                capture['identity_flags'] = {}
+                if not res.multi_hand_landmarks:
+                    self.identity_previous, self.identity_previous_time = {}, None
                 if res.multi_hand_landmarks:
                     wl = res.multi_hand_world_landmarks
                     h_img, w_img = frame.shape[:2]
@@ -684,6 +732,15 @@ class VideoWorker(QThread):
                         labels.append({'Left': 'Right', 'Right': 'Left'}.get(label))
                     capture['hand_labels'] = labels
                     capture['ambiguous_handedness'] = len(set(labels)) != len(labels) or None in labels
+                    wrists = {label: (res.multi_hand_landmarks[i].landmark[0].x,
+                                      res.multi_hand_landmarks[i].landmark[0].y)
+                              for i, label in enumerate(labels) if label is not None and labels.count(label) == 1}
+                    identity = assess_hand_identity(self.identity_previous, wrists, capture_time,
+                                                    previous_timestamp=self.identity_previous_time)
+                    capture['identity_flags'] = identity['flags']
+                    capture['identity_status'] = identity['status']
+                    if not identity['flags']:
+                        self.identity_previous, self.identity_previous_time = wrists, capture_time
                     for i, lms in enumerate(res.multi_hand_landmarks):
                         hand = labels[i]
                         if hand is None or labels.count(hand) != 1:
@@ -702,10 +759,12 @@ class VideoWorker(QThread):
                         deproject = (lambda pixel, z: self._deproject(intr, pixel, z)) if intr else None
                         measurement = measure_hand(W, pixels, self.latest_depth, deproject, self.palm_calib_mm)
                         measurement['handedness_score'] = res.multi_handedness[i].classification[0].score
+                        measurement['identity_status'] = identity['flags'].get(hand, 'not_flagged')
                         measurements[hand] = measurement
                         # No normalized-image fallback: its coordinates are not metres.
-                        if W is None or not np.isfinite(W).all():
+                        if W is None or not np.isfinite(W).all() or hand in identity['flags']:
                             continue
+                        self._prepare_hand(hand, t)
                         rec = self.build_3d(hand, world, t, dist)
                         if rec:
                             hands3d[hand] = rec
@@ -716,22 +775,27 @@ class VideoWorker(QThread):
                         raw['Grip_Aperture'] = mp_ap / 10.0
                         pab, rab = thumb_abduction(palm_frame(W)[0])
                         raw['Thumb_PalmarAbd'], raw['Thumb_RadialAbd'] = pab, rab
-                        hold, filt = self._moved(hand, wx, wy), {}
+                        hold, filt, quality = self._moved(hand, wx, wy), {}, {}
                         for k, v in raw.items():
                             key = f"{hand}_{k}"
                             if k == 'Grip_Aperture' or k in ABD_KEYS:
                                 if v is None:
                                     filt[k] = None
+                                    quality[k] = 'invalid_geometry'
                                     continue
                                 if key not in self.ap_filters:
                                     self.ap_filters[key] = ApertureFilter(
                                         v, vmax=APERTURE_MAX_CM if k == 'Grip_Aperture' else 180.0)
                                 filt[k] = self.ap_filters[key].update(t, v) if self.use_filter else v
+                                quality[k] = 'smoothed' if self.use_filter else 'raw'
                             else:
                                 if key not in self.filters:
-                                    self.filters[key] = AngleFilter(v)
+                                    self.filters[key] = AngleFilter(v, limit_deg=30.0 if self.angle_limit else None)
                                 filt[k] = self.filters[key].update(t, v, hold) if self.use_filter else v
-                        angles_out[hand] = {'raw': raw, 'filtered': filt}
+                                quality[k] = (self.filters[key].quality if self.use_filter else
+                                              'raw' if v is not None else 'invalid_geometry')
+                        angles_out[hand] = {'raw': raw, 'filtered': filt, 'quality': quality}
+                capture['frame_processing_ms'] = (time.perf_counter() - capture_time) * 1000
                 if self.recorder:
                     recorded_overlay = frame.copy()
                     for text, wx, wy in overlays:
@@ -846,7 +910,7 @@ class LiveAngleChart(PlotCanvas):
             ax.grid(True, ls='--', color='#272b3f', lw=0.8)
             self.lines[hand] = {f: ax.plot([], [], label=f, color=c, lw=2)[0]
                                 for f, c in FINGER_COLORS.items()}
-            ax.legend(loc='upper right', fontsize=7, ncol=5, facecolor='#191c2b',
+            ax.legend(loc='upper right', fontsize=6, ncol=3, facecolor='#191c2b',
                       edgecolor='#334155', labelcolor='#f1f5f9')
             self.axes[hand] = ax
             self.tbuf[hand] = deque(maxlen=300)
@@ -859,7 +923,14 @@ class LiveAngleChart(PlotCanvas):
 
     def update_data(self, t, ad):
         for hand in HANDS:
+            if self.tbuf[hand] and t - self.tbuf[hand][-1] > MAX_FRAME_GAP_S:
+                self.tbuf[hand].append(t)
+                for f in FINGER_COLORS:
+                    self.abuf[hand][f].append(np.nan)
             if hand not in ad:
+                self.tbuf[hand].append(t)
+                for f in FINGER_COLORS:
+                    self.abuf[hand][f].append(np.nan)
                 continue
             d = ad[hand].get('filtered', ad[hand])
             self.tbuf[hand].append(t)
@@ -916,6 +987,10 @@ class Hand3DView(PlotCanvas):
         self.setParent(parent)
         self.axes, self.bones, self.palm, self.mesh, self.pts, self.titles, self.c = \
             {}, {}, {}, {}, {}, {}, {}
+        self.trails, self.trail_lines = {}, {}
+        self.tip_links = {}
+        self.trail_seconds = 3.0
+        self._wait_state = 0
 
         for i, hand in enumerate(HANDS):
             ax = self.fig.add_subplot(1, 2, i + 1, projection='3d')
@@ -944,6 +1019,13 @@ class Hand3DView(PlotCanvas):
             # scatter의 _offsets3d는 비공개 API라 marker Line3D + set_data_3d를 쓴다
             self.pts[hand], = ax.plot([], [], [], ls='none', marker='o', ms=5,
                                       color='#fff', mec='#38bdf8', mew=0.8)
+            self.trails[hand] = deque(maxlen=180)
+            self.tip_links[hand], = ax.plot([], [], [], color='#facc15',
+                                            lw=2.0, marker='s', ms=6)
+            self.trail_lines[hand] = {
+                tip: ax.plot([], [], [], color=FINGER_COLORS[finger], lw=1.5,
+                             alpha=.65, ls='--')[0]
+                for tip, finger in ((4, 'Thumb'), (8, 'Index'))}
             self.titles[hand] = ax.set_title(f"{HAND_KR[hand]}  ·  대기", color="#64748b",
                                              fontsize=9, fontweight='bold', pad=2)
             self.axes[hand] = ax
@@ -951,6 +1033,21 @@ class Hand3DView(PlotCanvas):
             self._lim(ax, self.c[hand])
         self._last = None
         self.fig.subplots_adjust(left=.02, right=.98, top=.78, bottom=.04, wspace=.12)
+
+    def record_hands(self, t, hands3d):
+        """Collect bounded display trajectories independently of paint rate."""
+        for hand in HANDS:
+            trail = self.trails[hand]
+            rec = hands3d.get(hand)
+            if rec is None:
+                trail.clear()
+                continue
+            if trail and not 0 < t - trail[-1][0] <= MAX_FRAME_GAP_S:
+                trail.clear()
+            points = rec['points'][[4, 8]]
+            trail.append((t, np.column_stack((points[:, 0], points[:, 2], -points[:, 1]))))
+            while trail and t - trail[0][0] > self.trail_seconds:
+                trail.popleft()
 
     @staticmethod
     def _lim(ax, c, r=VIEW3D_R):
@@ -965,11 +1062,16 @@ class Hand3DView(PlotCanvas):
         for ln in self.palm[hand]:
             ln.set_data_3d([], [], [])
         self.pts[hand].set_data_3d([], [], [])
+        self.tip_links[hand].set_data_3d([], [], [])
+        self.trails[hand].clear()
+        for line in self.trail_lines[hand].values():
+            line.set_data_3d([], [], [])
 
     def update_hands(self, t, hands3d):
         if self._last is not None and t - self._last < VIEW3D_INTERVAL:
-            return
+            return False
         self._last = t
+        self._wait_state = 0
         for hand in HANDS:
             rec = hands3d.get(hand)
             if rec is None:
@@ -986,25 +1088,54 @@ class Hand3DView(PlotCanvas):
             for ln, (a, b) in zip(self.palm[hand], self.PALM_EDGES):
                 ln.set_data_3d([x[a], x[b]], [y[a], y[b]], [z[a], z[b]])
             self.pts[hand].set_data_3d(x, y, z)
+            self.tip_links[hand].set_data_3d(x[[4, 8]], y[[4, 8]], z[[4, 8]])
+            trail = self.trails[hand]
+            for i, tip in enumerate((4, 8)):
+                if trail:
+                    xyz = np.array([sample[1][i] for sample in trail])
+                    self.trail_lines[hand][tip].set_data_3d(*xyz.T)
+                else:
+                    self.trail_lines[hand][tip].set_data_3d([], [], [])
 
             cloud = np.stack([x, y, z], 1).mean(axis=0)
             self.c[hand] = (1 - VIEW3D_ALPHA) * self.c[hand] + VIEW3D_ALPHA * cloud
             self._lim(self.axes[hand], self.c[hand])
 
             m = rec['metrics']
-            ap = m['aperture_mm_cal'] if m['aperture_mm_cal'] is not None else m['aperture_mm']
-            txt = f"{HAND_KR[hand]}  ·  MP 파지폭 {ap:.0f}mm"
-            if m['aperture_mm_cal'] is not None:
-                txt += "*"
-            detail = []
-            if m.get('thumb_palmar_abd') is not None:
-                detail.append(f"외전 {m['thumb_palmar_abd']:.0f}°")
-            if m['wrist_dist_m']:
-                detail.append(f"손목 거리 {m['wrist_dist_m']:.2f}m")
-            if detail:
-                txt += '\n' + '  ·  '.join(detail)
+            ap = m['display_aperture_mm']
+            source = 'MP 스무딩' if m['display_smoothed'] else 'MP 원본'
+            dx, dy, dz = m['tip_delta_mm']
+            txt = (f"{HAND_KR[hand]} · {source} {ap:.1f}mm\n"
+                   f"ΔX {dx:+.1f}  ΔY {dy:+.1f}  ΔZ {dz:+.1f} mm")
             self.titles[hand].set_text(txt)
             self.titles[hand].set_color('#10b981')
+        self.draw_idle()
+        return True
+
+    def clear_trajectories(self):
+        """New session: keep the observed hand and viewing position."""
+        for hand in HANDS:
+            self.trails[hand].clear()
+            for line in self.trail_lines[hand].values():
+                line.set_data_3d([], [], [])
+        self.draw_idle()
+
+    def show_waiting(self, clear=False):
+        """Wall-clock silence is not a newly captured no-hand frame.
+
+        Never advance _last here: only source timestamps control frame order.
+        Retained geometry is explicitly labelled as a previous observation.
+        """
+        state = 2 if clear else 1
+        if self._wait_state == state:
+            return
+        self._wait_state = state
+        for hand in HANDS:
+            if clear:
+                self._clear(hand)
+            suffix = '영상 수신 대기' if clear else '수신 지연 · 이전 화면'
+            self.titles[hand].set_text(f'{HAND_KR[hand]} · {suffix}')
+            self.titles[hand].set_color('#f59e0b')
         self.draw_idle()
 
     def reset_view(self):
@@ -1015,6 +1146,7 @@ class Hand3DView(PlotCanvas):
             self.titles[hand].set_text(f"{HAND_KR[hand]}  ·  대기")
             self.titles[hand].set_color("#64748b")
         self._last = None
+        self._wait_state = 0
         self.draw_idle()
 
 
@@ -1300,8 +1432,11 @@ class ClinicalApp(QMainWindow):
             title = QLabel('오른손' if hand == 'Right' else '왼손')
             title.setAlignment(Qt.AlignmentFlag.AlignCenter)
             grid.addWidget(title, 3, col)
-        for row, (key, label) in enumerate((('mp_aperture_mm', 'MP 파지폭 (mm)'),
+        for row, (key, label) in enumerate((('mp_aperture_mm', 'MP 원본 (mm)'),
+                                           ('mp_display_mm', '3D 표시값 (mm)'),
                                            ('rs_aperture_mm', 'RS 파지폭 (mm)'),
+                                           ('rs_thumb', 'RS 엄지끝 상태'),
+                                           ('rs_index', 'RS 검지끝 상태'),
                                            ('rs_valid', '깊이 유효점 / 21'),
                                            ('index_pip', '검지 PIP (°)')), 4):
             caption = QLabel(label)
@@ -1314,7 +1449,8 @@ class ClinicalApp(QMainWindow):
                 grid.addWidget(value, row, col)
                 self.monitor_values[hand, key] = value
         monitor.setToolTip('수신: 저장기에 전달한 원본 프레임. 저장: 파일 쓰기 완료.\n'
-                           'MP/RS 파지폭은 독립적인 원시 측정값입니다. --는 결측값입니다.\n'
+                           'MP 원본/RS는 독립적인 원시 측정값입니다. --는 결측값입니다.\n'
+                           '3D 표시값은 현재 그린 손끝 연결선과 같은 좌표·프레임입니다.\n'
                            '깊이 유효점은 손 관절 21개 중 깊이 품질 검사를 통과한 수입니다.\n'
                            'PIP는 필터 적용 관절 내각이며 완전 폄이 약 180°입니다.')
         outer.addWidget(monitor)
@@ -1327,13 +1463,13 @@ class ClinicalApp(QMainWindow):
         lay = QVBoxLayout(panel)
         lay.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
         lay.setContentsMargins(0, 0, 0, 0)
-        lay.setSpacing(10)
+        lay.setSpacing(6)
 
         card = QFrame()
         card.setObjectName('videoCard')
         cl = QVBoxLayout(card)
-        cl.setContentsMargins(10, 10, 10, 10)
-        cl.setSpacing(8)
+        cl.setContentsMargins(8, 8, 8, 8)
+        cl.setSpacing(4)
 
         status = QHBoxLayout()
         self.lbl_session = QLabel('● READY (대기 중)')
@@ -1351,7 +1487,7 @@ class ClinicalApp(QMainWindow):
         self.lbl_trial = QLabel('대기 상태')
         self.lbl_trial.setWordWrap(True)
         self.lbl_trial.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
-        self.lbl_trial.setMinimumHeight(32)
+        self.lbl_trial.setMinimumHeight(24)
         self.lbl_trial.setStyleSheet('color:#94a3b8; font-weight:bold;')
 
 
@@ -1400,26 +1536,38 @@ class ClinicalApp(QMainWindow):
         self.lbl_video.setAlignment(Qt.AlignmentFlag.AlignCenter)
         # Pixmap size must not become the label's minimum size after a large frame.
         self.lbl_video.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
-        self.lbl_video.setMinimumHeight(190)
+        self.lbl_video.setMinimumHeight(100)
         self.lbl_video.setStyleSheet('background:#08090e; border-radius:6px;')
         cl.addWidget(self.lbl_video, stretch=1)
-        grow = QHBoxLayout()
+        gauges_page = QWidget()
+        grow = QHBoxLayout(gauges_page)
         grow.setSpacing(8)
         for hand in HANDS:
             grow.addWidget(self._gauge_panel(hand), stretch=1)
-        cl.addLayout(grow)
-        lay.addWidget(card, stretch=3)
+        lay.addWidget(card, stretch=2)
 
-        # Full-width pages keep plots and all 12 result columns readable.
+        # Both live views share one page; the divider adjusts their widths.
         self.analysis_tabs = QTabWidget()
-        self.analysis_tabs.setMinimumHeight(290)
+        self.analysis_tabs.setMinimumHeight(260)
         self.chart = LiveAngleChart(self)
         self.view3d = Hand3DView(self)
         for widget in (self.chart, self.view3d):
             widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-            widget.setMinimumSize(0, 250)
-        self.analysis_tabs.addTab(self.chart, '굴곡각 그래프')
-        self.analysis_tabs.addTab(self.view3d, '3D 손 보기')
+            widget.setMinimumSize(0, 200)
+        live_page = QWidget()
+        live_layout = QVBoxLayout(live_page)
+        live_layout.setContentsMargins(0, 0, 0, 0)
+        caption = QLabel('3D: 손목 기준·손길이 정규화 | 노란 선: 엄지끝–검지끝 | Δ: MP축 검지−엄지(mm), 화면축 X/Z/−Y | 점선: 최근 3초 궤적')
+        caption.setWordWrap(True)
+        caption.setStyleSheet('color:#94a3b8; font-size:11px;')
+        live_layout.addWidget(caption)
+        self.live_splitter = QSplitter(Qt.Orientation.Horizontal)
+        self.live_splitter.setChildrenCollapsible(False)
+        self.live_splitter.addWidget(self.view3d)
+        self.live_splitter.addWidget(self.chart)
+        self.live_splitter.setSizes([450, 550])
+        live_layout.addWidget(self.live_splitter, stretch=1)
+        self.analysis_tabs.addTab(live_page, '3D 궤적 + 각도 그래프')
         self.table = QTableWidget(0, len(self.TABLE_COLS))
         self.table.setHorizontalHeaderLabels(self.TABLE_COLS)
         self.table.setWordWrap(False)
@@ -1429,7 +1577,8 @@ class ClinicalApp(QMainWindow):
         header.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         header.setStretchLastSection(True)
         self.analysis_tabs.addTab(self.table, '회차 결과')
-        lay.addWidget(self.analysis_tabs, stretch=2)
+        self.analysis_tabs.addTab(gauges_page, '관절각 상세')
+        lay.addWidget(self.analysis_tabs, stretch=3)
 
         self.lbl_toast = QLabel('세션 시작 시 원본·손 추적 영상을 함께 저장합니다. Space: 구간 측정 · F11: 전체화면 전환 · Esc: 창 모드')
         self.lbl_toast.setWordWrap(True)
@@ -1565,11 +1714,15 @@ class ClinicalApp(QMainWindow):
         self.worker.set_enable_3d(v)
         if not v:
             self.view3d.reset_view()
+            for hand in HANDS:
+                self.monitor_values[hand, 'mp_display_mm'].setText('--')
         self.toast(f"3D 재구성: {'ON' if v else 'OFF'}")
 
     def _on_smooth(self, v):
         self.worker.set_smooth_3d(v)
         self.view3d.reset_view()
+        for hand in HANDS:
+            self.monitor_values[hand, 'mp_display_mm'].setText('--')
         self.toast(f"3D 좌표 스무딩: {'ON' if v else 'OFF (원본 사용)'}")
 
     def _space(self):
@@ -1639,6 +1792,7 @@ class ClinicalApp(QMainWindow):
         self.task_history = [(0.0, self.cb_task.currentText())]
         self.table.setRowCount(0)
         self.chart.reset_chart()
+        self.view3d.clear_trajectories()
         self.btn_start.setEnabled(False)
         self.btn_stop.setEnabled(True)
         self.btn_trial.setEnabled(False)
@@ -1704,12 +1858,12 @@ class ClinicalApp(QMainWindow):
             row = self.table.rowCount()
             self.table.insertRow(row)
             cells = [f"Trial #{self.trial_idx}", HAND_KR[hand].split(' ')[0], short,
-                     f"{dur:.2f}초", f"{tr['cycles']}회",
+                     f"{dur:.2f}초", f"{tr['cycles']}회" if tr['cycles'] is not None else "-",
                      f"{tr['period']:.2f}" if tr['period'] else "-",
-                     f"{tr['tarom']:.1f}°",
+                     f"{tr['tarom']:.1f}°" if tr['tarom'] is not None else "-",
                      f"{tr['cmc_rom']:.1f}°" if tr['cmc_rom'] is not None else "-",
                      f"{tr['pab_max']:.0f}°" if tr['pab_max'] is not None else "-",
-                     f"{tr['mga']:.1f}cm",
+                     f"{tr['mga']:.1f}cm" if tr['mga'] is not None else "-",
                      f"{tr['flex_speed']:.0f}°/s" if tr['flex_speed'] else "-",
                      f"{tr['sparc']:.2f}" if tr['sparc'] is not None else "-"]
             for c, txt in enumerate(cells):
@@ -1787,7 +1941,7 @@ class ClinicalApp(QMainWindow):
 
         p3 = [r['angles3d'].get('Index_PIP') for r in seg
               if r.get('angles3d', {}).get('Index_PIP') is not None]
-        return dict(mga=mga, rom=rom, tarom=tarom, tam_f=tam_f, tam_j=tam_j,
+        result = dict(mga=mga, rom=rom, tarom=tarom, tam_f=tam_f, tam_j=tam_j,
                     cmc_rom=tam_j.get('Thumb_CMC'),
                     pab_max=pab_max, pab_rom=pab_rom, rab_max=rab_max, rab_rom=rab_rom,
                     cycles=cycles, period=period,
@@ -1800,6 +1954,11 @@ class ClinicalApp(QMainWindow):
                     rs_mp_mean_abs_diff_mm=float(np.mean(np.abs(differences))) if differences else None,
                     mga3d=m3('aperture_mm'), mga3d_cal=m3('aperture_mm_cal'),
                     rom3d=(max(p3) - min(p3)) if len(p3) >= 2 else None)
+        if not seg:
+            # No observation is different from observed zero motion/aperture.
+            result.update(mga=None, rom=None, tarom=None, cycles=None,
+                          tam_f={finger: None for finger in FINGERS})
+        return result
 
     def _worker_failed(self, message):
         logging.error('Camera error: %s', message)
@@ -2042,7 +2201,8 @@ class ClinicalApp(QMainWindow):
                               f(tr['requested_duration']), int(tr['interrupted'])])
 
         meta = {
-            'schema_version': 3,
+            'schema_version': 5,
+            'display_distance_definition': 'Euclidean distance of the displayed MP tip 4 and 8, restored from palm-normalized display coordinates to model mm; no contact threshold, offset subtraction, or hand-length calibration applied. MP_Display_Delta_X/Y/Z_mm = index minus thumb in MP axes. Display axes are MP X/Z/-Y.',
             'session_id': self.session_id,
             'raw_recording': self.capture_summary,
             'session_error': self._session_error,
@@ -2052,7 +2212,7 @@ class ClinicalApp(QMainWindow):
             'raw_arrays': 'color_bgr uint8 (unmirrored, no overlays); depth_native_z16 and depth_aligned_z16 uint16 when available',
             'video_files': {'original.avi': 'Unmirrored original colour camera stream, MJPG playback copy; lossless source remains in NPZ',
                             'mediapipe.avi': 'Same frames with MediaPipe landmarks, MP/RS distances, frame ID and detected hand count'},
-            'video_timeline': '30 FPS playback; cached JPEG packet held over capture gaps. frames.csv video_frame_index is global; video_part and video_part_frame_index locate samples in paired AVI parts. Images are not interpolated.',
+            'video_timeline': '30 FPS playback; cached JPEG packet held over capture gaps. Multiple sources in one playback slot share a video index; video_source_present=0 means this source is retained only in lossless NPZ, not as its own AVI image. video_part and video_part_frame_index locate the playback slot. Images are not interpolated.',
             'recording_backpressure': 'Acquisition is paced before receiving another frame when the bounded writer queue is full. Every acquired source frame is submitted; actual capture FPS can fall below sensor FPS.',
             'raw_scope': 'Every frame acquired by this app during recording, including no-hand frames; not a guarantee of every sensor frame. In-flight raw frames may extend past session stop; filter by time.',
             'measurement_methods': {
@@ -2135,9 +2295,13 @@ class ClinicalApp(QMainWindow):
                              'MP_Aperture_raw_mm', 'MP_Aperture_cal_mm', 'RS_Aperture_raw_mm',
                              'RS_minus_MP_mm', 'RS_Thumb_Status', 'RS_Index_Status',
                              'Handedness_Score', 'Color_Frame_Number', 'Color_Timestamp_ms',
-                             'Depth_Frame_Number', 'Depth_Timestamp_ms'])
+                             'Depth_Frame_Number', 'Depth_Timestamp_ms',
+                             'MP_Display_Aperture_mm', 'MP_Display_Delta_X_mm',
+                             'MP_Display_Delta_Y_mm', 'MP_Display_Delta_Z_mm',
+                             'MP_Display_Smoothed'])
             for rec in self.records:
                 m = rec['measurement']
+                display = rec.get('metrics3d', {})
                 writer.writerow([rec['frame_id'], f(rec['time'], '{:.6f}'),
                                  f(rec['capture_monotonic_s'], '{:.6f}'), f(rec['capture_unix_s'], '{:.6f}'),
                                  rec['hand'], rec['task'], int(rec['protocol_valid']),
@@ -2146,7 +2310,10 @@ class ClinicalApp(QMainWindow):
                                  f(m['rs_aperture_mm'], '{:.4f}'), f(m['rs_minus_mp_mm'], '{:.4f}'),
                                  m['rs_status'][4], m['rs_status'][8], f(m.get('handedness_score'), '{:.4f}'),
                                  rec.get('color_frame_number'), f(rec.get('color_timestamp_ms'), '{:.6f}'),
-                                 rec.get('depth_frame_number'), f(rec.get('depth_timestamp_ms'), '{:.6f}')])
+                                 rec.get('depth_frame_number'), f(rec.get('depth_timestamp_ms'), '{:.6f}'),
+                                 f(display.get('display_aperture_mm'), '{:.4f}'),
+                                 *[f(v, '{:.4f}') for v in display.get('tip_delta_mm', [None]*3)],
+                                 int(display['display_smoothed']) if 'display_smoothed' in display else ''])
         with open(os.path.join(self.folder, f'{pre}_landmarks.csv'), 'w',
                   newline='', encoding='utf-8-sig') as fp:
             writer = csv.writer(fp)
@@ -2275,6 +2442,10 @@ class ClinicalApp(QMainWindow):
         captured = capture['capture_monotonic_s']
         self._last_capture = captured
         self._last_found = [h for h in HANDS if h in angles]
+        if self.chk_3d.isChecked() and not self.finishing:
+            self.view3d.record_hands(captured - self.t_app, hands3d)
+        if not self.session_on and not self.finishing and not self.capture_summary:
+            self.chart.update_data(captured - self.t_app, angles)
         if self.session_on and capture.get('session_id') == self.session_id:
             t = captured - self.t_session
             if t >= 0 and (self._stop_time is None or t <= self._stop_time):
@@ -2325,13 +2496,18 @@ class ClinicalApp(QMainWindow):
 
     def _render_preview(self, packet, now):
         frame, angles, fps, n_hands, depths, hands3d, capture = packet
+        self._last_preview_received = now
         captured = capture['capture_monotonic_s']
         cam = 'RealSense' if capture['source'] == 'realsense' else 'Webcam (RS 결측)'
         self.lbl_fps.setText(f'{cam} | FPS: {fps:.1f} | Hands: {n_hands}')
         self.lbl_latency.setText(f'처리 {fps:.1f} FPS · 화면 {max(0, now-captured)*1000:.0f} ms')
-        if not self.finishing and self.chk_3d.isChecked() and self.analysis_tabs.currentIndex() == 1:
+        if not self.finishing and self.chk_3d.isChecked() and self.analysis_tabs.currentIndex() == 0:
             if now - getattr(self, '_last_3d_draw', 0) >= .5:
-                self.view3d.update_hands(captured - self.t_app, hands3d)
+                if self.view3d.update_hands(captured - self.t_app, hands3d):
+                    for hand in HANDS:
+                        metric = hands3d.get(hand, {}).get('metrics', {})
+                        self.monitor_values[hand, 'mp_display_mm'].setText(
+                            self._f(metric.get('display_aperture_mm'), '{:.1f}') or '--')
                 self._last_3d_draw = now
         for hand in HANDS:
             self._update_gauge(hand, angles.get(hand), depths.get(hand))
@@ -2339,6 +2515,15 @@ class ClinicalApp(QMainWindow):
             for key in ('mp_aperture_mm', 'rs_aperture_mm'):
                 self.monitor_values[hand, key].setText(self._f(measurement.get(key), '{:.1f}') or '--')
             valid = measurement.get('rs_status')
+            reasons = {'ok': '유효', 'no_depth': '깊이 없음',
+                       'outside_image': '화면 밖', 'depth_hole': '깊이 결측',
+                       'depth_out_of_range': '범위 밖', 'insufficient_depth': '표본 부족',
+                       'depth_edge': '경계 혼합', 'no_intrinsics': '내부값 없음',
+                       'deprojection_failed': '3D 변환 실패'}
+            for key, index in (('rs_thumb', 4), ('rs_index', 8)):
+                status = valid[index] if valid else None
+                self.monitor_values[hand, key].setText(reasons.get(status, status or '--'))
+                self.monitor_values[hand, key].setToolTip(status or '손 미인식')
             self.monitor_values[hand, 'rs_valid'].setText(str(valid.count('ok')) if valid else '--')
             pip = angles.get(hand, {}).get('filtered', {}).get('Index_PIP')
             self.monitor_values[hand, 'index_pip'].setText(self._f(pip, '{:.1f}') or '--')
@@ -2384,6 +2569,12 @@ class ClinicalApp(QMainWindow):
         self._refresh_record_monitor(now)
         if not self.finishing and self.analysis_tabs.currentIndex() == 0:
             self.chart.refresh(now)
+            received = getattr(self, '_last_preview_received', None)
+            if (self.chk_3d.isChecked() and received is not None and
+                    now - received > .75):
+                self.view3d.show_waiting(clear=now - received >= 2.0)
+                for hand in HANDS:
+                    self.monitor_values[hand, 'mp_display_mm'].setText('--')
         if not self.session_on or self.finishing:
             return
         self.lbl_session.setText(

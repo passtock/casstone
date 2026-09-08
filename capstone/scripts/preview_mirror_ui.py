@@ -95,11 +95,11 @@ for width, height in [(1536, 864), (1280, 720), (1920, 1080)]:
         for label in (ax.xaxis.label, ax.yaxis.label):
             bounds = label.get_window_extent(renderer)
             assert window.chart.fig.bbox.contains(bounds.x0, bounds.y0), (width, 'chart label clipped')
-window.analysis_tabs.setCurrentIndex(2)
+window.analysis_tabs.setCurrentIndex(1)
 for _ in range(3):
     app.processEvents()
 window.grab().save(str(out / 'ui_results.png'))
-window.analysis_tabs.setCurrentIndex(1)
+window.analysis_tabs.setCurrentIndex(0)
 for _ in range(3):
     app.processEvents()
 window.grab().save(str(out / 'ui_3d.png'))
