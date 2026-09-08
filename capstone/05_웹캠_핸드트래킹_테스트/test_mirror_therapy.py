@@ -9,6 +9,9 @@ import json
 import math
 import os
 import queue
+import threading
+import copy
+import logging
 import tempfile
 import time
 import unittest
@@ -31,6 +34,7 @@ def load_logic():
     nodes = [n for n in tree.body if isinstance(n, (ast.Assign, ast.FunctionDef, ast.ClassDef))]
     namespace = dict(np=np, math=math, os=os, csv=csv, json=json, time=time, queue=queue,
                      datetime=datetime, deque=deque, hashlib=hashlib, Path=Path,
+                     threading=threading, copy=copy, SimpleNamespace=NS, logging=logging,
                      __file__=str(source), sys=__import__('sys'), re=__import__('re'), uuid=__import__('uuid'),
                      RawFrameWriter=RawFrameWriter, measure_hand=measure_hand,
                      contiguous_segments=contiguous_segments, MAX_FRAME_GAP_S=MAX_FRAME_GAP_S,
@@ -268,7 +272,7 @@ class WorkerTests(unittest.TestCase):
                 worker._colorize_depth = lambda depth: np.zeros((101, 101, 3), dtype=np.uint8)
                 worker.failed = MagicMock()
                 recorded = []
-                worker.recorder = NS(submit=lambda info, arrays: recorded.append(arrays))
+                worker.recorder = NS(ready=lambda: True, submit=lambda info, arrays: recorded.append(arrays))
                 def emit(*args):
                     outputs.append(args[-1]['measurements']['Right'])
                     worker.running = False
@@ -291,6 +295,7 @@ def app_fixture():
     app = APP.__new__(APP)
     app.session_on, app.session_id, app.t_session = True, 'test', 100.
     app.finishing = app.unsaved = app.close_pending = False
+    app.exporter = None
     app._stop_time, app._last_capture, app._trial_previous = None, None, None
     app._session_error = None
     app.trial_on, app.trial_idx, app.t_trial, app.auto_left = True, 1, 0., 1.
@@ -305,6 +310,10 @@ def app_fixture():
                  'worker'):
         setattr(app, name, MagicMock())
     app.worker.source_name = 'webcam'
+    app.worker.take_preview.return_value = None
+    app.worker.recording_status.return_value = {}
+    app.analysis_tabs = MagicMock()
+    app._refresh_record_monitor = MagicMock()
     app.txt_name.text.return_value = 'Test Subject'
     app.spin_age.value.return_value = 30
     app.spin_auto.value.return_value = 1
@@ -375,12 +384,11 @@ class SessionTests(unittest.TestCase):
         app = app_fixture()
         app.records = records([180])
         app._stop_time = 1.
-        app.save_session = MagicMock(side_effect=[OSError('disk full'), None])
-        app._save_finished_session()
+        app._complete_export('disk full')
         self.assertTrue(app.unsaved)
         self.assertEqual(len(app.records), 1)
         app.btn_start.setEnabled.assert_called_with(False)
-        app._save_finished_session()
+        app._complete_export(None)
         self.assertFalse(app.unsaved)
 
     def test_same_subject_gets_unique_session_folders(self):
