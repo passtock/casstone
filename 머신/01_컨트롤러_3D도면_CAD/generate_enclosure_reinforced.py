@@ -1,12 +1,10 @@
 import FreeCAD
-import FreeCADGui
 import Part
 from FreeCAD import Base
 import math
 import os
-import shutil
 
-doc_name = "Finger_Keyboard_10Key_v2"
+doc_name = "Finger_Keyboard_10Key_Reinforced"
 
 try:
     FreeCAD.closeDocument(doc_name)
@@ -15,8 +13,15 @@ except Exception:
 
 doc = FreeCAD.newDocument(doc_name)
 
+def set_color(obj, color):
+    try:
+        if hasattr(obj, "ViewObject") and obj.ViewObject is not None:
+            obj.ViewObject.ShapeColor = color
+    except Exception:
+        pass
+
 # -------------------------------------------------------------
-# Dimensions (mm) - Heavy-Duty Reinforced Compact Edition
+# Dimensions (mm) - Heavy-Duty Reinforced Compact Edition (5 Pillars)
 # -------------------------------------------------------------
 W = 320.0        # Width (X)
 D = 180.0        # Depth (Y)
@@ -112,12 +117,7 @@ for jx in jack_x_positions:
 # -------------------------------------------------------------
 # 4. Waterproof Tongue/Lip on Upper Shell Bottom Edge
 # -------------------------------------------------------------
-# Lip dimensions: width 2.0mm, height 1.8mm protruding from bottom perimeter
-lip_offset = wall / 2.0 # center of 6.0mm wall (3.0mm from edge)
-lip_w = W - 2 * (wall - 2.0)
-lip_d = D - 2 * (wall - 2.0)
 lip_h = 1.8
-
 lip_outer = Part.makeBox(W - 4.0, D - 4.0, lip_h, Base.Vector(2.0, 2.0, -lip_h))
 lip_inner = Part.makeBox(W - 8.0, D - 8.0, lip_h + 1.0, Base.Vector(4.0, 4.0, -lip_h - 0.5))
 sealing_lip = lip_outer.cut(lip_inner)
@@ -125,20 +125,21 @@ sealing_lip = lip_outer.cut(lip_inner)
 housing_with_lip = housing_with_ports.fuse(sealing_lip)
 
 # -------------------------------------------------------------
-# 5. Fastener Bosses (6 Standoff Pillars for M3 Threaded Inserts)
+# 5. Fastener Bosses: Exactly 5 Pillars (Rear-Center removed for GX16 Cable Clearance!)
 # -------------------------------------------------------------
 boss_outer_r = 5.0     # 10.0 mm diameter heavy-duty boss
 boss_insert_r = 2.0    # 4.0 mm hole for standard M3 heat-set insert (M3x4.6x5.7)
 boss_h = H - top_t
 corner_offset = 14.0
 
+# 5 Pillars: 3 on the Front (wrist-load zone) + 2 on the Rear Corners
+# The Rear-Center (X=160) is intentionally removed to guarantee zero interference with the middle GX16 connector!
 boss_positions = [
-    (corner_offset, corner_offset),            # Front-Left
-    (W - corner_offset, corner_offset),        # Front-Right
-    (corner_offset, D - corner_offset),        # Rear-Left
-    (W - corner_offset, D - corner_offset),    # Rear-Right
-    (W / 2.0, corner_offset),                  # Front-Center
-    (W / 2.0, D - corner_offset),              # Rear-Center
+    (corner_offset, corner_offset),            # 1. Front-Left
+    (W / 2.0, corner_offset),                  # 2. Front-Center (reinforces palm rest)
+    (W - corner_offset, corner_offset),        # 3. Front-Right
+    (corner_offset, D - corner_offset),        # 4. Rear-Left
+    (W - corner_offset, D - corner_offset),    # 5. Rear-Right
 ]
 
 final_housing = housing_with_lip
@@ -150,10 +151,10 @@ for cx, cy in boss_positions:
 
 housing_obj = doc.addObject("Part::Feature", "UpperHousing_HD")
 housing_obj.Shape = final_housing
-housing_obj.ViewObject.ShapeColor = (0.2, 0.22, 0.26, 1.0) # Matte Tactical Dark Grey
+set_color(housing_obj, (0.2, 0.22, 0.26, 1.0)) # Matte Tactical Dark Grey
 
 # -------------------------------------------------------------
-# 6. Heavy-Duty Bottom Base Plate (6.0mm thickness) + Gasket Groove + M3 Counterbores
+# 6. Heavy-Duty Bottom Base Plate (6.0mm thickness) + Gasket Groove + 5 M3 Counterbores
 # -------------------------------------------------------------
 base_raw = Part.makeBox(W, D, base_t, Base.Vector(0.0, 0.0, -base_t - lip_h))
 
@@ -176,13 +177,11 @@ gasket_groove = groove_outer.cut(groove_inner)
 
 base_with_groove = base_filleted.cut(gasket_groove)
 
-# 6 x M3 Counterbore Screw Holes in Base
+# 5 x M3 Counterbore Screw Holes in Base (matching the 5 boss pillars)
 # ISO 4762 M3: Through-hole 3.4mm, Counterbore dia 6.5mm, depth 3.5mm
 base_with_screws = base_with_groove
 for cx, cy in boss_positions:
-    # 3.4mm through-hole
     th = Part.makeCylinder(1.7, base_t + 2.0, Base.Vector(cx, cy, -base_t - lip_h - 1.0), Base.Vector(0, 0, 1))
-    # 6.5mm counterbore from the bottom face
     cb = Part.makeCylinder(3.25, 3.5, Base.Vector(cx, cy, -base_t - lip_h - 0.1), Base.Vector(0, 0, 1))
     base_with_screws = base_with_screws.cut(th).cut(cb)
 
@@ -201,7 +200,7 @@ for fx, fy in foot_positions:
 
 base_obj = doc.addObject("Part::Feature", "BottomBasePlate_HD")
 base_obj.Shape = base_with_screws
-base_obj.ViewObject.ShapeColor = (0.13, 0.14, 0.16, 1.0) # Deep Charcoal
+set_color(base_obj, (0.13, 0.14, 0.16, 1.0)) # Deep Charcoal
 
 # -------------------------------------------------------------
 # 7. Virtual 3D Arcade Buttons & Metal Connectors (for render visualization)
@@ -212,50 +211,58 @@ rim_h = 3.0
 cap_h = 3.5
 
 for name, bx, by in buttons_layout:
-    # Black Rim Flange
     rim = Part.makeCylinder(rim_r, rim_h, Base.Vector(bx, by, H), Base.Vector(0, 0, 1))
     rim_obj = doc.addObject("Part::Feature", f"{name}_Rim")
     rim_obj.Shape = rim
-    rim_obj.ViewObject.ShapeColor = (0.1, 0.1, 0.1, 1.0)
+    set_color(rim_obj, (0.1, 0.1, 0.1, 1.0))
     
-    # Bright Green Button Plunger
     cap = Part.makeCylinder(cap_r, cap_h, Base.Vector(bx, by, H + rim_h), Base.Vector(0, 0, 1))
     cap_obj = doc.addObject("Part::Feature", f"{name}_Cap")
     cap_obj.Shape = cap
-    cap_obj.ViewObject.ShapeColor = (0.1, 0.85, 0.25, 1.0)
+    set_color(cap_obj, (0.1, 0.85, 0.25, 1.0))
 
 for idx, jx in enumerate(jack_x_positions, 1):
     collar = Part.makeCylinder(9.5, 4.5, Base.Vector(jx, D, jack_z), Base.Vector(0, 1, 0))
     jack_obj = doc.addObject("Part::Feature", f"GX16_Jack_{idx}")
     jack_obj.Shape = collar
-    jack_obj.ViewObject.ShapeColor = (0.78, 0.80, 0.84, 1.0)
+    set_color(jack_obj, (0.78, 0.80, 0.84, 1.0))
 
 doc.recompute()
 
 # -------------------------------------------------------------
 # 8. Export Files directly to: C:\Users\passp\OneDrive\바탕 화면\jeayong\머신\01_컨트롤러_3D도면_CAD
 # -------------------------------------------------------------
+# -------------------------------------------------------------
+# 8. Export Files (FCStd, STEP, STL for both Parts and Assembly)
+# -------------------------------------------------------------
 export_dir = r"c:\Users\passp\OneDrive\바탕 화면\jeayong\머신\01_컨트롤러_3D도면_CAD"
 os.makedirs(export_dir, exist_ok=True)
 
+# 1. FreeCAD Native Project
 fcstd_path = os.path.join(export_dir, "Finger_Keyboard_10Key_Reinforced.FCStd")
 doc.saveAs(fcstd_path)
 
-step_path = os.path.join(export_dir, "Finger_Keyboard_Housing_Reinforced.step")
-Part.export([housing_obj, base_obj], step_path)
+# 2. STEP CAD Files (Upper Housing, Bottom Base, and Combined Assembly)
+step_housing_path = os.path.join(export_dir, "Finger_Keyboard_Housing_Reinforced.step")
+Part.export([housing_obj], step_housing_path)
 
+step_base_path = os.path.join(export_dir, "Finger_Keyboard_Base_Reinforced.step")
+Part.export([base_obj], step_base_path)
+
+step_assembly_path = os.path.join(export_dir, "Finger_Keyboard_Assembly_Reinforced.step")
+Part.export([housing_obj, base_obj], step_assembly_path)
+
+# 3. STL 3D Printing Files
 stl_housing_path = os.path.join(export_dir, "Finger_Keyboard_Housing_Reinforced.stl")
 Part.export([housing_obj], stl_housing_path)
 
 stl_base_path = os.path.join(export_dir, "Finger_Keyboard_Base_Reinforced.stl")
 Part.export([base_obj], stl_base_path)
 
-# Also save this generator script in the target folder
-shutil.copy2(r"C:\Users\passp\.gemini\antigravity-ide\brain\1be60f37-311a-4eb3-9b24-b78b2f947137\scratch\generate_enclosure_v2.py",
-             os.path.join(export_dir, "generate_enclosure_reinforced.py"))
-
-print("REINFORCED 3D CAD MODELING & EXPORT COMPLETE!")
-print("Saved FCStd:", fcstd_path)
-print("Exported STEP:", step_path)
-print("Exported STL (Housing):", stl_housing_path)
-print("Exported STL (Base):", stl_base_path)
+print("SUCCESS: Full Export (FCStd, Individual STEPs, Assembly STEP, STLs) Complete!")
+print(" - FCStd Project:", fcstd_path)
+print(" - STEP (Housing):", step_housing_path)
+print(" - STEP (Base):", step_base_path)
+print(" - STEP (Assembly):", step_assembly_path)
+print(" - STL (Housing):", stl_housing_path)
+print(" - STL (Base):", stl_base_path)
