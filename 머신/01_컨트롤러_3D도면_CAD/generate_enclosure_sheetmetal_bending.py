@@ -124,8 +124,8 @@ screw_positions = [
 
 cover_with_screws = cover_with_ports
 for sx, sy in screw_positions:
-    # 4.2 mm hole for M4 thread or weld nut
-    sh = Part.makeCylinder(2.1, t + 2.0, Base.Vector(sx, sy, t - 1.0), Base.Vector(0, 0, 1))
+    # 3.3 mm pilot hole for M4 tapping (standard M4 coarse thread pitch 0.7mm)
+    sh = Part.makeCylinder(1.65, t + 2.0, Base.Vector(sx, sy, t - 1.0), Base.Vector(0, 0, 1))
     cover_with_screws = cover_with_screws.cut(sh)
 
 top_cover_obj = doc.addObject("Part::Feature", "SheetMetal_TopCover")
