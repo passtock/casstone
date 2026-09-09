@@ -160,16 +160,8 @@ for sx, sy in screw_positions:
     cs = Part.makeCone(4.2, 2.25, t, Base.Vector(sx, sy, 0), Base.Vector(0, 0, 1))
     chassis_with_screws = chassis_with_screws.cut(th).cut(cs)
 
-# 4 Rubber Feet Recesses / Mounts in Corners
-foot_positions = [
-    (25.0, 25.0),
-    (W - 25.0, 25.0),
-    (25.0, D - 25.0),
-    (W - 25.0, D - 25.0)
-]
-for fx, fy in foot_positions:
-    fp = Part.makeCylinder(6.0, 0.8, Base.Vector(fx, fy, -0.1), Base.Vector(0, 0, 1))
-    chassis_with_screws = chassis_with_screws.cut(fp)
+# Note: Bottom plate is kept completely flat for sheet metal laser cutting.
+# Standard 3M adhesive rubber feet can be attached directly to the finished flat surface.
 
 bottom_base_obj = doc.addObject("Part::Feature", "SheetMetal_BottomChassis")
 bottom_base_obj.Shape = chassis_with_screws
