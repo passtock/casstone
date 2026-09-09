@@ -1,5 +1,14 @@
 # 운영 결정 기록
 
+## 2026-09-09 — 연구계획서 VLM 입력 및 프롬프트 구체화
+- 작업용 Codex 모델 배치와 연구 평가에 호출할 모델을 구분함.
+- 연구 계획안: GPT-5.2 `gpt-5.2-2025-12-11` 주모델, Gemini 2.5 Pro `gemini-2.5-pro` 보조 재현 모델, Qwen2.5-VL-7B-Instruct 선택적 로컬 후보. 기존 A0 L2 순서형 로지스틱 및 환자 LOSO 유지.
+- 선정 근거는 공식 이미지 입력·구조화 출력·버전 관리 기능이며 본 연구의 관측 성능에 따른 순위가 아님. 모델 접근 가능성과 실행 설정은 개발 단계 확인 대상.
+- 주 입력은 검증된 RS aperture 기반 피처. MP 거리로 RS 결측을 자동 대체하지 않음. 검증되지 않은 각도/SPARC는 주 입력에서 제외.
+- A1 영상에 수치·골격 오버레이를 넣지 않음. 공통 zero-shot 지침과 JSON Schema를 고정하고 조건별 입력 블록만 변경.
+- 고정 해제 2초 관찰창, 품질 기준 후보, 사건 주석 분리, NA/coverage와 민감도 분석을 문서화함. 구현 또는 검증 완료를 의미하지 않음.
+- 공식 자료: https://developers.openai.com/api/docs/models/gpt-5.2 ; https://developers.openai.com/api/docs/guides/structured-outputs ; https://ai.google.dev/gemini-api/docs/models/gemini-2.5-pro ; https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct
+
 ## 2026-09-08 — 초기 모델 배치
 - 사용자 요청: 캡스톤 폴더 안에 역할별 모델을 선정하고 설정.
 - 총괄 및 연구설계: GPT-6 Astra / high.
@@ -38,6 +47,5 @@
   - 연구설계(research_planner): GPT-6 Astra / medium
   - 실험구현(experiment_engineer): GPT-6 Astra / low
   - 발표/문서작성(presentation_builder): GPT-6 Astra / low
-
 
 
