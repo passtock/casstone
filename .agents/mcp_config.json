@@ -1,0 +1,25 @@
+﻿{
+  "mcpServers": {
+    "fusion360": {
+      "command": "C:\\Users\\passp\\.local\\bin\\fusion360-mcp-server.exe",
+      "args": [
+        "--mode",
+        "socket"
+      ],
+      "env": {
+        "PYTHONUTF8": "1",
+        "PYTHONIOENCODING": "utf-8"
+      }
+    },
+    "freecad": {
+      "command": "C:\\Users\\passp\\.local\\bin\\uvx.exe",
+      "args": [
+        "freecad-mcp"
+      ],
+      "env": {
+        "PYTHONUTF8": "1",
+        "PYTHONIOENCODING": "utf-8"
+      }
+    }
+  }
+}
