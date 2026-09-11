@@ -2,7 +2,7 @@ import os
 os.environ.update({'TF_ENABLE_ONEDNN_OPTS': '0', 'TF_CPP_MIN_LOG_LEVEL': '2',
                    'QT_ENABLE_HIGHDPI_SCALING': '1', 'QT_AUTO_SCREEN_SCALE_FACTOR': '1'})
 
-import sys, csv, json, time, math, uuid
+import sys, csv, re, glob, json, time, math, uuid, struct, shutil, subprocess, threading, argparse
 from datetime import datetime
 from collections import deque
 
@@ -48,14 +48,29 @@ RS_VISUAL_PRESET = 'medium_density'      # 'default' | 'high_accuracy' | 'high_d
 # ---- 영상 기록 ----
 # 원본(original.avi)과 랜드마크 오버레이(mediapipe.avi)를 따로 남긴다.
 # 둘 다 미러링 이전의 원본 좌표계 프레임이라 픽셀이 CSV와 그대로 대응된다.
+#
+# [fps 처리 방침]
+# 기록 '전'에 잰 속도로 헤더 fps를 정하면 반드시 틀린다. 프리뷰 구간은 손이
+# 없어 MediaPipe가 가볍고, 기록이 시작되면 1280x720 MJPG 인코딩이 두 번씩
+# 추가되어 루프가 느려지기 때문이다. 실제로 헤더 23.8fps / 실측 14.5fps,
+# 즉 1.64배 빨라진 영상이 나왔다. 그래서 기록 중에는 임시값만 적어 두고,
+# 프레임마다 촬영 시각을 모아 두었다가 종료 시점에 실측 fps로 헤더를 고친다.
+# 헤더의 정수 필드만 바꾸므로 재인코딩도, 프레임-CSV 대응 변화도 없다.
 VIDEO_FOURCC = 'MJPG'
 VIDEO_RAW_NAME, VIDEO_MP_NAME = 'original.avi', 'mediapipe.avi'
-# 파일에 적는 fps가 실제 처리 속도와 다르면 재생 배속이 어긋난다. MediaPipe 추론
-# 때문에 루프는 카메라 fps보다 느리게 돌므로, RS_FPS를 그대로 쓰면 프레임이 모자라
-# 영상이 빨라진다. 기록 직전 실측한 프레임 간격으로 fps를 정한다.
-VIDEO_FPS_WINDOW = 120           # 실측에 쓰는 최근 프레임 간격 개수
-VIDEO_FPS_MIN_SAMPLES = 20       # 이보다 표본이 적으면 RS_FPS로 폴백
-VIDEO_FPS_RANGE = (1.0, 120.0)   # 순간적인 끊김이 이상값을 만들지 않도록 하는 상한/하한
+VIDEO_TS_NAME = 'video_timestamps.csv'   # 영상 프레임 인덱스 <-> Frame_ID <-> 촬영 시각
+VIDEO_NOMINAL_FPS = float(RS_FPS)        # 기록 중 임시 헤더값 (종료 시 덮어씀)
+VIDEO_FPS_RANGE = (1.0, 120.0)           # 이상값 방지용 상한/하한
+VIDEO_FPS_MIN_SAMPLES = 2                # 이보다 프레임이 적으면 헤더를 건드리지 않는다
+
+# ---- 세션 분할 (물체=Task / 회차=Trial 단위) ----
+# 세션이 끝나면 원본은 그대로 두고 <세션폴더>/split/ 아래에 파생물만 만든다.
+# 구간 정의가 바뀌면 --split 로 다시 돌리면 되므로 원본을 다시 찍을 일이 없다.
+AUTO_SPLIT = True                # 세션 종료 시 자동 분할
+SPLIT_DIR_NAME = 'split'
+SPLIT_PAD_S = 0.5                # 영상 클립 앞뒤 여유 (CSV에는 적용하지 않는다)
+SPLIT_INCLUDE_REST = False       # Trial 사이 Rest 구간까지 뽑을지
+SPLIT_WITH_VIDEO = True          # 클립까지 만들지 (ffmpeg 필요)
 
 # ---- depth 샘플링 품질 게이트 ----
 # 홀 필링을 하지 않는다. 값을 만들어내는 대신 결측으로 남기고 상태 코드를 기록한다.
@@ -456,6 +471,379 @@ def measure_depth_hand(pixels, depth_m, intr):
                 thumb_palmar_abd=pab, thumb_radial_abd=rab, wrist_z_m=wrist_z)
 
 
+
+# ======================= AVI 헤더 프레임레이트 =======================
+def read_avi_fps(path):
+    """AVI 헤더에 적힌 프레임레이트를 읽는다 (dwRate / dwScale)."""
+    with open(path, 'rb') as fp:
+        head = fp.read(65536)
+    if head[:4] != b'RIFF' or head[8:12] != b'AVI ':
+        raise ValueError('not a RIFF/AVI file')
+    j, k = -1, 0
+    while True:
+        k = head.find(b'strh', k)
+        if k < 0:
+            break
+        if head[k + 8:k + 12] == b'vids':
+            j = k
+            break
+        k += 4
+    if j < 0:
+        raise ValueError('video strh chunk not found')
+    scale, rate = struct.unpack('<II', head[j + 8 + 20:j + 8 + 28])
+    return (rate / scale) if scale else None
+
+
+def patch_avi_fps(path, fps):
+    """AVI 헤더의 프레임레이트 필드만 제자리에서 바꾼다.
+
+    RIFF 컨테이너에서 재생 속도를 정하는 값은 세 개다.
+      avih.dwMicroSecPerFrame  (프레임당 마이크로초)
+      strh.dwScale / dwRate    (fps = dwRate / dwScale)
+    영상 스트림 데이터는 건드리지 않으므로 재인코딩이 없고, 프레임 수와
+    순서도 그대로다. 즉 CSV의 Frame_ID 대응이 깨지지 않는다."""
+    if not fps or not np.isfinite(fps) or fps <= 0:
+        raise ValueError('invalid fps')
+    scale, rate = 1000, int(round(float(fps) * 1000))
+    upf = int(round(1e6 / float(fps)))
+    with open(path, 'r+b') as fp:
+        head = fp.read(65536)         # hdrl LIST는 파일 맨 앞에 있다
+        if head[:4] != b'RIFF' or head[8:12] != b'AVI ':
+            raise ValueError('not a RIFF/AVI file')
+
+        i = head.find(b'avih')
+        if i < 0:
+            raise ValueError('avih chunk not found')
+        fp.seek(i + 8)                # 청크 데이터 선두 = dwMicroSecPerFrame
+        fp.write(struct.pack('<I', upf))
+
+        # 오디오 스트림이 섞여 있을 수 있으므로 fccType이 'vids'인 것만 고른다
+        j, k = -1, 0
+        while True:
+            k = head.find(b'strh', k)
+            if k < 0:
+                break
+            if head[k + 8:k + 12] == b'vids':
+                j = k
+                break
+            k += 4
+        if j < 0:
+            raise ValueError('video strh chunk not found')
+        # strh 데이터 내부 오프셋 20/24 = dwScale/dwRate
+        fp.seek(j + 8 + 20)
+        fp.write(struct.pack('<II', scale, rate))
+    return True
+
+
+# ==================== 세션 분할 (Task / Trial 단위) ====================
+def _slug(text):
+    """'Task 2: 구형 파지 (Sphere)' -> 'Task2_구형파지_Sphere'"""
+    text = str(text).replace(':', '_')
+    text = re.sub(r'[\\/*?"<>|]', '', text)
+    text = re.sub(r'[()\[\]]', '', text)
+    text = re.sub(r'\s+', '', text)
+    return text.strip('_') or 'Task'
+
+
+def _find_one(folder, suffix):
+    hits = sorted(glob.glob(os.path.join(folder, f"*{suffix}")))
+    return hits[0] if hits else None
+
+
+def _read_csv(path):
+    """헤더 + 행 리스트로 읽는다 (pandas 의존을 만들지 않기 위해)."""
+    with open(path, newline='', encoding='utf-8-sig') as fp:
+        r = csv.reader(fp)
+        head = next(r, [])
+        return head, [row for row in r if row]
+
+
+def _write_csv(path, head, rows):
+    with open(path, 'w', newline='', encoding='utf-8-sig') as fp:
+        w = csv.writer(fp)
+        w.writerow(head)
+        w.writerows(rows)
+
+
+def _slice_by_id(src, dst, id_col, lo, hi):
+    """정수 ID 열이 [lo, hi] 범위인 행만 남긴다."""
+    if not src or not os.path.exists(src):
+        return None
+    head, rows = _read_csv(src)
+    if id_col not in head:
+        return None
+    ix = head.index(id_col)
+    out = []
+    for row in rows:
+        if ix >= len(row):
+            continue
+        try:
+            v = int(float(row[ix]))
+        except (TypeError, ValueError):
+            continue
+        if lo <= v <= hi:
+            out.append(row)
+    if not out:
+        return None
+    _write_csv(dst, head, out)
+    return len(out)
+
+
+def _frame_map(folder, cont_rows, cont_head, fq_path):
+    """frame_id를 영상 프레임 인덱스로 옮기는 함수와 실측 fps를 낸다.
+
+    video_timestamps.csv가 있으면 그대로 쓴다 (정확). 없는 옛 세션은
+    '기록 시작 프레임 = 영상 0번'으로 가정해 오프셋만 맞춘다. 기록 요청과
+    실제 파일 생성 사이에 한 프레임이 끼일 수 있어 ±1 정도 어긋날 수 있다."""
+    ts_path = os.path.join(folder, VIDEO_TS_NAME)
+    if os.path.exists(ts_path):
+        head, rows = _read_csv(ts_path)
+        try:
+            fi, vi = head.index('frame_id'), head.index('video_frame_index')
+            ui = head.index('capture_unix_s')
+            table = {int(float(r[fi])): int(float(r[vi])) for r in rows}
+            u = [float(r[ui]) for r in rows]
+            fps = (len(u) - 1) / (u[-1] - u[0]) if len(u) >= 2 and u[-1] > u[0] else None
+            return (lambda f: table.get(int(f))), fps, VIDEO_TS_NAME
+        except (ValueError, IndexError):
+            pass
+
+    # --- 폴백: frame_id 오프셋 ---
+    base = None
+    if fq_path and os.path.exists(fq_path):
+        h, r = _read_csv(fq_path)
+        if 'frame_id' in h and r:
+            k = h.index('frame_id')
+            vals = [int(float(x[k])) for x in r if k < len(x) and x[k]]
+            base = min(vals) if vals else None
+    ci, ti = cont_head.index('Frame_ID'), cont_head.index('time_s')
+    fids = [int(float(r[ci])) for r in cont_rows]
+    times = [float(r[ti]) for r in cont_rows]
+    if base is None:
+        base = min(fids)
+    fps = None
+    if len(fids) >= 2 and times[-1] > times[0]:
+        fps = (fids[-1] - fids[0]) / (times[-1] - times[0])
+    return (lambda f: int(f) - base), fps, f'frame_id offset (base={base})'
+
+
+def _cut_clip_ffmpeg(ffmpeg, src, dst, t0, t1):
+    """MJPG는 모든 프레임이 독립 JPEG이라 재인코딩 없이 정확히 잘린다."""
+    subprocess.run([ffmpeg, '-y', '-loglevel', 'error',
+                    '-ss', f"{t0:.6f}", '-to', f"{t1:.6f}",
+                    '-i', src, '-c', 'copy', dst], check=True)
+    return True
+
+
+def _cut_clip_cv(src, dst, i0, i1, fps):
+    """ffmpeg가 없을 때 쓰는 폴백. 프레임 번호로 직접 잘라낸다.
+
+    OpenCV는 스트림 복사를 못 하므로 MJPG로 다시 인코딩된다. JPEG 재압축이
+    한 번 더 걸려 원본보다 화질이 조금 떨어진다. 측정값은 이미 CSV에 있고
+    클립은 눈으로 확인하는 용도라 실용상 문제가 없지만, 화질이 중요하면
+    ffmpeg를 설치하는 편이 낫다."""
+    cap = cv2.VideoCapture(src)
+    if not cap.isOpened():
+        raise RuntimeError('영상을 열 수 없습니다')
+    w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    out = cv2.VideoWriter(dst, cv2.VideoWriter_fourcc(*VIDEO_FOURCC),
+                          float(fps), (w, h))
+    if not out.isOpened():
+        cap.release()
+        raise RuntimeError('VideoWriter를 열 수 없습니다')
+    cap.set(cv2.CAP_PROP_POS_FRAMES, int(i0))
+    n = 0
+    for _ in range(int(i1) - int(i0) + 1):
+        ok, frame = cap.read()
+        if not ok:
+            break
+        out.write(frame)
+        n += 1
+    out.release()
+    cap.release()
+    if n == 0:
+        raise RuntimeError('읽은 프레임이 없습니다')
+    return n
+
+
+def split_session(folder, pad=SPLIT_PAD_S, include_rest=SPLIT_INCLUDE_REST,
+                  with_video=SPLIT_WITH_VIDEO, patch=True, log=print):
+    """세션 폴더를 물체(Task) · 회차(Trial) 단위로 쪼갠다.
+
+    시간이 아니라 Frame_ID로 자른다. 손이 인식되지 않은 프레임은 CSV에 없어서
+    번호가 중간에 건너뛰므로, 시간으로 맞추면 클립과 CSV의 첫 행이 어긋난다."""
+    folder = os.path.abspath(folder)
+    cont_path = _find_one(folder, '_continuous_raw.csv')
+    if not cont_path:
+        raise FileNotFoundError('*_continuous_raw.csv 가 없습니다.')
+    pre = os.path.basename(cont_path)[:-len('_continuous_raw.csv')]
+    fq_path = _find_one(folder, '_frame_quality.csv')
+    trials_path = _find_one(folder, '_trials_summary.csv')
+
+    head, rows = _read_csv(cont_path)
+    for col in ('Frame_ID', 'time_s', 'Task', 'Trial', 'hand'):
+        if col not in head:
+            raise ValueError(f"continuous_raw.csv 에 '{col}' 열이 없습니다.")
+    ci = {c: head.index(c) for c in ('Frame_ID', 'time_s', 'Task', 'Trial', 'hand')}
+    rows = [r for r in rows if len(r) > ci['Frame_ID'] and r[ci['Frame_ID']]]
+
+    to_video, fps, src_desc = _frame_map(folder, rows, head, fq_path)
+    log(f"[분할] {os.path.basename(folder)} · 대응={src_desc} · "
+        + (f"실측 {fps:.3f}fps" if fps else "fps 미상"))
+
+    # --- 영상 준비 ---
+    videos, ffmpeg, skip = [], shutil.which('ffmpeg'), None
+    if with_video:
+        videos = [os.path.join(folder, n) for n in (VIDEO_RAW_NAME, VIDEO_MP_NAME)
+                  if os.path.exists(os.path.join(folder, n))]
+        if not videos:
+            skip = (f"{VIDEO_RAW_NAME} / {VIDEO_MP_NAME} 이 폴더에 없습니다 "
+                    "(녹화 실패 또는 다른 폴더)")
+            log(f"  [안내] 영상 클립 생략: {skip}")
+        elif not ffmpeg:
+            # ffmpeg가 없어도 OpenCV로 자를 수 있다. 재인코딩이라 화질만 조금 손해.
+            log("  [안내] ffmpeg가 없어 OpenCV로 자릅니다 (MJPG 재인코딩).")
+        if videos and not fps:
+            skip = "실측 fps를 구하지 못했습니다"
+            log(f"  [안내] 영상 클립 생략: {skip}")
+            videos = []
+    else:
+        skip = "with_video=False"
+    if videos and fps and patch:
+        for p in videos:
+            try:
+                cur = read_avi_fps(p)
+                if cur and abs(cur - fps) / fps > 0.01:
+                    patch_avi_fps(p, fps)
+                    log(f"  [보정] {os.path.basename(p)} 헤더 fps "
+                        f"{cur:.3f} → {fps:.3f} ({cur / fps:.3f}배 빨랐음)")
+            except Exception as e:
+                log(f"  [경고] {os.path.basename(p)} 헤더 확인 실패: {e}")
+
+    # --- (Task, Trial) 구간 ---
+    groups = {}
+    for r in rows:
+        task, trial = r[ci['Task']], r[ci['Trial']]
+        if trial == 'Rest' and not include_rest:
+            continue
+        g = groups.setdefault((task, trial), {'ids': [], 'ts': [], 'hands': set(), 'n': 0})
+        g['ids'].append(int(float(r[ci['Frame_ID']])))
+        g['ts'].append(float(r[ci['time_s']]))
+        g['hands'].add(r[ci['hand']])
+        g['n'] += 1
+    if not groups:
+        raise ValueError('뽑을 구간이 없습니다 (Rest만 있다면 include_rest 사용).')
+
+    out_root = os.path.join(folder, SPLIT_DIR_NAME)
+    os.makedirs(out_root, exist_ok=True)
+    index, made = [], 0
+
+    for (task, trial), g in sorted(groups.items(), key=lambda kv: min(kv[1]['ids'])):
+        lo, hi = min(g['ids']), max(g['ids'])
+        tslug = _slug(task)
+        sub = os.path.join(out_root, tslug, str(trial))
+        os.makedirs(sub, exist_ok=True)
+        stem = f"{pre}_{tslug}_{trial}"
+        log(f"  · {tslug} / {trial}: Frame_ID {lo}~{hi} "
+            f"({len(set(g['ids']))}프레임, {g['n']}행, "
+            f"{'/'.join(sorted(g['hands']))}, {max(g['ts']) - min(g['ts']):.2f}초)")
+
+        for suffix in ('_continuous_raw.csv', '_landmarks.csv', '_distance_comparison.csv'):
+            src = _find_one(folder, suffix)
+            _slice_by_id(src, os.path.join(sub, f"{stem}{suffix}"), 'Frame_ID', lo, hi)
+        # frame_quality는 열 이름이 소문자다. 손 미인식 프레임이 여기 남는다.
+        _slice_by_id(fq_path, os.path.join(sub, f"{stem}_frame_quality.csv"),
+                     'frame_id', lo, hi)
+
+        # --- 해당 회차의 요약 행 ---
+        if trials_path and str(trial).startswith('Trial_'):
+            th, tr = _read_csv(trials_path)
+            if 'Trial' in th:
+                k, num = th.index('Trial'), str(trial).replace('Trial_', '')
+                hit = [x for x in tr if k < len(x)
+                       and re.search(fr"#\s*{num}\b", str(x[k]))]
+                if hit:
+                    _write_csv(os.path.join(sub, f"{stem}_trials_summary.csv"), th, hit)
+
+        # --- 영상 클립 (MJPG는 전 프레임 독립 JPEG이라 재인코딩 없이 정확히 잘린다) ---
+        i0 = to_video(lo)
+        i1 = to_video(hi)
+        c0 = c1 = None
+        if videos and fps and i0 is not None and i1 is not None:
+            padf = max(0, int(round(pad * fps)))
+            j0, j1 = max(0, i0 - padf), i1 + padf
+            c0, c1 = j0 / fps, (j1 + 1) / fps
+            for p in videos:
+                tag = os.path.splitext(os.path.basename(p))[0]
+                dst = os.path.join(sub, f"{stem}_{tag}.avi")
+                try:
+                    if ffmpeg:
+                        _cut_clip_ffmpeg(ffmpeg, p, dst, c0, c1)
+                    else:
+                        _cut_clip_cv(p, dst, j0, j1, fps)
+                    made += 1
+                except Exception as e:
+                    log(f"      [경고] 클립 실패 ({os.path.basename(dst)}): {e}")
+        elif videos and i0 is None:
+            log(f"      [경고] Frame_ID {lo} 에 대응하는 영상 프레임을 찾지 못했습니다.")
+
+        index.append([task, tslug, trial, lo, hi, i0, i1,
+                      f"{c0:.4f}" if c0 is not None else "",
+                      f"{c1:.4f}" if c1 is not None else "",
+                      f"{min(g['ts']):.4f}", f"{max(g['ts']):.4f}",
+                      len(set(g['ids'])), g['n'], '/'.join(sorted(g['hands'])),
+                      os.path.relpath(sub, folder)])
+
+    _write_csv(os.path.join(out_root, 'index.csv'),
+               ["task", "task_slug", "trial", "frame_id_start", "frame_id_end",
+                "video_index_start", "video_index_end", "clip_start_s", "clip_end_s",
+                "session_t0_s", "session_t1_s", "frames_in_csv", "rows_in_csv",
+                "hands", "folder"], index)
+    with open(os.path.join(out_root, 'split_info.json'), 'w', encoding='utf-8') as fp:
+        json.dump({'session_folder': folder, 'prefix': pre, 'actual_fps': fps,
+                   'frame_map_source': src_desc, 'clip_pad_s': pad,
+                   'include_rest': include_rest, 'segments': len(index),
+                   'clips': made,
+                   'clip_encoder': ('ffmpeg' if ffmpeg else 'opencv') if videos else None,
+                   'video_skip_reason': skip if made == 0 else None,
+                   'note': ('구간은 Frame_ID로 잘랐다. 손이 인식되지 않은 프레임은 '
+                            'continuous_raw에 없어 번호가 건너뛰므로, 시간으로 맞추면 '
+                            '클립과 CSV의 첫 행이 어긋난다. video_timestamps.csv가 없는 '
+                            '세션은 기록 시작 프레임을 영상 0번으로 가정하므로 ±1프레임 '
+                            '오차가 있을 수 있다.')},
+                  fp, ensure_ascii=False, indent=2)
+    log(f"  [완료] {len(index)}개 구간 · 클립 {made}개 → {out_root}")
+    if with_video and made == 0 and skip:
+        log(f"  [주의] 영상 클립이 하나도 만들어지지 않았습니다: {skip}")
+    return {'root': out_root, 'segments': len(index), 'clips': made,
+            'fps': fps, 'video_skip_reason': (skip if made == 0 else None),
+            'encoder': ('ffmpeg' if ffmpeg else 'opencv') if videos else None}
+
+
+class SplitWorker(QThread):
+    """분할은 ffmpeg 호출이 섞여 몇 초 걸린다. UI를 얼리지 않도록 따로 돌린다."""
+    line = pyqtSignal(str)
+    done = pyqtSignal(dict, str)
+
+    def __init__(self, folder, pad=SPLIT_PAD_S, include_rest=SPLIT_INCLUDE_REST,
+                 with_video=SPLIT_WITH_VIDEO):
+        super().__init__()
+        self.folder, self.pad = folder, pad
+        self.include_rest, self.with_video = include_rest, with_video
+
+    def run(self):
+        try:
+            res = split_session(self.folder, pad=self.pad,
+                                include_rest=self.include_rest,
+                                with_video=self.with_video,
+                                log=lambda m: (print(m), self.line.emit(str(m))))
+            self.done.emit(res, "")
+        except Exception as e:
+            print(f"[경고] 세션 분할 실패: {e}")
+            self.done.emit({}, str(e))
+
+
 # ============================ 비디오 스레드 ============================
 class VideoWorker(QThread):
     # frame, angles, fps, n_hands, hands3d, rs_measurements, frame_meta
@@ -480,10 +868,15 @@ class VideoWorker(QThread):
         # 영상 기록 상태 (요청은 GUI 스레드, 실제 열고 닫기는 캡처 스레드에서)
         self._rec_folder = None
         self._rec_request = self._rec_release = False
+        self._rec_done = threading.Event()
+        self._rec_done.set()
         self.rec_raw = self.rec_mp = None
+        self.rec_size = None
         self.rec_frames = 0
-        self.rec_fps = float(RS_FPS)
-        self._dt_hist = deque(maxlen=VIDEO_FPS_WINDOW)
+        self.rec_fps = VIDEO_NOMINAL_FPS   # 종료 시 실측값으로 갱신된다
+        # 기록된 프레임의 촬영 시각과 Frame_ID. 이 둘이 fps 보정의 근거다.
+        self.rec_ts, self.rec_ids = [], []
+        self.last_recording = None
 
     def set_mirror_mode(self, v):
         # 미러링은 표시 전용이다. 측정 입력(픽셀·depth·intrinsics)은 항상 원본.
@@ -513,26 +906,32 @@ class VideoWorker(QThread):
     def start_recording(self, folder):
         """세션 시작 시 호출. 실제 파일 생성은 다음 캡처 프레임에서 일어난다."""
         self._rec_folder = folder
+        self.last_recording = None
+        self._rec_done.clear()
         self._rec_request = True
 
-    def stop_recording(self):
-        self._rec_release = True
+    def stop_recording(self, timeout=10.0):
+        """기록 종료를 요청하고 파일이 실제로 닫힐 때까지 기다린다.
 
-    def _measured_fps(self):
-        """최근 프레임 간격의 중앙값으로 실제 처리 속도를 낸다.
-        중앙값을 쓰는 이유는 한두 번의 끊김(디스크 I/O, GC)이 평균을 끌어내려
-        영상이 도리어 느려지는 것을 막기 위해서다."""
-        if len(self._dt_hist) < VIDEO_FPS_MIN_SAMPLES:
-            return float(RS_FPS)
-        med = float(np.median(self._dt_hist))
-        if not np.isfinite(med) or med <= 0:
-            return float(RS_FPS)
-        return float(np.clip(1.0 / med, *VIDEO_FPS_RANGE))
+        예전에는 요청만 던지고 곧바로 저장 루틴으로 넘어갔다. 그러면 아직
+        열려 있는 파일의 헤더를 고치려 들거나, rec_frames를 덜 채워진 상태로
+        읽게 된다. 닫힘을 확인해야 fps 보정이 안전하다."""
+        if self.rec_raw is None and not self._rec_request:
+            self._rec_done.set()
+            return self.last_recording
+        self._rec_release = True
+        self._rec_done.wait(timeout)
+        return self.last_recording
 
     def _open_writers(self, frame):
+        """헤더 fps는 일단 카메라 공칭값으로 적어 둔다.
+
+        여기서 '실측'을 시도해도 소용이 없다. 이 시점은 아직 인코딩 부하가
+        걸리기 전이라 항상 실제보다 빠르게 나오고, 그 값이 그대로 박히면
+        영상이 빨라진다. 진짜 fps는 _finalize_recording에서 정한다."""
         h, w = frame.shape[:2]
         fourcc = cv2.VideoWriter_fourcc(*VIDEO_FOURCC)
-        fps = self._measured_fps()
+        fps = VIDEO_NOMINAL_FPS
         try:
             raw = cv2.VideoWriter(os.path.join(self._rec_folder, VIDEO_RAW_NAME),
                                   fourcc, fps, (w, h))
@@ -541,14 +940,16 @@ class VideoWorker(QThread):
             if not (raw.isOpened() and mpv.isOpened()):
                 raise RuntimeError('VideoWriter open failed')
             self.rec_raw, self.rec_mp, self.rec_frames = raw, mpv, 0
-            self.rec_fps = fps
+            self.rec_ts, self.rec_ids = [], []
+            self.rec_size, self.rec_fps = (w, h), fps
             print(f"[녹화] {VIDEO_RAW_NAME} / {VIDEO_MP_NAME} "
-                  f"({w}x{h} @ {fps:.2f}fps 실측 · 카메라 {RS_FPS}fps)")
+                  f"({w}x{h} @ 임시 {fps:.2f}fps · 종료 시 실측값으로 헤더 보정)")
         except Exception as e:
             self.rec_raw = self.rec_mp = None
             print(f"[경고] 영상 기록을 시작하지 못했습니다: {e}")
 
     def _close_writers(self):
+        had = self.rec_raw is not None
         for wtr in (self.rec_raw, self.rec_mp):
             if wtr is not None:
                 try:
@@ -556,6 +957,70 @@ class VideoWorker(QThread):
                 except Exception:
                     pass
         self.rec_raw = self.rec_mp = None
+        if had:
+            try:
+                self.last_recording = self._finalize_recording()
+            except Exception as e:
+                print(f"[경고] 영상 마무리 처리 실패: {e}")
+                self.last_recording = None
+        # 헤더 보정까지 끝난 뒤에 대기 중인 GUI 스레드를 풀어 준다.
+        self._rec_done.set()
+
+    # ---------------- fps 보정 ----------------
+    def _finalize_recording(self):
+        """촬영 시각 목록으로 실제 fps를 정하고 헤더를 고친다."""
+        folder = self._rec_folder
+        ts, ids = list(self.rec_ts), list(self.rec_ids)
+        n = len(ts)
+        info = {'folder': folder, 'frames': n,
+                'nominal_fps': VIDEO_NOMINAL_FPS, 'actual_fps': None,
+                'duration_s': None, 'speed_ratio': None,
+                'timestamps_csv': None, 'patched': []}
+
+        # --- 1. 타임스탬프 사이드카 ---
+        # 고정 fps로는 담을 수 없는 프레임별 실제 간격을 여기에 남긴다.
+        # 영상 프레임 인덱스와 CSV의 Frame_ID를 잇는 유일한 정본이다.
+        if folder and n:
+            path = os.path.join(folder, VIDEO_TS_NAME)
+            try:
+                with open(path, 'w', newline='', encoding='utf-8-sig') as fp:
+                    w = csv.writer(fp)
+                    w.writerow(["video_frame_index", "frame_id", "capture_unix_s",
+                                "elapsed_s", "dt_s"])
+                    for i, (fid, u) in enumerate(zip(ids, ts)):
+                        w.writerow([i, fid, repr(u), f"{u - ts[0]:.6f}",
+                                    f"{u - ts[i-1]:.6f}" if i else ""])
+                info['timestamps_csv'] = path
+            except Exception as e:
+                print(f"[경고] {VIDEO_TS_NAME} 저장 실패: {e}")
+
+        # --- 2. 실측 fps ---
+        if n >= VIDEO_FPS_MIN_SAMPLES:
+            span = ts[-1] - ts[0]
+            if span > 0:
+                fps = float(np.clip((n - 1) / span, *VIDEO_FPS_RANGE))
+                info['actual_fps'] = fps
+                info['duration_s'] = span * n / (n - 1)   # 마지막 프레임 지속시간 포함
+                info['speed_ratio'] = VIDEO_NOMINAL_FPS / fps
+                self.rec_fps = fps
+
+        # --- 3. AVI 헤더 교정 ---
+        if info['actual_fps'] and folder:
+            for name in (VIDEO_RAW_NAME, VIDEO_MP_NAME):
+                p = os.path.join(folder, name)
+                if not os.path.exists(p):
+                    continue
+                try:
+                    patch_avi_fps(p, info['actual_fps'])
+                    info['patched'].append(name)
+                except Exception as e:
+                    print(f"[경고] {name} 헤더 fps 보정 실패: {e}")
+            print(f"[녹화] {n}프레임 · 실측 {info['actual_fps']:.3f}fps "
+                  f"(공칭 {VIDEO_NOMINAL_FPS:.1f}fps 대비 {info['speed_ratio']:.3f}배) "
+                  f"· 재생 길이 {info['duration_s']:.1f}초로 보정")
+        else:
+            print("[경고] 프레임 표본이 부족해 헤더 fps를 보정하지 않았습니다.")
+        return info
 
     # ---------------- RealSense ----------------
     @staticmethod
@@ -736,8 +1201,6 @@ class VideoWorker(QThread):
             now = time.time()
             dt_frame = now - prev_t
             fps = 1.0 / max(dt_frame, 1e-6)
-            if 0.0 < dt_frame < 1.0:      # 창 최소화 등으로 멈춘 구간은 표본에서 뺀다
-                self._dt_hist.append(dt_frame)
             prev_t, t = now, now - self.t0
             self.frame_id += 1
             # perf_counter는 시스템 시계 변경에 영향받지 않아 구간 길이 계산에 쓰고,
@@ -859,9 +1322,13 @@ class VideoWorker(QThread):
                     angles_out[hand] = {'raw': raw, 'filtered': filt}
 
             # ---- 랜드마크가 그려진 프레임 기록 (미러링 전) ----
+            # 여기서 촬영 시각을 함께 쌓는다. 두 파일은 같은 루프에서 같은 횟수로
+            # 기록되므로 프레임 인덱스가 서로 일치한다.
             if self.rec_mp is not None:
                 self.rec_mp.write(frame)
                 self.rec_frames += 1
+                self.rec_ts.append(cap_unix)
+                self.rec_ids.append(self.frame_id)
 
             frame_meta = {
                 'frame_id': self.frame_id,
@@ -919,7 +1386,7 @@ class VideoWorker(QThread):
 
     def stop(self):
         self.running = False
-        self.wait(2000)
+        self.wait(15000)      # 종료 시 헤더 보정까지 끝나도록 여유를 준다
 
 
 # ============================ 실시간 차트 ============================
@@ -1180,6 +1647,8 @@ class ClinicalApp(QMainWindow):
         self.trial_interrupted = False   # 구간 중 손 놓침 여부
         self.prefix = ""
         self.folder = ""
+        self.rec_info = None             # 마지막 세션의 영상 기록 요약
+        self.splitter = None             # 세션 분할 스레드
         self.t_app = time.time()
         self.gauges, self.glabels, self.gtitles = {}, {}, {}
         self.qc_ok = deque(maxlen=QC_WINDOW)     # 프레임당 유효 랜드마크 수
@@ -1374,6 +1843,11 @@ class ClinicalApp(QMainWindow):
         self.chk_smooth.setToolTip("MediaPipe 랜드마크 (x,y,z)에 One-Euro를 겁니다.\n"
                                    "depth 측정 경로에는 적용되지 않습니다.")
         self.chk_smooth.toggled.connect(self._on_smooth)
+        self.chk_split = QCheckBox("자동 분할")
+        self.chk_split.setChecked(AUTO_SPLIT)
+        self.chk_split.setToolTip("세션 종료 후 물체(Task)·회차(Trial)별로\n"
+                                  "CSV와 영상 클립을 <세션폴더>/split/ 에 뽑습니다.\n"
+                                  "원본은 그대로 두고 파생물만 만듭니다.")
 
         self.lbl_fps = QLabel("FPS: -- | Hands: 0")
         self.lbl_fps.setStyleSheet("color:#94a3b8; font-size:12px;")
@@ -1389,7 +1863,7 @@ class ClinicalApp(QMainWindow):
         head.addWidget(QLabel("보기:"))
         head.addWidget(self.cb_view)
         for w in (self.chk_mirror, self.chk_filter, self.chk_3d, self.chk_depth3d,
-                  self.chk_smooth):
+                  self.chk_smooth, self.chk_split):
             head.addSpacing(8)
             head.addWidget(w)
         head.addSpacing(12)
@@ -1662,6 +2136,7 @@ class ClinicalApp(QMainWindow):
         self.trials.clear()
         self.frames_qc.clear()
         self.trial_interrupted = False
+        self.rec_info = None
         self.table.setRowCount(0)
         self.chart.reset_chart()
         self.worker.start_recording(self.folder)
@@ -1874,7 +2349,12 @@ class ClinicalApp(QMainWindow):
         if self.trial_on:
             self._finish_trial()
         self.session_on = False
-        self.worker.stop_recording()
+
+        # 영상 파일이 실제로 닫히고 헤더 fps가 보정될 때까지 기다린다.
+        # 여기서 기다리지 않으면 아직 열려 있는 파일을 건드리게 된다.
+        self.toast("⏳ 영상 파일 마무리 및 fps 보정 중...")
+        QApplication.processEvents()
+        self.rec_info = self.worker.stop_recording()
         dur = time.time() - self.t_session
 
         self.btn_start.setEnabled(True)
@@ -1889,7 +2369,39 @@ class ClinicalApp(QMainWindow):
         n = len({x['trial'] for x in self.trials})
         self._status(f"총 {n}회차 저장됨", "#10b981")
         self.save_session(dur)
-        self.toast(f"✅ 저장 완료! {n}개 회차 ({dur:.1f}초)", ok=True)
+
+        rec = self.rec_info
+        if rec and rec.get('actual_fps'):
+            self.toast(f"✅ 저장 완료! {n}개 회차 ({dur:.1f}초) · 영상 {rec['frames']}프레임 "
+                       f"@ 실측 {rec['actual_fps']:.2f}fps (재생 {rec['duration_s']:.1f}초)", ok=True)
+        else:
+            self.toast(f"✅ 저장 완료! {n}개 회차 ({dur:.1f}초)", ok=True)
+
+        if self.chk_split.isChecked() and self.records:
+            self._start_split()
+
+    # ------------------------- 세션 분할 -------------------------
+    def _start_split(self):
+        """CSV가 모두 쓰인 뒤에 호출한다. 분할은 그 파일들을 다시 읽어 자른다."""
+        if self.splitter is not None and self.splitter.isRunning():
+            return self.toast("⏳ 이전 분할이 아직 진행 중입니다.")
+        self.toast("⏳ 물체·회차별 분할 중... (영상 클립 포함)")
+        self.splitter = SplitWorker(self.folder)
+        self.splitter.line.connect(lambda m: self.toast(m))
+        self.splitter.done.connect(self._on_split_done)
+        self.splitter.start()
+
+    def _on_split_done(self, res, err):
+        if err:
+            self.toast(f"⚠️ 분할 실패: {err}")
+        elif res:
+            msg = f"✅ 분할 완료! {res['segments']}개 구간 · 클립 {res['clips']}개"
+            if res.get('clips'):
+                msg += f" ({res.get('encoder')})"
+            elif res.get('video_skip_reason'):
+                msg = (f"⚠️ 분할 완료 ({res['segments']}개 구간) · "
+                       f"영상 클립 없음: {res['video_skip_reason']}")
+            self.toast(msg + f" → {SPLIT_DIR_NAME}/", ok=bool(res.get('clips')))
 
     # ---------------------------- 저장 ----------------------------
     @staticmethod
@@ -1919,14 +2431,12 @@ class ClinicalApp(QMainWindow):
 
         self.export_plot(os.path.join(self.folder, f"{pre}_waveform.png"), pre)
         self.export_joint_plot(os.path.join(self.folder, f"{pre}_joint_angles.png"), pre)
-
-        # 세션 메타데이터가 필요하면 아래 한 줄을 살리면 된다 (subject_metadata.json).
-        # self._save_metadata(duration)
+        self._save_metadata(duration)
 
     def _save_continuous(self, path):
         """프레임 단위 지표 + 정준 좌표. 하나의 행 = 한 프레임의 한 손."""
         f = self._f
-        head = ["time_s", "Task", "Trial", "Phase", "hand"]
+        head = ["time_s", "capture_unix_s", "Task", "Trial", "Phase", "hand"]
         for j in JOINT_DEFS:
             head += [f"{j}_raw", f"{j}_filt"]
         head += ["Grip_Aperture_cm_raw", "Grip_Aperture_cm_filt",
@@ -1946,7 +2456,8 @@ class ClinicalApp(QMainWindow):
                 task, tag, phase = self._phase_of(rec)
                 a3, m3 = rec.get('angles3d') or {}, rec.get('metrics3d') or {}
                 canon = rec.get('canon')
-                row = [f"{rec['time']:.4f}", task, tag, phase, rec['hand']]
+                row = [f"{rec['time']:.4f}", f(rec.get('unix'), "{:.6f}"),
+                       task, tag, phase, rec['hand']]
                 for j in JOINT_DEFS:
                     row += [f(rec['raw'].get(j)), f(rec['filtered'].get(j))]
                 row += [f(rec['raw'].get('Grip_Aperture')), f(rec['filtered'].get('Grip_Aperture'))]
@@ -2003,6 +2514,8 @@ class ClinicalApp(QMainWindow):
                        + ["Valid_Duration_s", "Samples", "RS_Valid_Samples",
                           "Paired_Samples", "MP_MGA_raw_mm", "RS_MGA_raw_mm",
                           "RS_minus_MP_mean_mm", "RS_MP_mean_abs_difference_mm",
+                          "RS_Valid_Rate", "RS_MGA_p95_mm", "RS_Index_ROM_deg",
+                          "RS_Landmarks_Mean", "RS_Dist_Median_m",
                           "Requested_Duration_s", "Interrupted"])
             for tr in self.trials:
                 w.writerow([f"Trial #{tr['trial']}", tr['hand'], tr['task_short'],
@@ -2020,6 +2533,9 @@ class ClinicalApp(QMainWindow):
                            + [f(tr['valid_duration']), tr['samples'], tr['rs_valid_n'],
                               tr['paired_n'], f(tr['mp_mga_raw']), f(tr['rs_mga_raw']),
                               f(tr['diff_mean']), f(tr['abs_diff_mean']),
+                              f(tr['rs_valid_rate'], "{:.3f}"), f(tr['rs_mga_p95'], "{:.1f}"),
+                              f(tr['rs_rom']), f(tr['rs_landmarks_mean'], "{:.1f}"),
+                              f(tr['rs_dist_median'], "{:.3f}"),
                               f(tr.get('requested')), int(bool(tr.get('interrupted')))])
 
     def _save_frame_quality(self, path):
@@ -2068,128 +2584,84 @@ class ClinicalApp(QMainWindow):
                             f(rec.get('depth_ts'), "{:.6f}")])
 
     def _save_metadata(self, duration):
-        # 세션 전체 QC 요약을 메타데이터에 함께 남긴다.
-        st_all = {k: 0 for k in DEPTH_STATUSES}
+        """세션 재현에 필요한 것만 남긴다. 카메라·보정·규약이 여기 없으면
+        나중에 이 데이터가 어떤 조건에서 나왔는지 되짚을 수 없다."""
+        st = {k: 0 for k in DEPTH_STATUSES}
         nv, dist = [], []
         for rec in self.records:
             rsd = rec.get('rs')
             if not rsd:
                 continue
-            for s in rsd['status']:
-                st_all[s] = st_all.get(s, 0) + 1
+            for x in rsd['status']:
+                st[x] = st.get(x, 0) + 1
             nv.append(rsd['n_valid'])
             if rsd['wrist_z_m'] is not None:
                 dist.append(rsd['wrist_z_m'])
-        total = sum(st_all.values())
+        total = sum(st.values())
+        ri = self.rec_info or {}
+        patient = self.rb_patient.isChecked()
 
         meta = {
-            "name": self.txt_name.text().strip(), "age": self.spin_age.value(),
-            "gender": self.cb_gender.currentText(),
-            "group": "Healthy" if self.rb_healthy.isChecked() else "Patient",
-            "fma_score": self.spin_fma.value() if self.rb_patient.isChecked() else None,
-            "brunnstrom": self.cb_brs.currentText() if self.rb_patient.isChecked() else None,
-            "affected_side": self.cb_affected.currentText() if self.rb_patient.isChecked() else None,
-            "total_trials": len({x['trial'] for x in self.trials}),
-            "trial_mode": ("healthy: fixed-duration auto trial"
-                           if self.rb_healthy.isChecked() else
-                           "patient: manual start/stop"),
-            "auto_trial_sec": (self.spin_auto.value()
-                               if self.rb_healthy.isChecked() else None),
-            "angle_convention": "angle3() inter-segment angle; 180 deg = full extension. "
-                                "Convert to flexion as (180 - theta) when reporting.",
-            "tam_definition": "TAM_total = sum over 5 fingers. Thumb = MCP + IP (ASSH); "
-                              "CMC is reported separately and NOT included in TAM. "
-                              "ROM = max - min within trial.",
-            "thumb_cmc": ("Thumb_CMC = angle(wrist, CMC, MCP). The wrist-CMC segment is a "
-                          "virtual palm segment, so this is a palm-relative composite of CMC "
-                          "flexion and abduction, not an isolated joint angle."),
-            "thumb_abduction": ("Palmar abduction = |out-of-palm-plane angle| of the 1st "
-                                "metacarpal; radial abduction = in-plane angle to the 2nd "
-                                "metacarpal. Both are magnitudes, so left and right hands are "
-                                "directly comparable."),
-            "joint_defs": {k: list(v) for k, v in JOINT_DEFS.items()},
-            "measurement_paths": {
-                "MP": ("MediaPipe world landmark + One-Euro smoothing + SVD palm "
-                       "canonicalization. Monocular model-scale estimate; absolute mm are "
-                       "only meaningful after hand-length calibration."),
-                "RS": ("MediaPipe image pixels (unmirrored) + unfiltered colour-aligned depth "
-                       "+ aligned depth intrinsics, deprojected to metres. Independent of the "
-                       "MP path; the two are never blended."),
+            "subject": {
+                "name": self.txt_name.text().strip(), "age": self.spin_age.value(),
+                "gender": self.cb_gender.currentText(),
+                "group": "Patient" if patient else "Healthy",
+                "fma_score": self.spin_fma.value() if patient else None,
+                "brunnstrom": self.cb_brs.currentText() if patient else None,
+                "affected_side": self.cb_affected.currentText() if patient else None,
+                "hand_length_calib_mm": self.spin_palm.value() or None,
             },
-            "depth_gating": {
-                "stage_1_pixel": {"centre_pixel_only": True, "hole_filling": False,
-                                  "neighbourhood_px": DEPTH_NEIGHBOR,
-                                  "valid_range_m": [DEPTH_MIN_M, DEPTH_MAX_M],
-                                  "edge_reject_p10_p90_m": DEPTH_EDGE_M},
-                "stage_2_hand_consistency": {"max_deviation_from_hand_median_m": DEPTH_HAND_DEV_M,
-                                             "min_samples_for_reference": DEPTH_HAND_MIN_SAMPLES},
-                "stage_3_anatomical": {"max_span_from_wrist_mm": LM_MAX_SPAN_MM,
-                                       "max_aperture_mm": APERTURE_MAX_MM},
-                "rationale": ("A local window cannot separate a fingertip from the background "
-                              "behind it, so a pixel-level gate alone lets implausible points "
-                              "through. Stages 2 and 3 reject those; every rejection keeps a "
-                              "status code and the sample stays NaN. Never interpolate before "
-                              "computing reliability statistics."),
-                "status_codes": list(DEPTH_STATUSES),
+            "protocol": {
+                "trial_mode": "manual" if patient else "auto",
+                "auto_trial_sec": None if patient else self.spin_auto.value(),
+                "total_trials": len({x['trial'] for x in self.trials}),
+                "session_duration_s": duration,
+                "working_distance_m": [WORK_MIN_M, WORK_MAX_M],
             },
-            "deprojection": ("rs2_deproject_pixel_to_point, except for modified "
-                             "Brown-Conrady intrinsics where cv2.undistortPoints is used "
-                             "because the SDK does not support that model."),
-            "post_processing_filters": ("spatial/temporal filters are applied to the DISPLAY "
-                                        "depth image only; measurement always uses raw aligned "
-                                        "depth."),
-            "mirroring": ("display-only. MediaPipe, depth sampling and deprojection always run "
-                          "on the unmirrored frame so pixels stay consistent with intrinsics."),
-            "video_files": {VIDEO_RAW_NAME: "unmirrored colour frames, no overlay",
-                            VIDEO_MP_NAME: "same frames with MediaPipe landmarks drawn",
-                            "recorded_fps": self.worker.rec_fps,
-                            "frames_written": self.worker.rec_frames,
-                            "note": ("fps is the measured processing rate, not the camera "
-                                     "rate; one written frame = one Frame_ID, so exact "
-                                     "per-frame timing comes from capture_unix_s in the CSVs.")},
-            "display_mirrored": self.chk_mirror.isChecked(),
-            "depth3d_enabled": self.chk_depth3d.isChecked(),
-            "reporting_rules": {
-                "rs_mga_statistic": "p95 within trial (max is dominated by single-frame outliers)",
-                "min_valid_frames": RS_MIN_VALID_FRAMES,
-                "note": ("RS summary values are blank when RS_Valid_Samples is below the "
-                         "threshold. Always report RS_Valid_Rate next to any RS value."),
+            "conventions": {
+                "angle": "angle3() 관절 사이각. 180도 = 완전 신전. 굴곡으로 보고할 때는 (180 - theta).",
+                "tam": "5손가락 합. 엄지는 MCP + IP (ASSH). CMC는 별도 보고. ROM = 구간 내 max - min.",
+                "thumb_cmc": "angle(wrist, CMC, MCP). 손목-CMC는 가상 손바닥 세그먼트라 CMC 굴곡과 외전이 섞인 값.",
+                "thumb_abduction": "장측 = 손바닥 평면 밖 각, 요측 = 평면 내 제2중수골과의 각. 둘 다 크기라 좌우 비교 가능.",
+                "joint_defs": {k: list(v) for k, v in JOINT_DEFS.items()},
+                "palm_frame_landmarks": FRAME_IDS,
             },
-            "working_distance_m": [WORK_MIN_M, WORK_MAX_M],
-            "session_qc": {
+            "paths": {
+                "MP": "MediaPipe world landmark + One-Euro + SVD 손바닥 정준화. 단안 모델 스케일이라 절대 mm는 손 길이 보정 후에만 의미.",
+                "RS": "미러링 전 픽셀 + 후처리 없는 정렬 depth + 정렬 intrinsics 역투영(m). MP와 절대 섞지 않는다.",
+                "depth_gate": {"neighbourhood_px": DEPTH_NEIGHBOR,
+                               "valid_range_m": [DEPTH_MIN_M, DEPTH_MAX_M],
+                               "edge_p10_p90_m": DEPTH_EDGE_M,
+                               "hand_dev_m": DEPTH_HAND_DEV_M,
+                               "max_span_mm": LM_MAX_SPAN_MM,
+                               "max_aperture_mm": APERTURE_MAX_MM,
+                               "hole_filling": False},
+            },
+            "video": {
+                "files": [VIDEO_RAW_NAME, VIDEO_MP_NAME, VIDEO_TS_NAME],
+                "actual_fps": ri.get('actual_fps'),
+                "playback_duration_s": ri.get('duration_s'),
+                "frames_written": ri.get('frames', self.worker.rec_frames),
+                "header_patched": ri.get('patched'),
+                "note": "헤더 fps는 종료 시 실측값((n-1)/경과)으로 다시 씀. 프레임별 정확한 시각은 video_timestamps.csv.",
+            },
+            "qc": {
                 "landmark_samples": total,
-                "status_counts": st_all,
-                "ok_rate": (st_all['ok'] / total) if total else None,
+                "status_counts": {k: v for k, v in st.items() if v},
+                "ok_rate": (st['ok'] / total) if total else None,
                 "mean_valid_landmarks": float(np.mean(nv)) if nv else None,
                 "median_wrist_distance_m": float(np.median(dist)) if dist else None,
+                "rs_min_valid_frames": RS_MIN_VALID_FRAMES,
+                "note": "RS 값을 인용할 때는 반드시 RS_Valid_Rate를 함께 본다. DIP는 단안 폐색에서 가장 덜 믿을 만하다.",
             },
-            "coord_units": {
-                "canon": "canonical palm frame: wrist origin, palm length = 1.0, rotation removed",
-                "RS": "metres, aligned colour camera frame (X right, Y down, Z forward)",
-            },
-            "palm_frame_landmarks": FRAME_IDS,
-            "hand_length_calib_mm": self.spin_palm.value() or None,
-            "aperture_units": {"Grip_Aperture_cm": "cm (MediaPipe world landmark)",
-                               "Grip_Aperture_mm_3D": "mm (model hand scale)",
-                               "Grip_Aperture_mm_3D_cal": "mm (subject-calibrated)",
-                               "RS_Aperture_mm": "mm (measured depth, no calibration needed)"},
-            "files": {
-                "continuous_raw.csv": "per-frame metrics (angles, apertures, canonical coords)",
-                "landmarks.csv": "long-format per-landmark pixels, MP world, depth and status",
-                "trials_summary.csv": "per-trial metrics + MP/RS paired comparison",
-                "frame_quality.csv": "per-frame capture and protocol validity log",
-                "distance_comparison.csv": "per-frame MP vs RS aperture with frame timestamps",
-            },
-            "session_duration_sec": duration,
+            "display_mirrored": self.chk_mirror.isChecked(),
+            "depth3d_enabled": self.chk_depth3d.isChecked(),
             "camera": self.worker.source_name,
             "camera_info": self.worker.camera_info,
-            "known_limitation": ("DIP angles are least reliable under monocular occlusion. On "
-                                 "the RS path, fingertips fail most often during fist closure, "
-                                 "so a trial's RS values are only comparable to another at a "
-                                 "similar valid rate."),
             "saved_at": f"{datetime.now():%Y-%m-%d %H:%M:%S}",
         }
-        with open(os.path.join(self.folder, "subject_metadata.json"), 'w', encoding='utf-8') as fp:
+        with open(os.path.join(self.folder, f"{self.prefix}_metadata.json"),
+                  'w', encoding='utf-8') as fp:
             json.dump(meta, fp, ensure_ascii=False, indent=2)
 
     def export_plot(self, path, title):
@@ -2286,109 +2758,6 @@ class ClinicalApp(QMainWindow):
         fig.suptitle(f"[{title}] 관절별 각도 변화 (엄지 CMC/MCP/IP · 180° = 신전)",
                      fontsize=12, fontweight='bold')
         plt.tight_layout(rect=[0, 0, 1, 0.98])
-        plt.savefig(path)
-        plt.close(fig)
-
-    def export_depth_plot(self, path, title):
-        """MP 추정과 RS 실측 파지폭을 나란히 보고, 결측 구간은 끊어 둔다.
-        (기본 출력에서는 호출하지 않는다. 필요할 때 save_session에서 부르면 된다.)"""
-        fig, axes = plt.subplots(3, 2, figsize=(13, 9), dpi=150,
-                                 gridspec_kw={'height_ratios': [3, 2, 3]})
-        fig.patch.set_facecolor('#ffffff')
-        spans = list({t['trial']: t for t in self.trials}.values())
-
-        for c, hand in enumerate(HANDS):
-            seg = [r for r in self.records if r['hand'] == hand]
-            ax0, ax1, ax2 = axes[0][c], axes[1][c], axes[2][c]
-            ax0.set_title(HAND_KR[hand], fontsize=11, fontweight='bold')
-            if not seg:
-                for ax in (ax0, ax1, ax2):
-                    ax.text(.5, .5, "데이터 없음", ha='center', transform=ax.transAxes)
-                continue
-            ts = [r['time'] for r in seg]
-            mp = [(r.get('metrics3d') or {}).get('aperture_mm_cal')
-                  or (r.get('metrics3d') or {}).get('aperture_mm') or np.nan for r in seg]
-            rs_ap = [(r['rs']['aperture_mm'] if (r.get('rs') and r['rs']['aperture_mm'] is not None)
-                      else np.nan) for r in seg]
-            nv = [(r['rs']['n_valid'] if r.get('rs') else np.nan) for r in seg]
-
-            ax0.plot(ts, mp, color='#94a3b8', lw=1.3, label='MP 추정 (mm)')
-            ax0.plot(ts, rs_ap, color='#0ea5e9', lw=1.5, label='RS 실측 (mm)')
-            ax0.set_ylim(0, APERTURE_MAX_MM)
-            ax0.set_ylabel("파지폭 (mm)", fontweight='bold', fontsize=9)
-            ax0.legend(loc='upper right', fontsize=7)
-
-            ax1.plot(ts, nv, color='#22c55e', lw=1.2)
-            ax1.set_ylim(0, 21)
-            ax1.set_ylabel("유효 랜드마크\n(개/21)", fontweight='bold', fontsize=9)
-
-            diff = [(a - b) if (np.isfinite(a) and np.isfinite(b)) else np.nan
-                    for a, b in zip(rs_ap, mp)]
-            ax2.axhline(0, color='#cbd5e1', lw=1)
-            ax2.plot(ts, diff, color='#ef4444', lw=1.2)
-            ax2.set_ylabel("RS − MP (mm)", fontweight='bold', fontsize=9)
-            ax2.set_xlabel("Elapsed Time (s)", fontweight='bold')
-
-            for ax in (ax0, ax1, ax2):
-                for tr in spans:
-                    ax.axvspan(tr['start'], tr['end'], color='#fef08a', alpha=.35)
-                ax.grid(True, ls=':', alpha=.6)
-
-        fig.suptitle(f"[{title}] depth 실측 vs MediaPipe 추정 (끊긴 구간 = depth 결측)",
-                     fontsize=12, fontweight='bold')
-        plt.tight_layout(rect=[0, 0, 1, 0.97])
-        plt.savefig(path)
-        plt.close(fig)
-
-    def export_qc_plot(self, path, title):
-        """랜드마크별 결측 원인. 어디를 고쳐야 하는지가 바로 나온다.
-        (기본 출력에서는 호출하지 않는다.)"""
-        rec_rs = [r for r in self.records if r.get('rs')]
-        fig, axes = plt.subplots(1, 2, figsize=(13, 7), dpi=150, sharey=True)
-        fig.patch.set_facecolor('#ffffff')
-        cause_colors = {'ok': '#22c55e', 'depth_hole': '#ef4444', 'depth_edge': '#f59e0b',
-                        'depth_off_hand': '#a855f7', 'implausible_span': '#ec4899',
-                        'depth_out_of_range': '#0ea5e9', 'insufficient_depth': '#64748b'}
-        shown = list(cause_colors)
-
-        for c, hand in enumerate(HANDS):
-            ax = axes[c]
-            seg = [r for r in rec_rs if r['hand'] == hand]
-            ax.set_title(f"{HAND_KR[hand]}  (n={len(seg)} frames)", fontsize=11, fontweight='bold')
-            if not seg:
-                ax.text(.5, .5, "데이터 없음", ha='center', transform=ax.transAxes)
-                continue
-            counts = {s: np.zeros(21) for s in shown}
-            other = np.zeros(21)
-            for r in seg:
-                for i, st in enumerate(r['rs']['status']):
-                    if st in counts:
-                        counts[st][i] += 1
-                    else:
-                        other[i] += 1
-            total = len(seg)
-            left = np.zeros(21)
-            ypos = np.arange(21)
-            for s in shown:
-                vals = counts[s] / total * 100
-                ax.barh(ypos, vals, left=left, color=cause_colors[s], label=s, height=0.75)
-                left += vals
-            if other.any():
-                ax.barh(ypos, other / total * 100, left=left, color='#cbd5e1',
-                        label='other', height=0.75)
-            ax.set_yticks(ypos)
-            ax.set_yticklabels(LM_NAMES, fontsize=8)
-            ax.invert_yaxis()
-            ax.set_xlim(0, 100)
-            ax.set_xlabel("프레임 비율 (%)", fontweight='bold')
-            ax.grid(True, axis='x', ls=':', alpha=.6)
-            if c == 1:
-                ax.legend(loc='lower right', fontsize=7)
-
-        fig.suptitle(f"[{title}] 랜드마크별 depth 결측 원인 "
-                     f"(hole 지배 → 거리·조명·프리셋 / off_hand·edge 지배 → 배경 분리)",
-                     fontsize=12, fontweight='bold')
-        plt.tight_layout(rect=[0, 0, 1, 0.96])
         plt.savefig(path)
         plt.close(fig)
 
@@ -2491,11 +2860,44 @@ class ClinicalApp(QMainWindow):
     def closeEvent(self, e):
         if self.session_on:
             self.stop_session()
+        # 분할이 도는 중에 앱이 내려가면 클립이 중간에 끊긴다.
+        if self.splitter is not None and self.splitter.isRunning():
+            self.toast("⏳ 분할이 끝날 때까지 기다립니다...")
+            QApplication.processEvents()
+            self.splitter.wait(120000)
         self.worker.stop()
         e.accept()
 
 
 def main():
+    """인자 없이 실행하면 측정 GUI, --split 을 주면 분할만 수행한다.
+
+    측정과 분할을 한 파일에 둔 이유는, 둘이 같은 규칙(Frame_ID 대응, AVI 헤더
+    fps 보정)을 공유하기 때문이다. 규칙이 두 곳에 흩어지면 언젠가 어긋난다."""
+    ap = argparse.ArgumentParser(
+        description='공압장갑 미러테라피 · 손 기능 평가 (측정 + 세션 분할)')
+    ap.add_argument('--split', metavar='FOLDER',
+                    help='이미 촬영된 세션 폴더를 Task/Trial 별로 분할하고 종료')
+    ap.add_argument('--pad', type=float, default=SPLIT_PAD_S,
+                    help='영상 클립 앞뒤 여유 (초). CSV에는 적용하지 않는다')
+    ap.add_argument('--include-rest', action='store_true',
+                    help='Trial 사이 Rest 구간도 뽑는다')
+    ap.add_argument('--no-video', action='store_true',
+                    help='CSV만 분할하고 영상은 건드리지 않는다')
+    ap.add_argument('--no-patch', action='store_true',
+                    help='AVI 헤더 fps 보정을 건너뛴다')
+    args = ap.parse_args()
+
+    if args.split:
+        try:
+            split_session(args.split, pad=args.pad,
+                          include_rest=args.include_rest,
+                          with_video=not args.no_video,
+                          patch=not args.no_patch)
+        except Exception as e:
+            sys.exit(f"[에러] {e}")
+        return
+
     for attr in ('AA_EnableHighDpiScaling', 'AA_UseHighDpiPixmaps'):
         if hasattr(QtCore.Qt.ApplicationAttribute, attr):
             QtWidgets.QApplication.setAttribute(
