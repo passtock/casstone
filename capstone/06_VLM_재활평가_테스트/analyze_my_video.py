@@ -27,7 +27,7 @@ def print_step(step: int, total: int, title: str):
 
 
 def main():
-    video_path = "KakaoTalk_20260909_183548574.mp4"
+    video_path = "C:/Users/passp/OneDrive/바탕 화면/jeayong/capstone/06_VLM_재활평가_테스트/KakaoTalk_20260909_183548574.mp4"
     if not os.path.exists(video_path):
         print(f"[오류] 영상 파일을 찾을 수 없습니다: {video_path}")
         print("현재 폴더에 'KakaoTalk_20260909_183548574.mp4' 파일이 있는지 확인해 주세요.")
@@ -39,55 +39,52 @@ def main():
     print("      Qwen2.5-VL-3B 로컬 재활 모션 영상 분석기 (RTX 3060 최적화)")
     print("=" * 65, flush=True)
 
-    # 1. 영상 정보 확인 및 프레임 샘플링
-    print_step(1, 5, "영상 로드 및 분석용 프레임 샘플링 (해상도 최적화)")
+    # 1. 영상 정보 확인
+    print_step(1, 5, "영상 정보 확인 및 네이티브 비디오 인풋 준비")
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS) or 24.0
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     cap.release()
     duration_s = total_frames / fps
     print(f" -> 영상 정보: 길이 {duration_s:.1f}초 ({total_frames} 프레임), {fps:.1f} FPS", flush=True)
+    print(f" -> 정지 프레임 추출 대신 비디오 파일 전체(.mp4)를 VLM에 직접 입력합니다.", flush=True)
 
     # 2. VLM 모델 GPU 로드
     print_step(2, 5, "VLM 모델(Qwen2.5-VL-3B) 로컬 GPU 로드 중...")
     t0 = time.time()
     evaluator = VLMRehabEvaluator(
         model_name="Qwen/Qwen2.5-VL-3B-Instruct",
-        quantization="none"  # bfloat16 기본 모드 (VRAM ~4.5GB 소모)
+        quantization="4bit"  # 4-bit 양자화로 VRAM을 ~6.5GB로 대폭 절감하여 80초 영상 전체 처리 안정화
     )
     print(f" -> 모델 로드 완료 (소요 시간: {time.time() - t0:.1f}초)", flush=True)
-
-    # 8개 프레임 추출 (RTX 3060 고속 연산에 최적화된 512px 리사이징 적용)
-    frames = evaluator.sample_video_frames(video_path, num_frames=8, max_width=512)
-    print(f" -> 8개 대표 프레임 추출 완료 (연산 토큰 최적화 완료)", flush=True)
 
     results = {}
 
     # 3. 과제 A: 장면 및 재활 활동 설명 (Activity Identification)
-    print_step(3, 5, "과제 1: 장면 및 재활 활동 식별 (Activity Identification) 추론")
+    print_step(3, 5, "과제 1: 전체 동영상 기반 장면 및 재활 활동 식별 (Activity Identification) 추론")
     t0 = time.time()
     prompt_activity = (
-        "Look at these 8 chronological video frames of an upper-limb movement session. "
+        "Watch this rehabilitation video of an upper-limb movement session carefully. "
         "Describe in detail: "
-        "1) What objects are on the table and what the participant is doing with both hands. "
+        "1) What objects are on the table and what the participant is doing with both hands throughout the video. "
         "2) Is the participant performing a bimanual (two-handed) grasping or stabilization task on the two round objects? "
         "Explain clearly."
     )
-    results["activity"] = evaluator.ask(frames, prompt_activity, max_new_tokens=256)
+    results["activity"] = evaluator.ask(video_path, prompt_activity, max_new_tokens=256)
     print(f" -> 추론 완료 ({time.time() - t0:.1f}초)", flush=True)
     print(f" [활동 분석 결과]:\n{results['activity']}\n", flush=True)
 
     # 4. 과제 B: 논문 방식 이진 분해 질의 (Motion & Grasp Decomposed Prompting)
-    print_step(4, 5, "과제 2: 논문 프로토콜 양손 Motion & Grasp 이진 분해 판별")
+    print_step(4, 5, "과제 2: 전체 동영상 기반 양손 Motion & Grasp 이진 분해 판별")
     t0 = time.time()
     print(" -> 오른손(Right Hand) 분석 중...", flush=True)
-    mg_right = evaluator.detect_motion_and_grasp(frames, target_hand="right")
+    mg_right = evaluator.detect_motion_and_grasp(video_path, target_hand="right")
     print(f"    - 움직임(Motion): {'O (Yes)' if mg_right['motion_detected'] else 'X (No)'}")
     print(f"    - 물체파지(Grasp): {'O (Yes)' if mg_right['grasp_detected'] else 'X (No)'}")
     print(f"    - 추정 프리미티브: {mg_right['estimated_primitive']}")
 
     print(" -> 왼손(Left Hand) 분석 중...", flush=True)
-    mg_left = evaluator.detect_motion_and_grasp(frames, target_hand="left")
+    mg_left = evaluator.detect_motion_and_grasp(video_path, target_hand="left")
     print(f"    - 움직임(Motion): {'O (Yes)' if mg_left['motion_detected'] else 'X (No)'}")
     print(f"    - 물체파지(Grasp): {'O (Yes)' if mg_left['grasp_detected'] else 'X (No)'}")
     print(f"    - 추정 프리미티브: {mg_left['estimated_primitive']}")
@@ -97,14 +94,14 @@ def main():
     print(f" -> 분해 판별 완료 ({time.time() - t0:.1f}초)", flush=True)
 
     # 5. 과제 C: 양손 협응 및 대칭성 평가 (Coordination & Symmetry)
-    print_step(5, 5, "과제 3: 양손 대칭성 및 움직임 협응(미러 효과) 평가")
+    print_step(5, 5, "과제 3: 전체 동영상 기반 양손 대칭성 및 움직임 협응 평가")
     t0 = time.time()
     prompt_symmetry = (
-        "Observe the movement coordination between the left hand and the right hand. "
+        "Observe the movement coordination between the left hand and the right hand across the whole video. "
         "Are both hands placed and moved symmetrically over the two spherical objects? "
         "Does either hand show hesitation, tremor, or asymmetry?"
     )
-    results["symmetry"] = evaluator.ask(frames, prompt_symmetry, max_new_tokens=256)
+    results["symmetry"] = evaluator.ask(video_path, prompt_symmetry, max_new_tokens=256)
     print(f" -> 추론 완료 ({time.time() - t0:.1f}초)", flush=True)
     print(f" [대칭성 분석 결과]:\n{results['symmetry']}\n", flush=True)
 

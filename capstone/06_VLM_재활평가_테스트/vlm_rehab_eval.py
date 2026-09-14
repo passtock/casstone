@@ -105,13 +105,25 @@ class VLMRehabEvaluator:
         cap.release()
         return frames
 
-    def ask(self, images: List[Image.Image], prompt: str, max_new_tokens: int = 128) -> str:
-        """프레임 이미지들과 프롬프트를 입력받아 VLM 텍스트 추론 반환"""
+    def ask(self, vision_inputs: Union[List[Image.Image], str, Path], prompt: str, max_new_tokens: int = 128, fps: float = 0.5) -> str:
+        """프레임 이미지 리스트 또는 비디오 파일 경로(전체 동영상)와 프롬프트를 입력받아 VLM 텍스트 추론 반환"""
         from qwen_vl_utils import process_vision_info
 
         content = []
-        for img in images:
-            content.append({"type": "image", "image": img})
+        if isinstance(vision_inputs, (str, Path)):
+            # 비디오 파일 경로가 직접 전달된 경우: 동영상 파일 전체를 네이티브 비디오로 투입
+            content.append({
+                "type": "video",
+                "video": str(vision_inputs),
+                "fps": fps,
+                "max_pixels": 256 * 28 * 28,
+            })
+        elif isinstance(vision_inputs, list):
+            for img in vision_inputs:
+                content.append({"type": "image", "image": img})
+        else:
+            raise ValueError(f"지원하지 않는 입력 형식입니다: {type(vision_inputs)}")
+
         content.append({"type": "text", "text": prompt})
 
         messages = [
@@ -122,13 +134,16 @@ class VLMRehabEvaluator:
             messages, tokenize=False, add_generation_prompt=True
         )
         image_inputs, video_inputs = process_vision_info(messages)
-        inputs = self.processor(
-            text=[text],
-            images=image_inputs,
-            videos=video_inputs,
-            padding=True,
-            return_tensors="pt"
-        )
+        processor_kwargs = {
+            "text": [text],
+            "images": image_inputs,
+            "videos": video_inputs,
+            "padding": True,
+            "return_tensors": "pt",
+        }
+        if video_inputs is not None:
+            processor_kwargs["cap_pixels_per_frame"] = True
+        inputs = self.processor(**processor_kwargs)
         inputs = inputs.to(self.model.device)
 
         with torch.no_grad():
@@ -140,19 +155,17 @@ class VLMRehabEvaluator:
                 generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
             )[0]
 
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
         return response.strip()
 
-    def identify_activity(self, video_or_frames: Union[str, Path, List[Image.Image]], optimized: bool = True) -> str:
-        """논문 과제 1: 9대 일상 재활 활동(ADL) 식별 (8프레임 기반)"""
-        if isinstance(video_or_frames, (str, Path)):
-            frames = self.sample_video_frames(video_or_frames, num_frames=8)
-        else:
-            frames = video_or_frames
-
+    def identify_activity(self, video_or_frames: Union[str, Path, List[Image.Image]], optimized: bool = True, fps: float = 1.0) -> str:
+        """논문 과제 1: 9대 일상 재활 활동(ADL) 식별"""
         if optimized:
             # 논문에서 제안한 모델 어휘 기반 최적화 프롬프트
             prompt = (
-                "You are an expert rehabilitation analyzer. Look at these 8 video frames from an upper limb rehabilitation session. "
+                "You are an expert rehabilitation analyzer. Watch this video from an upper limb rehabilitation session. "
                 "Identify which of the following 9 activities is being performed:\n"
                 "1. Brushing teeth\n"
                 "2. Combing hair\n"
@@ -166,24 +179,19 @@ class VLMRehabEvaluator:
                 "Answer with the exact activity name only."
             )
         else:
-            prompt = "What rehabilitation activity is the person performing in these frames? Choose from: brushing teeth, combing hair, applying deodorant, drinking water, washing face, eating, glasses, tabletop task, shelf task."
+            prompt = "What rehabilitation activity is the person performing in this video? Choose from: brushing teeth, combing hair, applying deodorant, drinking water, washing face, eating, glasses, tabletop task, shelf task."
 
-        return self.ask(frames, prompt)
+        return self.ask(video_or_frames, prompt, fps=fps)
 
-    def detect_motion_and_grasp(self, video_or_frames: Union[str, Path, List[Image.Image]], target_hand: str = "right") -> dict:
+    def detect_motion_and_grasp(self, video_or_frames: Union[str, Path, List[Image.Image]], target_hand: str = "right", fps: float = 1.0) -> dict:
         """논문 과제 2: 원초 기능 동작 분해 (Decomposed Prompting: Motion & Grasp)"""
-        if isinstance(video_or_frames, (str, Path)):
-            frames = self.sample_video_frames(video_or_frames, num_frames=8)
-        else:
-            frames = video_or_frames
-
         # Q1: 움직임 여부
-        q_motion = f"Focus strictly on the subject's {target_hand} hand. Is the {target_hand} hand moving significantly during these frames? Answer 'Yes' or 'No' directly."
-        ans_motion = self.ask(frames, q_motion, max_new_tokens=16)
+        q_motion = f"Focus strictly on the subject's {target_hand} hand throughout this video. Is the {target_hand} hand moving significantly? Answer 'Yes' or 'No' directly."
+        ans_motion = self.ask(video_or_frames, q_motion, max_new_tokens=16, fps=fps)
 
         # Q2: 파지(Grasp) 여부
-        q_grasp = f"Focus strictly on the subject's {target_hand} hand. Is the {target_hand} hand actively grasping or holding an object? Answer 'Yes' or 'No' directly."
-        ans_grasp = self.ask(frames, q_grasp, max_new_tokens=16)
+        q_grasp = f"Focus strictly on the subject's {target_hand} hand throughout this video. Is the {target_hand} hand actively grasping or holding an object? Answer 'Yes' or 'No' directly."
+        ans_grasp = self.ask(video_or_frames, q_grasp, max_new_tokens=16, fps=fps)
 
         has_motion = "yes" in ans_motion.lower()
         has_grasp = "yes" in ans_grasp.lower()
