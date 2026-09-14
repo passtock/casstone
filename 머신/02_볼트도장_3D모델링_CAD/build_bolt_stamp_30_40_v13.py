@@ -2,7 +2,7 @@
 Bolt Stamp v13 - complete D30 and D40 models from ONE self-contained script.
 Run in the same FreeCAD 1.1 Python environment as previous versions.
 No PNG or JSON sidecar required: detailed v12 CAD contours are embedded.
-Head diameters: 30/40 mm. Proportional shaft diameters: 22.5/30 mm. Total height: 45 mm.
+Head diameters: 30/40 mm. Proportional shaft diameters: 22.5/30 mm. Total height: 50 mm (60 mm with loop).
 Head height: 10 mm. Relief depth: 1.5 mm. All XY features scale proportionally with head.
 Uses the detail variant (0.04 mm original CAD offset), not reinforced variant.
 Outputs: output_v13 beside this script, FCStd/STEP/STL for each diameter.
@@ -62,7 +62,7 @@ def fuse_many(base, additions, label):
 
 def build_stamp(head_diameter):
     doc = FreeCAD.newDocument(f"BoltStamp_D{head_diameter:.0f}")
-    head_r=head_diameter/2.0; head_h=10.0; total_h=45.0
+    head_r=head_diameter/2.0; head_h=10.0; total_h=50.0
     xy_scale=head_diameter/20.0
     shank_r=7.5*xy_scale
     
@@ -120,7 +120,7 @@ def build_stamp(head_diameter):
     groove_depth=0.65*xy_scale
     crest_extra=0.5*xy_scale
     cut_cyl_r=shank_r+1.0*xy_scale
-    while z<43.0:
+    while z<48.0:
         v1=Part.makeCone(shank_r+crest_extra,shank_r-groove_depth,pitch*0.5,Base.Vector(0,0,z),Base.Vector(0,0,1))
         v2=Part.makeCone(shank_r-groove_depth,shank_r+crest_extra,pitch*0.5,Base.Vector(0,0,z+pitch*0.5),Base.Vector(0,0,1))
         cs=Part.makeCylinder(cut_cyl_r,pitch,Base.Vector(0,0,z),Base.Vector(0,0,1))
@@ -196,6 +196,21 @@ def build_stamp(head_diameter):
     body=fuse_many(body,[nameplate],"Attach nameplate to shaft")
     print(f"  Text: {text_raise}mm raised above plate")
     
+    # 3.5. TOP EYELET LOOP
+    log("[4.5/6] Top eyelet loop")
+    hole_r=2.5
+    outer_r=5.0
+    loop_w=4.0
+    arch_z=total_h+5.0
+    loop_embed=0.5
+    cyl_outer=Part.makeCylinder(outer_r,loop_w,Base.Vector(0,-loop_w/2,arch_z),Base.Vector(0,1,0))
+    box_base=Part.makeBox(2*outer_r,loop_w,arch_z-(total_h-loop_embed),
+                          Base.Vector(-outer_r,-loop_w/2,total_h-loop_embed))
+    arch_solid=cyl_outer.fuse(box_base)
+    hole_cyl=Part.makeCylinder(hole_r,loop_w+4.0,Base.Vector(0,-loop_w/2-2.0,arch_z),Base.Vector(0,1,0))
+    loop_solid=arch_solid.cut(hole_cyl)
+    body=fuse_many(body,[loop_solid],"Attach top loop to shaft")
+    
     
     log("[5/6] Final union")
     final=fuse_many(head,[body],"Join stamped head and finished shaft")
@@ -204,7 +219,7 @@ def build_stamp(head_diameter):
     final=timed("Final solid validation",lambda: require_solid(final,"Final model"))
     log(f"Artwork solids: {artwork_count}; final solids: {len(final.Solids)}")
     bounds=final.BoundBox
-    for actual,expected in [(bounds.XLength,head_diameter),(bounds.YLength,head_diameter),(bounds.ZLength,45.0)]:
+    for actual,expected in [(bounds.XLength,head_diameter),(bounds.YLength,head_diameter),(bounds.ZLength,60.0)]:
         if abs(actual-expected)>0.01:
             raise RuntimeError(f"Unexpected model dimension: {actual} vs {expected}")
     
