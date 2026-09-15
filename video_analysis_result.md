@@ -2,13 +2,13 @@
 
 - **대상 영상**: `C:/Users/passp/OneDrive/바탕 화면/jeayong/capstone/06_VLM_재활평가_테스트/KakaoTalk_20260909_183548574.mp4` (길이: 80.7초)
 - **분석 모델**: `Qwen/Qwen2.5-VL-3B-Instruct` (로컬 GPU 가속 구동)
-- **총 소요 시간**: 1624.9초
-- **분석 일시**: 2026-09-14 12:49:32
+- **총 소요 시간**: 1495.9초
+- **분석 일시**: 2026-09-15 18:42:06
 
 ---
 
 ## 1. 전체 활동 및 세팅 식별 (Activity & Scene Identification)
-The video shows a rehabilitation video of an upper-limb movement session. The participant is sitting at a table with two round objects in front of him. He is wearing a brown jacket and has short black hair. He is holding the two round objects with both hands, and he is moving them around the table. He is also looking at the camera and talking to someone off-screen. The background of the video shows a room with shelves and cabinets.
+The video shows a rehabilitation video of an upper-limb movement session. The participant is sitting at a table with two round objects in front of him. He is wearing a brown jacket and has short black hair. He is using both hands to grasp and stabilize the objects. He is looking at the camera and appears to be concentrating on his movements. The background of the video shows a room with shelves and cabinets.
 
 ---
 
