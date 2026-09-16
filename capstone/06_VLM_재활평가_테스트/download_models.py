@@ -68,22 +68,24 @@ def download_single_model(key: str, info: dict, target_dir: str = None):
     print("=" * 65, flush=True)
 
     t0 = time.time()
-    try:
-        kwargs = {
-            "repo_id": repo_id,
-            "max_workers": 4,
-        }
-        if target_dir:
-            kwargs["local_dir"] = os.path.join(target_dir, key)
+    for attempt in range(1, 4):
+        try:
+            kwargs = {
+                "repo_id": repo_id,
+                "max_workers": 2,
+            }
+            if target_dir:
+                kwargs["local_dir"] = os.path.join(target_dir, key)
 
-        local_path = snapshot_download(**kwargs)
-        elapsed = time.time() - t0
-        print(f"\n[+] 다운로드 완료! ({elapsed/60:.1f}분 소요)")
-        print(f"    저장 경로: {local_path}\n", flush=True)
-        return True
-    except Exception as e:
-        print(f"\n[-] 다운로드 중 오류 발생: {e}\n", flush=True)
-        return False
+            local_path = snapshot_download(**kwargs)
+            elapsed = time.time() - t0
+            print(f"\n[+] 다운로드 완료! ({elapsed/60:.1f}분 소요)")
+            print(f"    저장 경로: {local_path}\n", flush=True)
+            return True
+        except Exception as e:
+            print(f"\n[-] 다운로드 중 오류 (시도 {attempt}/3): {e}", flush=True)
+            time.sleep(5)
+    return False
 
 
 def main():

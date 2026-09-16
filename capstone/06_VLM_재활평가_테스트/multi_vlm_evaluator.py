@@ -148,8 +148,8 @@ class UnifiedVLMRehabRunner:
         mapping = {
             "qwen3_8b": "Qwen/Qwen3-VL-8B-Instruct",
             "qwen25_32b": "Qwen/Qwen2.5-VL-32B-Instruct",
-            "llavanext": "lmms-lab/LLaVA-NeXT-Video-7B",
-            "llavaonevision": "lmms-lab/llava-onevision-qwen2-7b-ov",
+            "llavanext": "llava-hf/LLaVA-NeXT-Video-7B-hf",
+            "llavaonevision": "llava-hf/llava-onevision-qwen2-7b-ov-hf",
             "qwen25_3b": "Qwen/Qwen2.5-VL-3B-Instruct"
         }
         if self.model_type not in mapping:
@@ -164,17 +164,18 @@ class UnifiedVLMRehabRunner:
         if self.device == "cuda":
             if self.quantization == "4bit":
                 from transformers import BitsAndBytesConfig
+                dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
                 load_kwargs["quantization_config"] = BitsAndBytesConfig(
                     load_in_4bit=True,
-                    bnb_4bit_compute_dtype=torch.bfloat16,
+                    bnb_4bit_compute_dtype=dtype,
                     bnb_4bit_quant_type="nf4",
                     bnb_4bit_use_double_quant=True
                 )
-                load_kwargs["device_map"] = "auto"
+                load_kwargs["device_map"] = "cuda:0"
             else:
                 dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
                 load_kwargs["torch_dtype"] = dtype
-                load_kwargs["device_map"] = "auto"
+                load_kwargs["device_map"] = "cuda:0"
         else:
             load_kwargs["torch_dtype"] = torch.float32
 
@@ -198,14 +199,14 @@ class UnifiedVLMRehabRunner:
             )
 
         elif self.model_type == "llavanext":
-            from transformers import LlavaNextVideoForConditionalGeneration, LlavaNextVideoProcessor
+            from transformers import LlavaNextVideoForConditionalGeneration, AutoProcessor
             self.model = LlavaNextVideoForConditionalGeneration.from_pretrained(self.repo_id, **load_kwargs)
-            self.processor = LlavaNextVideoProcessor.from_pretrained(self.repo_id)
+            self.processor = AutoProcessor.from_pretrained(self.repo_id)
 
         elif self.model_type == "llavaonevision":
-            from transformers import LlavaOnevisionForConditionalGeneration, LlavaOnevisionProcessor
+            from transformers import LlavaOnevisionForConditionalGeneration, AutoProcessor
             self.model = LlavaOnevisionForConditionalGeneration.from_pretrained(self.repo_id, **load_kwargs)
-            self.processor = LlavaOnevisionProcessor.from_pretrained(self.repo_id)
+            self.processor = AutoProcessor.from_pretrained(self.repo_id)
 
         print(f"[+] 모델 로드 완료! (소요 시간: {time.time() - t0:.1f}초)")
 
@@ -221,14 +222,15 @@ class UnifiedVLMRehabRunner:
     def _ask_qwen(self, vision_input, prompt: str, max_new_tokens: int) -> str:
         from qwen_vl_utils import process_vision_info
         content = []
-        if isinstance(vision_input, (str, Path)):
-            content.append({"type": "video", "video": str(vision_input), "fps": 0.5, "max_pixels": 256 * 28 * 28})
-        elif isinstance(vision_input, list):
-            for img in vision_input:
-                content.append({"type": "image", "image": img})
-        elif isinstance(vision_input, np.ndarray):
-            for frame in vision_input:
-                content.append({"type": "image", "image": Image.fromarray(frame)})
+        if vision_input is not None:
+            if isinstance(vision_input, (str, Path)):
+                content.append({"type": "video", "video": str(vision_input), "fps": 0.5, "max_pixels": 256 * 28 * 28})
+            elif isinstance(vision_input, list):
+                for img in vision_input:
+                    content.append({"type": "image", "image": img})
+            elif isinstance(vision_input, np.ndarray):
+                for frame in vision_input:
+                    content.append({"type": "image", "image": Image.fromarray(frame)})
 
         content.append({"type": "text", "text": prompt})
         messages = [{"role": "user", "content": content}]
@@ -238,12 +240,13 @@ class UnifiedVLMRehabRunner:
 
         proc_kwargs = {
             "text": [text],
-            "images": image_inputs,
-            "videos": video_inputs,
             "padding": True,
             "return_tensors": "pt"
         }
+        if image_inputs is not None:
+            proc_kwargs["images"] = image_inputs
         if video_inputs is not None:
+            proc_kwargs["videos"] = video_inputs
             proc_kwargs["cap_pixels_per_frame"] = True
 
         inputs = self.processor(**proc_kwargs).to(self.model.device)
@@ -257,24 +260,36 @@ class UnifiedVLMRehabRunner:
         return res.strip()
 
     def _ask_llavanext(self, vision_input, prompt: str, max_new_tokens: int) -> str:
-        if isinstance(vision_input, (str, Path)):
-            video_arr, _ = sample_video_uniform_array(str(vision_input), max_frames=16, max_width=384)
-        elif isinstance(vision_input, list):
-            video_arr = np.stack([np.array(img) for img in vision_input])
-        elif isinstance(vision_input, np.ndarray):
-            video_arr = vision_input
+        if vision_input is not None:
+            if isinstance(vision_input, (str, Path)):
+                video_arr, _ = sample_video_uniform_array(str(vision_input), max_frames=16, max_width=384)
+            elif isinstance(vision_input, list):
+                video_arr = np.stack([np.array(img) for img in vision_input])
+            elif isinstance(vision_input, np.ndarray):
+                video_arr = vision_input
 
-        conversation = [
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": prompt},
-                    {"type": "video"},
-                ],
-            },
-        ]
-        prompt_text = self.processor.apply_chat_template(conversation, add_generation_prompt=True)
-        inputs = self.processor(text=prompt_text, videos=video_arr, return_tensors="pt").to(self.model.device)
+            conversation = [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {"type": "video"},
+                    ],
+                },
+            ]
+            prompt_text = self.processor.apply_chat_template(conversation, add_generation_prompt=True)
+            inputs = self.processor(text=prompt_text, videos=video_arr, return_tensors="pt").to(self.model.device)
+        else:
+            conversation = [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                    ],
+                },
+            ]
+            prompt_text = self.processor.apply_chat_template(conversation, add_generation_prompt=True)
+            inputs = self.processor(text=prompt_text, return_tensors="pt").to(self.model.device)
 
         with torch.no_grad():
             out = self.model.generate(**inputs, max_new_tokens=max_new_tokens)
@@ -286,24 +301,36 @@ class UnifiedVLMRehabRunner:
         return res.strip()
 
     def _ask_llavaonevision(self, vision_input, prompt: str, max_new_tokens: int) -> str:
-        if isinstance(vision_input, (str, Path)):
-            video_arr, _ = sample_video_uniform_array(str(vision_input), max_frames=16, max_width=384)
-        elif isinstance(vision_input, list):
-            video_arr = np.stack([np.array(img) for img in vision_input])
-        elif isinstance(vision_input, np.ndarray):
-            video_arr = vision_input
+        if vision_input is not None:
+            if isinstance(vision_input, (str, Path)):
+                video_arr, _ = sample_video_uniform_array(str(vision_input), max_frames=16, max_width=384)
+            elif isinstance(vision_input, list):
+                video_arr = np.stack([np.array(img) for img in vision_input])
+            elif isinstance(vision_input, np.ndarray):
+                video_arr = vision_input
 
-        conversation = [
-            {
-                "role": "user",
-                "content": [
-                    {"type": "video"},
-                    {"type": "text", "text": prompt},
-                ],
-            },
-        ]
-        prompt_text = self.processor.apply_chat_template(conversation, add_generation_prompt=True)
-        inputs = self.processor(text=prompt_text, videos=video_arr, return_tensors="pt").to(self.model.device)
+            conversation = [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "video"},
+                        {"type": "text", "text": prompt},
+                    ],
+                },
+            ]
+            prompt_text = self.processor.apply_chat_template(conversation, add_generation_prompt=True)
+            inputs = self.processor(text=prompt_text, videos=video_arr, return_tensors="pt").to(self.model.device)
+        else:
+            conversation = [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                    ],
+                },
+            ]
+            prompt_text = self.processor.apply_chat_template(conversation, add_generation_prompt=True)
+            inputs = self.processor(text=prompt_text, return_tensors="pt").to(self.model.device)
 
         with torch.no_grad():
             out = self.model.generate(**inputs, max_new_tokens=max_new_tokens)
