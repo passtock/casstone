@@ -1762,15 +1762,21 @@ class ClinicalApp(QMainWindow):
         f5.setSpacing(8)
 
         auto_row = QHBoxLayout()
+        self.chk_auto = QCheckBox("자동 시간 측정:")
+        self.chk_auto.setChecked(False)
+        self.chk_auto.setToolTip("체크 시 설정된 시간(초) 동안 자동으로 구간을 측정하고 자동 종료합니다.\n"
+                                 "체크 해제 시 [Space] 키 또는 버튼을 직접 눌러 시작/종료를 수동으로 제어합니다.")
+        self.chk_auto.toggled.connect(self._on_auto_toggle)
+
         self.spin_auto = QSpinBox()
         self.spin_auto.setRange(1, 60)
         self.spin_auto.setValue(int(AUTO_TRIAL_SEC))
         self.spin_auto.setSuffix(" 초")
-        self.spin_auto.setEnabled(False)          # 환자군이 기본값
-        self.spin_auto.setToolTip("비장애인 대조군에서 버튼을 한 번 누를 때 자동으로 측정되는 길이.\n"
-                                  "환자군은 시작/종료를 직접 눌러 구간을 잡습니다.")
+        self.spin_auto.setEnabled(False)          # 기본 체크 해제 상태이므로 비활성화
+        self.spin_auto.setToolTip("자동으로 측정할 시간(초).")
         self.spin_auto.valueChanged.connect(lambda v: self._trial_btn(not self.trial_on))
-        auto_row.addWidget(QLabel("자동 측정 길이 (비장애인):"))
+
+        auto_row.addWidget(self.chk_auto)
         auto_row.addWidget(self.spin_auto)
         f5.addLayout(auto_row)
 
@@ -2044,11 +2050,17 @@ class ClinicalApp(QMainWindow):
         self.lbl_qc.setStyleSheet(f"color:{color}; font-size:12px; font-weight:bold; "
                                   "padding:3px 8px; background:#12141f; border-radius:4px;")
 
+    def _on_auto_toggle(self, checked):
+        self.spin_auto.setEnabled(checked)
+        self._trial_btn(not self.trial_on)
+        self.toast(f"자동 측정: {'ON (' + str(self.spin_auto.value()) + '초 자동 종료)' if checked else 'OFF (수동 시작/종료)'}")
+
     def _on_group(self, healthy):
         self.g_clin.setEnabled(not healthy)
-        self.spin_auto.setEnabled(healthy)
+        self.chk_auto.setChecked(healthy)
+        self.spin_auto.setEnabled(self.chk_auto.isChecked())
         self._trial_btn(not self.trial_on)
-        self.toast("피험자 군: " + (f"비장애인 대조군 ({self.spin_auto.value()}초 자동 측정)"
+        self.toast("피험자 군: " + (f"비장애인 대조군 ({'자동 ' + str(self.spin_auto.value()) + '초 측정' if self.chk_auto.isChecked() else '수동 측정'})"
                                      if healthy else "편마비 환자군 (수동 구간 측정)"))
 
     def _on_palm(self, mm):
@@ -2094,8 +2106,8 @@ class ClinicalApp(QMainWindow):
         self.toggle_trial() if self.session_on else self.start_session()
 
     def _auto_mode(self):
-        """비장애인 대조군 = 고정 시간 자동 측정, 편마비 환자군 = 수동 시작/종료."""
-        return self.rb_healthy.isChecked()
+        """자동 측정 체크박스가 켜져 있으면 설정 시간(초) 동안 자동 측정, 꺼져 있으면 수동 시작/종료."""
+        return hasattr(self, 'chk_auto') and self.chk_auto.isChecked()
 
     def _trial_btn(self, starting):
         if starting:
@@ -2146,7 +2158,7 @@ class ClinicalApp(QMainWindow):
         self.btn_trial.setEnabled(True)
         self._trial_btn(True)
         for w in (self.txt_name, self.spin_age, self.cb_gender,
-                  self.rb_healthy, self.rb_patient, self.spin_auto):
+                  self.rb_healthy, self.rb_patient, self.chk_auto, self.spin_auto):
             w.setEnabled(False)
 
         self.lbl_session.setText("● REC (기록 중...)")
@@ -2360,9 +2372,9 @@ class ClinicalApp(QMainWindow):
         self.btn_start.setEnabled(True)
         self.btn_stop.setEnabled(False)
         self.btn_trial.setEnabled(False)
-        for w in (self.txt_name, self.spin_age, self.cb_gender, self.rb_healthy, self.rb_patient):
+        for w in (self.txt_name, self.spin_age, self.cb_gender, self.rb_healthy, self.rb_patient, self.chk_auto):
             w.setEnabled(True)
-        self.spin_auto.setEnabled(self.rb_healthy.isChecked())
+        self.spin_auto.setEnabled(self.chk_auto.isChecked())
         self.lbl_session.setText("● READY (세션 완료)")
         self.lbl_session.setStyleSheet("color:#10b981; font-weight:bold; font-size:14px;")
 
@@ -2612,8 +2624,8 @@ class ClinicalApp(QMainWindow):
                 "hand_length_calib_mm": self.spin_palm.value() or None,
             },
             "protocol": {
-                "trial_mode": "manual" if patient else "auto",
-                "auto_trial_sec": None if patient else self.spin_auto.value(),
+                "trial_mode": "auto" if self._auto_mode() else "manual",
+                "auto_trial_sec": self.spin_auto.value() if self._auto_mode() else None,
                 "total_trials": len({x['trial'] for x in self.trials}),
                 "session_duration_s": duration,
                 "working_distance_m": [WORK_MIN_M, WORK_MAX_M],
