@@ -1,0 +1,973 @@
+# ARAT·FMA-UE·상지 운동학·VLM 전체 선행연구 — 통합 정밀 프로토콜 아틀라스 (v2)
+
+**기준일:** 2026-09-22
+**버전:** v2 통합본 (v1의 8편 RGB-D/VLM 분석을 전체 조사 문헌으로 확장)
+**분석 초점:** 실제 실험·임상 환경에서 **누가 / 무엇을 / 어떻게 몇 번 / 어떤 장비로 / 어떻게 수치화하고 / 무엇과 비교했는가**
+**표기 원칙:** 논문에 명시된 수치만 기재. 접근 가능한 원문·초록·공식 HTML·메타데이터에서 확인되지 않은 항목은 **`미명시`**로 표시한다. 추정값을 수치처럼 쓰지 않는다.
+
+**중요 분류 정정 2건**
+1. **Padilla-Magaña 2022는 RGB-D 카메라 연구가 아니라 데이터 글러브(CyberGlove II) 연구**다. ARAT 손 과제를 실제 계측한 유일한 직접 선행연구이므로 포함하되 "카메라 조건 아님"을 명시한다.
+2. **Tang 2025는 뇌졸중 환자 0명**(UI-PRMD·REHAB24-6 모두 건강인 10명)이다. 이 수치를 뇌졸중 파지 성능으로 인용하면 안 된다.
+
+**문헌 성격 구분**
+- **`[실험]`** = 자체 피험자 모집·측정을 수행한 연구 → 5항목 전부 적용
+- **`[메타/리뷰]`** = 문헌 합성 연구 → 5항목을 "검색·선정·추출·합성·검증" 구조로 변환 적용
+- **`[방법론]`** = 시뮬레이션·합의·기술 개발 → "설계·입력·처리·출력·검증" 구조로 변환 적용
+
+---
+
+## 0. 공통 기준: ARAT 표준 프로토콜의 실제 물성·배치
+
+모든 논문의 "ARAT 손 과제"를 비교하려면 표준값이 필요하다. Yozbatiran et al. 표준화 지침(Lyle 1981 원형 기반) 기준.[Yozbatiran et al. 2008](https://doi.org/10.1177/1545968307305353)
+
+### 0-1. 19개 항목 목록과 물체 사양
+
+| # | 소척도 | 항목 | 크기 | 무게 |
+|---|---|---|---|---|
+| 1 | Grasp | 목재 블록 | 10.0 cm³ | **492 g** |
+| 2 | Grasp | 목재 블록 | 2.5 cm³ | **6.5 g** |
+| 3 | Grasp | 목재 블록 | **5 cm³** | **55 g** |
+| 4 | Grasp | 목재 블록 | 7.5 cm³ | **196 g** |
+| 5 | Grasp | 크리켓 볼 | 지름 7.1–7.5 cm | **159 g** |
+| 6 | Grasp | 숫돌 | 10.0 × 2.5 × 1 cm | **60.3 g** |
+| 7 | Grip | 유리잔→유리잔 물 붓기 | 상부 지름 6–7 cm, 높이 12–15 cm | 컵 125.4 g(빈) + 물 4 oz |
+| 8 | Grip | 대형 알루미늄 관 | 지름 2.25 cm, 길이 11.5 cm | **38.5 g** |
+| 9 | Grip | 소형 알루미늄 관 | 지름 1 cm, 길이 16 cm | **14.2 g** |
+| 10 | Grip | 와셔를 볼트에 | 와셔 지름 3.5 cm | — |
+| 11 | Pinch | 볼베어링 — 약지+엄지 | 지름 6 mm | **1.1 g** |
+| 12 | Pinch | **구슬 — 검지+엄지** | 지름 1.5 cm | **5.4 g** |
+| 13 | Pinch | 볼베어링 — 중지+엄지 | 6 mm | 1.1 g |
+| 14 | Pinch | 볼베어링 — 검지+엄지 | 6 mm | 1.1 g |
+| 15 | Pinch | 구슬 — 약지+엄지 | 1.5 cm | 5.4 g |
+| 16 | Pinch | 구슬 — 중지+엄지 | 1.5 cm | 5.4 g |
+| 17–19 | Gross | 손을 머리 뒤/위/입으로 | — | — |
+
+### 0-2. 배치·자세·시간 기준
+
+- **책상** 높이 75 cm, 폭 76 cm, 깊이 49 cm. **의자**: 등받이 있음, **팔걸이 없음**, 좌면 높이 46 cm. **선반: 책상면에서 37 cm 위**
+- **Grasp:** 물체를 시상면과 겨드랑이선의 **중간**에 배치. 검사측 손은 **회내**로 물체 옆, 반대손도 회내로 책상 위. **검사자가 물체를 잡아주면 감점**, 환자가 반대손으로 고정해도 감점
+- **Grip(붓기):** 컵 2개를 정중선 양측 **8 cm 간격**, 앞모서리에서 **10 cm**. 컵에 **4 oz 물**(미리 그은 선까지)
+- **Grip(관):** 시작 못 앞모서리에서 **8 cm**, 목표 못은 **30 cm 원위**
+- **Grip(와셔):** 뚜껑 앞모서리에서 **5 cm**, 목표 못 **30 cm 원위**
+- **Pinch:** 뚜껑 2개(하부=시작, 상부=선반 목표). **수직으로 들어 올려** 목표 뚜껑에 놓기
+- **시간 기준:** 3점=**5초 이내**, 2점=5–60초 또는 큰 어려움, 1점=60초 내 부분, 0점=60초 내 수행 불가
+- **계층 중단:** 각 소척도 최난이도 항목을 먼저 → 3점이면 소척도 전부 3점, 최하난이도가 0점이면 소척도 전부 0점
+- **총점:** 57점 (Grasp 18 / Grip 12 / Pinch 18 / Gross 9)
+
+> **v5 계획 일치 확인:** "ARAT 3번 5 cm 블록"=**55 g**, "12번 엄지–검지 구슬"=**5.4 g**. 무게 차 **10배**, 크기 차 **3.3배**. 항목 12는 ARAT에서 두 번째로 어려운 난이도군이며, **37 cm 수직 들어올리기**가 핵심 운동학이다 → 카메라가 수직 시야를 확보해야 한다.
+
+---
+
+## 0-3. 지표·통계·해부학 용어 해설 (비전문가용)
+
+> 이 문서에는 ICC, MDC, SPARC 같은 전문 용어가 대량으로 나온다. **의미를 모르면 수치를 읽을 수 없으므로** 아래에 전부 해설한다. 각 항목은 `뜻·계산·단위` / `해석 기준` / `본 문서의 실제 값` 순으로 적었다.
+
+### 0-3-1. 신뢰도 · 일치도 · 측정오차
+
+| 용어 | 뜻 · 계산 · 단위 | 해석 기준 | 본 문서 실제 값 |
+|---|---|---|---|
+| **ICC** (Intraclass Correlation Coefficient, 급내상관계수) | 같은 대상을 여러 번/여러 평가자가 측정했을 때 **점수가 얼마나 일치하는지** 나타내는 0~1 값. Pearson r과 달리 **절대 일치(agreement)** 를 본다. 표기는 (모델, 단일/평균) = 예: ICC(2,1)은 two-way random·단일측정·절대일치 | Koo & Li 기준: **<0.5 poor, 0.5–0.75 moderate, 0.75–0.9 good, >0.9 excellent**. 0.9 이상이면 실용적으로 매우 안정 | Faity: trunk displacement **0.93** vs peak velocity **0.21**; Bayle SPARC **0.912**; ARAT 평가자간 **≥0.92** |
+| **SEM** (Standard Error of Measurement, 측정표준오차) | 반복측정 시 점수가 흔들리는 정도. **SEM = SD × √(1 − ICC)**. 단위는 원래 점수 단위 | 작을수록 좋다. 절대 기준은 없고 **MDC 계산의 재료**로 쓰인다 | SEM에서 유도된 MDC가 아래 값 |
+| **MDC / MDC95** (Minimal Detectable Change, 최소검출변화) | **측정오차보다 큰 변화인지** 판정하는 문턱값. **MDC95 = 1.96 × √2 × SEM** (동일 피험자 반복측정 기준). 단위는 점수 | **이 값보다 작은 변화는 “실제 변화”라고 말할 수 없다.** 즉 자동화 시스템의 최소 정밀도 요구치 | ARAT **13.1점**, UE-FM **12.9점**, UE-STREAM 3.9점, WMFT 20.2점; 새 ARAT는 **1–4점**; Unger 논문의 **MCID 15 pp** |
+| **MDC = 최고점의 6%** 표현 | MDC를 척도 만점 대비 %로 환산한 것. ARAT 만점 57점의 6% ≈ 3.4점 수준의 개념 | %가 작을수록 민감 | UE-FM **8%**, ARAT **6%** |
+| **CoV** (Coefficient of Variation, 변동계수) | **CoV = (SD / 평균) × 100 [%]**. 단위를 제거하고 흩어짐을 비교 | **<10% = 양호**, >30% = 불안정 | Bayle: SPARC **8.9%**, LDLJ 9.1%, nSUB **33%**, NARJ **48%** |
+| **Cohen's κ / weighted kappa** (kappa) | 두 평가자의 **범주형 일치도**(우연 일치를 보정). 가중 kappa는 0↔3처럼 먼 불일치에 더 큰 벌점(quadratic weighting) | Landis & Koch: <0.40 poor, 0.41–0.60 moderate, 0.61–0.80 substantial, **0.81–1.00 almost perfect** | Valladares .76/.83/.81; xAARA **κ=0.934**(task)·0.727(phase); 새 ARAT 항목별 κ ≥0.90 |
+| **PA** (Percentage Agreement, 일치율) | 단순히 **같은 점수를 준 비율(%)**. 우연 보정 없음 | **≥70% 만족**(이 문서의 기준), ≥90% 우수 | Hernández FMA-UE 전 항목 **PA >90%**; ARAT 항목별 42.4–100% |
+| **RP / RC / RV** | 순위기반 불일치 3분해. **RP**=상대위치(한쪽이 체계적으로 높게/낮게), **RC**=상대집중(중앙값 쏠림), **RV**=상대순위변동(개인차) | −0.1~0.1 = 무시 가능 | Hernández: inter-rater 1개 항목, intra-rater 4개 항목에서 유의 |
+| **LoA** (Limits of Agreement, 일치한계) | Bland–Altman 방식. **평균 차이 ± 1.96 × 차이의 SD**. 두 장비/방법의 실용 일치 범위 | **LoA가 임상적 허용범위 안이면 교체 가능**. 평균 차이(bias)가 0에서 멀면 체계적 오차 | ARAT 각도계 LoA 약 **±10°**; 새 ARAT LoA ±1–2점 |
+| **Bias** (편향) | 두 방법의 **평균 차이**. 체계적 과대/과소 | 0에 가까울수록 좋다 | Faity: elbow extension **+13.95°(+62.5%)** 과대평가, trunk rotation **−4.10°** 과소평가 |
+
+### 0-3-2. 타당도 · 상관 · 분류 성능
+
+| 용어 | 뜻 · 계산 · 단위 | 해석 기준 | 본 문서 실제 값 |
+|---|---|---|---|
+| **Spearman ρ** (순위상관) | 두 변수의 **순위**가 얼마나 같이 움직이는지(−1~+1). 서열척도·비정규 자료에 적합 | 이 문서 기준: 0–.29 무시, .3–.49 낮음, .5–.69 중간, .7–.89 높음, **>.9 매우 높음** | ARAT–NMU **r=.81**; ARAT floor 단계별 상관 ρ≥.81 |
+| **Pearson r** (선형상관) | 두 변수의 **선형 관계** 강도(−1~+1). 등간척도·정규분포 전제 | 위와 유사하나 **논문마다 구간이 다르다**. Bayle는 weak<0.4 / moderate 0.4–0.6 / **strong 0.6–0.8** / very strong ≥0.8 | SPARC–ARAT **.68**(D0); 치료사 대비 **r=.981** |
+| **ICC vs Pearson의 차이** ⚠️ | Pearson은 “같이 움직이는가”, ICC는 “**같은 값을 주는가**”. 두 평가자가 항상 3점 차이로 다르면 Pearson은 1.0인데 ICC는 낮다 | **일치도를 주장하려면 반드시 ICC**를 봐야 한다 | 그래서 Faity는 ICC를, Li 2022는 r을 보고 — 두 논문은 **같은 종류의 증거가 아니다** |
+| **AUC / ROC** (Area Under the Curve) | 분류기가 **정상과 환자를 얼마나 잘 분리하는지**(0.5=찍기, 1.0=완벽). ROC 곡선 아래 면적 | 0.7 acceptable, **0.85 excellent**, >0.9 outstanding | Valladares AUC 0.74–0.94; Unger Tier1 **0.91–1.00**; Tang AUC-ROC 0.70/0.72 |
+| **Sensitivity / Specificity** | **민감도**=환자를 환자로 맞힌 비율(놓치지 않음). **특이도**=정상을 정상으로 맞힌 비율(오경보 없음) | 둘 다 높아야 함. 한쪽만 높으면 사용 불가 | Alt Murphy velocity 지표 **둘 다 >94.7%**; Valladares 만성 고기능 **특이도 0.55**로 급락 |
+| **Accuracy / Precision / Recall / F1** | **Accuracy**=전체 정답률. **Precision**=양성이라 한 것 중 진짜 양성. **Recall**=진짜 양성 중 찾아낸 비율(=민감도). **F1**=Precision과 Recall의 조화평균 = 2PR/(P+R). **macro-F1**=클래스별 F1의 단순평균(불균형 자료에서 유리) | 클래스 불균형이면 **Accuracy는 부풀려진다** → F1·macro-F1 병기 | Li 2022: 정확도 **80.83%**, macro-F1 **80.97%**; Tang: Acc/F1 0.76/0.79 |
+| **Effect size (효과크기)** | 집단 차이를 **표준화**한 크기. **Cohen's d=(M₁−M₂)/SD_pooled**; **η²=SS_효과/SS_전체**; **SRM**=변화량/SD_변화량; **r**(효과크기용)=0.1/0.3/0.5 소/중/대 | d: 0.2 small / 0.5 medium / **0.8 large**. η²: 0.01/0.06/0.14. SRM·d: 0.2/0.5/0.8 | Hsueh 반응성 **.52–.79**; Alt Murphy **η² 0.22–0.62**; Bayle SPARC **0.76** |
+| **η²H** (Kruskal–Wallis 효과크기) | 비모수 검정의 효과크기. **η²H=(H−k+1)/(n−k)** | 0.01 small, 0.06 medium | Unger **η²H=0.0053 < 0.06** → “중증도가 재구성 품질에 영향 없음” 판정 근거 |
+| **SMD** (Standardised Mean Difference) | 메타분석용 표준화 평균차 = (M₁−M₂)/SD_pooled. **단위 없음** | 0.2/0.5/0.8 = small/medium/large. **음수면 환자가 더 작은 값** | Collins: peak velocity **−1.48**, trunk displacement **+1.55** |
+| **I²** (이질성) | 메타분석에서 연구 간 결과가 얼마나 **따로 노는지(%)**. **I²=(Q−df)/Q×100** | 25/50/75% = low/moderate/high | Collins reach-to-target: low 10개, moderate 13개, **high 3개** |
+| **타당도 4종** | **Construct**=개념을 제대로 재는가. **Concurrent**=같은 시점 다른 도구와 일치. **Criterion**=외부 기준과 일치. **Predictive**=미래 결과 예측. **Responsiveness**=변화를 감지 | 자동화 시스템은 **동시+예측+반응성**을 함께 보고해야 함 | Bayle: 동시(r=.48–.68)와 예측(D0→D30 .54–.58)을 분리 보고 |
+| **Ceiling / Floor effect** (천장·바닥 효과) | 환자들이 **최고점(ceiling) 또는 최저점(floor)에 몰리는 현상**. 포화되면 차이를 못 잡는다 | 관례상 **>15% 또는 >20%** 를 문제로 판정 | ARAT floor 14일 **41.5%**, ceiling 180일 **22.6%**; FMA-UE ceiling **21.7%** |
+| **MCID** (Minimal Clinically Important Difference) | 환자가 **“좋아졌다”고 느끼는 최소 변화**. MDC와 다르다 | **MDC=통계적 잡음 문턱, MCID=환자 체감 문턱.** 두 값을 비교해 유효성 판단 | FMA-UE MCID 4–7점(Lundquist), 9점(집중훈련), 13점(8주) 등 조건별로 다름; Unger **15 pp** |
+| **Downs & Black / COSMIN / GRADE** | 편향위험·측정속성·근거수준 평가 **도구 이름** | 낮을수록 좋다 / 높을수록 좋다 / 높을수록 좋다 | Collins: **unclear~high**(낮은 신뢰); Schwarz 2019: **inadequate~very good**; GRADE로 권고 |
+
+### 0-3-3. 오차 · 정확도 · 모델 평가
+
+| 용어 | 뜻 · 계산 · 단위 | 해석 기준 | 본 문서 실제 값 |
+|---|---|---|---|
+| **MAE** (Mean Absolute Error) | 오차 절대값의 평균. 단위 유지(mm, 점, °) | 작을수록 좋다. **단위가 있으므로 임상 문턱과 직접 비교 가능** | Li 2022 항목별 **0.21점**; FMA-UE 총점에서 2.75–4.9점(tele-FMA) |
+| **RMSE** (Root Mean Square Error) | 오차 제곱 평균의 제곱근. **큰 오차에 더 민감** | MAE보다 큰 값이 정상(큰 오차에 민감하므로) | Tannús **4.42점**; Faity RMSE 0.34–0.41 s(시간) |
+| **NRMSE / NMAE** (정규화 오차) | RMSE·MAE를 **범위나 평균으로 나눠 단위 제거** | %로 해석 | Zhou 2025 FMA-UE **NRMSE 7%** |
+| **MAD / MAPE** | **MAD**=평균절대편차(오차), **MAPE**=평균절대백분율오차(%) | 작을수록 좋다 | RAST-G·ST-GCN 비교에서 MAD 0.4001, MAPE 2.28% |
+| **LOSO / LOOCV** | **LOSO**=피험자 1명씩 빼고 훈련(환자 단위). **LOOCV**=샘플 1개씩 빼고 훈련 | **LOSO/LOOCV는 hold-out보다 낙관적이지 않다** → 더 신뢰해야 하는 수치 | Zhou **LOSO NRMSE 7%**; Tannús **LOOCV R²=0.32–0.55 vs hold-out 0.89** |
+| **patient-disjoint split** (환자 단위 분할) | 훈련·시험셋에 **같은 환자가 섞이지 않게** 나누는 것 | **섞이면 성능이 부풀려진다(data leakage)** | Ahmed 2025는 **segment 단위 분할**로 기술 → 누수 가능성 미해소 |
+| **reprojection error** | 2D에서 검출한 관절점과, 3D로 재구성한 관절을 다시 2D로 투영한 점 사이의 **픽셀 거리** | 실험실 기준 **5–10 px**, 임상 허용 **10–20 px** | Unger **12.5 ± 3.0 px** |
+| **offset** (관절 위치 오차) | 두 시스템 간 관절 좌표의 **평균 유클리드 거리(mm)** | 작을수록 좋다. **손가락 목표(15 mm)와 비교해야 의미가 있다** | Li 2022 RealSense vs Vicon **평균 96 mm** |
+| **세션 내 / 세션 간 재현성** | 같은 세션 안 반복 vs 다른 날 반복 | 둘 다 필요 | Bayle는 세션 내 CoV, Faity는 test-retest ICC |
+
+### 0-3-4. 운동학 지표
+
+| 용어 | 뜻 · 계산 · 단위 | 방향 | 본 문서 실제 값 |
+|---|---|---|---|
+| **SPARC** (Spectral Arc Length) | 속도 신호를 Fourier 변환해 **스펙트럼의 호 길이**를 잰 값. **단위 없음(음수)**. ωc=20 Hz 등 상한 컷오프 사용 | **0에 가까울수록 매끄럽다(좋다)** | 건강인 **−1.436**, 환자 D0 **−1.82** → D30 **−1.61** |
+| **LDLJ** (Log Dimensionless Jerk) | 시간영역 smoothness. 속도의 3차 미분(jerk)을 정규화해 로그 | 클수록(덜 음수) 매끄럽다 | D0 −10.7 → D30 −9.36; ICC 0.911 |
+| **nSUB** (Number of Submovements) | 속도 곡선에 나타나는 **하위 움직임 개수** | **작을수록 매끄럽다** | D0 15 → D30 11; CoV 33%(불안정) |
+| **NARJ** (Normalized Average Rectified Jerk) | jerk 절대값 평균을 정규화 | 작을수록 매끄럽다 | CoV **48%**, ICC 0.613 → **신뢰도 낮음** |
+| **NMU** (Number of Movement Units) | 속도 프로파일의 극소→극대 개수. **진폭 >20 mm/s, 간격 >150 ms** 조건 | 작을수록 매끄럽다 | 정상 **2.3±0.3** vs 환자 **8.4±4.2**; ARAT와 **r=.81** |
+| **Jerk / jerky score** | 가속도 변화율. 클수록 뻣뻣하고 끊긴 움직임 | 작을수록 좋다 | 편마비 log(jerky) **1.81** vs 비편마비 **1.21** |
+| **PAp** (Peak Aperture, 최대 파지 폭) | reaching 중 **엄지–검지 사이 최대 거리** | 물체 크기에 맞게 조절되어야 정상 | **0.08 → 0.10 m**; Jarque-Bou 손가락 각도, Tannús **hand aperture**가 FMA 핵심 특징 |
+| **TPAp** (Time to Peak Aperture) | reach 시작 → PAp까지 **시간** | 파지 계획(preshaping) 속도 | Qiu 모델에서 PAp와 함께 **adj. R² 59.8** |
+| **TAPV** (Time After Peak Velocity) | wrist **최대속도 → 물체 운반 시작**까지 시간 | **미세조정(late correction)** 지표. 짧을수록 좋다 | **1.17 → 0.79 → 0.70 s**; TPAp와 함께 **adj. R² 61.9** |
+| **RGC** (Reach–Grasp Coupling) | **TPAp − TTPV**. 도달과 파지의 시간 결합 | 0에 가까울수록 결합이 좋다 | **0.44 → 0.37 → 0.24 s** |
+| **TLR / path ratio** (Trajectory Length Ratio) | 실제 이동거리 ÷ 직선거리. **1 = 완전 직선** | 1에 가까울수록 좋다 | 환자 1.11–1.37 vs 정상 ~1.0 |
+| **PV / PAVE / TTPV** | **PV**=최대 손 속도(mm/s), **PAVE**=팔꿈치 최대 각속도(°/s), **TTPV**=최대속도 도달시간(s) | 클수록/빠를수록 좋다 | PV **431 vs 616 mm/s**; PAVE **64.9 vs 121.8 °/s** |
+| **TMT** (Total Movement Time) | 과제 전체 소요시간(s) | 짧을수록 좋다 | **11.4 vs 6.49 s**; ARAT와 **r=.68** |
+| **TD** (Trunk Displacement, 체간 변위) | 흉골/흉곽 표식의 초기 대비 **최대 전방 이동(mm)** | **작을수록 좋다(보상 지표)** | 정상 **26.7 mm** vs 환자 **77.2 mm**; ARAT와 **r=.63**; SMD **1.55** |
+| **ROM / FROM / aROM / sROM** | **ROM**=평균 가동범위(°), **FROM**=활동 90%를 수행하는 데 필요한 5–95 백분위 범위, **aROM**=굴곡+신전 총 호, **sROM**=소척도별 | 클수록 좋다 | Padilla-Magaña: Index MCP **46.18°**, Middle MCP **47.5°**, Little PIP **22.10°** |
+| **Correlation coefficient between joints (interjoint)** | 두 관절 각도의 상관 또는 **최대각속도 타이밍 차이(%)** | 정상은 일정한 순서·간격 | Schwarz 2025: elbow flexion–shoulder rotation **18% vs 14%** |
+
+### 0-3-5. 임상척도 · 해부학 용어
+
+| 용어 | 뜻 | 왜 중요한가 |
+|---|---|---|
+| **FMA-UE** | Fugl-Meyer Assessment 상지 소척도. 33항목 × 0–2점 = **만점 66**. 반사·협응·속도 포함 | 장애(impairment) 수준 척도. 우리 자동화의 목표 중 하나 |
+| **FMA-UE subscale A–D** | **A** shoulder/elbow(0–36), **B** wrist(0–10), **C** hand(0–14), **D** coordination/speed(0–6) | 총점만 보면 어느 부위 문제인지 알 수 없음 |
+| **ARAT** | Action Research Arm Test. **19항목 × 0–3점 = 만점 57**. Grasp 6 / Grip 4 / Pinch 6 / Gross 3 | 활동(activity) 수준 척도. 손가락 소근육 반영 |
+| **WMFT / BBT / NHPT / CAHAI / MAL / ABILHAND** | WMFT=Wolf Motor Function Test, BBT=Box and Block Test, NHPT=Nine Hole Peg Test, CAHAI=Chedoke Arm and Hand Activity Inventory, MAL=Motor Activity Log(자가보고 사용량), ABILHAND=자가보고 난이도 | 서로 다른 ICF 층을 측정. 이 문서에서 반복 비교됨 |
+| **Brunnstrom stage** | 뇌졸중 운동회복 단계(1–6). 연합반응→시너지→분리운동 | jerky score와 약한 상관(ρ=−0.387)이 중증도 대표성 한계를 보임 |
+| **MAS / Modified Ashworth Scale** | 강직(spasticity) 평가. 0–4 등급 | 운동학 지표가 강직을 반영하는지 확인 필요 |
+| **NIHSS / mRS / MMSE** | NIHSS=뇌졸중 중증도, mRS=일상기능 장애, MMSE=인지 | **MMSE<23~24는 흔한 제외 기준** |
+| **ICF** | WHO 국제기능분류: Body function / Activity / Participation | FMA=body function, ARAT=activity. 층이 다르므로 점수가 완전히 일치하지 않는다 |
+| **MCP / PIP / DIP / IP / CMC** | 손가락 관절: 중수지절(MCP), 근위지절(PIP), 원위지절(DIP), 지절간(IP), 수근중수(CMC) | **Padilla-Magaña의 보상 패턴이 MCP↓ + PIP↑** — 즉 어떤 관절이 보상하는지 |
+| **Flexion / Extension / Abduction / Adduction / Pronation / Supination / Opposition / Circumduction** | 굴곡 / 신전 / 외전 / 내전 / 회내(손바닥 아래로) / 회외 / 맞섬(엄지-손가락 마주) / 원회(돌리기) | ARAT 항목별 요구 동작. opposition은 구슬 과제의 핵심 |
+| **Proximal / Distal** | 몸통에 가까운(어깨·팔꿈치) / 먼(손목·손가락) | **end-point(원위)은 회복돼도 proximal은 남는다** (Schwarz 2025) |
+| **Compensation / Restitution** | 보상(다른 관절로 대체) / 회복(원래 협응 복원) | **ARAT·FMA 점수는 둘을 구분하지 못한다** (Valladares 2024) |
+| **PROM / AROM** | 수동 / 능동 관절가동범위 | 우리 과제는 AROM 중심 |
+
+### 0-3-6. 통계 · 설계 용어
+
+| 용어 | 뜻 | 본 문서 사용 예 |
+|---|---|---|
+| **Welch's ANOVA** | **분산이 다른** 집단 평균 비교(일반 ANOVA의 보정판) | Padilla-Magaña의 환자 vs 건강군 비교 |
+| **Linear Mixed Model (LMM)** | 고정효과 + 피험자별 랜덤효과. **반복측정·결측을 처리** | Saes(종단), Schwarz 2025, IMU drinking task |
+| **Multiple/Best-subset regression** | 여러 예측변수 조합 중 최적 선택 | Qiu: TAPV+TPAp 조합 선택 |
+| **adjusted R² / predicted R² / Mallow's Cp** | **adjusted R²**=변수수 벌점 반영 설명력, **predicted R²**=새 자료 예측성, **Cp**=모델 복잡도 대비 적합(작을수록·변수수에 가까울수록 좋음) | Qiu adj R² **59.8/61.9**, Cp **1.2/0.2** |
+| **PCA** (주성분분석) | 변수들을 **직교 저차원 성분**으로 압축. **eigenvalue >1(Kaiser)** 기준으로 성분수 결정 | Alt Murphy 5성분 86%, van Kordelaar 4성분 84.7% |
+| **Varimax 회전** | PCA 성분을 **sparse**하게(소수 변수만 크게) 회전 | Jarque-Bou 2019/2020 |
+| **Hierarchical clustering** | 거리 기반 계층 군집 | Jarque-Bou: 418 PC → 23 그룹 → 12 시너지 |
+| **t-SNE** | 비선형 저차원 시각화. **perplexity**=이웃 수 | Herbst 2020(perplexity 10–15) |
+| **kNN** | k개 최근접 이웃 투표 | Herbst: k=10, 가중치 거리⁻², 5-fold CV, 정확도 95.48% |
+| **GPLVM** | Gaussian Process Latent Variable Model. **비선형** 차원축소 | Romero 2010: 35차원 → 2차원 |
+| **GMM / GMR** | **GMM**=K개 가우시안 혼합(EM 적합, **BIC**로 K 선택). **GMR**=GMM에서 조건부 평균으로 경로 생성 | Romero: **Gaussian ≤3개로 충분** → 우리 6-component GMM은 **정당화 필요** |
+| **BIC / bootstrap stability** | 모델 복잡도 벌점 기준 / 재표집 안정성 | **GMM cluster 수 선택 근거로 반드시 제시해야 함** |
+| **Borderline-SMOTE** | 클래스 불균형 보정 오버샘플링 | Padilla-Magaña 2022c(건강 800 vs 환자 288) |
+| **One-hot encoding** | 범주형 변수를 이진 열로 변환 | 분류모델의 활동/소척도 변수 |
+| **Bonferroni 보정** | 다중비교 시 유의수준을 나눠 보수화 | Kristersson p<0.016 |
+| **Butterworth 필터 (차수·컷오프)** | **차수**=차단 기울기(1차당 약 6 dB/octave), **컷오프**=감쇠 시작 주파수(Hz). **zero-phase(filtfilt)**=시간 지연 제거 | Faity **2차 2.5 Hz**, Unger **4차 5 Hz**, Jarque-Bou 2차 5 Hz |
+| **SSA** (Singular Spectrum Analysis) | 시계열을 **추세/주기/잡음**으로 분해해 상위 성분만 재구성하는 비모수 denoising | Li 2022가 저역통과 필터 대신 채택 |
+| **보간(interpolation) / imputation** | 결측 프레임을 추정해 채움 | xAARA는 **self-attention imputation** 사용 |
+| **VQ-VAE / codebook** | 연속 신호를 **이산 토큰**으로 양자화. **codebook**=토큰 사전 | BiomechGPT: **512 codeword × 512차원** |
+| **QLoRA** | 대형 모델을 4-bit로 양자화해 **저랭크 어댑터**만 학습 | BiomechGPT(rank/alpha 32, dropout 0.1) |
+| **Chain-of-Thought / certainty / probability elicitation** | LLM 추론 유도 기법. **CoT**=단계적 추론, **certainty**=0–1 확신도 출력, **probability**=정답 확률 출력 | Tang 2025: CoT가 **자체 임계값을 만들어 오류 증폭** |
+| **zero-shot / few-shot (k-shot)** | 예시 없이 / k개 예시 제공 | Tang: **3-shot 최적, 4-shot 급락(0.42)** |
+| **AER / RCE / ES (dose 평가)** | **AER**=action error rate(낮을수록 좋음), **RCE**=relative counting error, **ES**=edit score(0–100, 높을수록 좋음) | Li 2026 dose 정량화 |
+| **Ordinal vs interval scale** | **서열**=순서만 의미(0<1<2<3), **등간**=간격도 의미 | ARAT·FMA는 **서열척도** → 합산·평균에 주의. 이것이 ordinal 모델링이 필요한 이유 |
+
+### 0-3-7. 특히 헷갈리는 구분 5쌍
+
+1. **ICC vs Pearson r** — r=.98이어도 ICC가 낮을 수 있다. **일치 주장은 ICC**. 자동화 논문이 r만 보고하면 **불충분**하다.
+2. **MDC vs MCID** — MDC는 **측정오차 문턱**, MCID는 **환자 체감 문턱**. MDC > MCID면 “측정이 환자 체감보다 둔하다”는 뜻.
+3. **Floor/Ceiling vs MDC** — floor/ceiling은 **집단 분포 문제**, MDC는 **개인 변화 검출 문제**. 둘 다 있어야 임상적 민감도를 주장할 수 있다.
+4. **Accuracy vs κ** — 불균형 자료에서 accuracy는 부풀려진다. **κ와 F1 병기** 필요.
+5. **Sensitivity vs Precision** — Sensitivity는 **놓침(False Negative)** 을, Precision은 **오경보(False Positive)** 를 다룬다. 우리 시스템에서는 **거짓 “정상” 판정(놓침)** 이 더 위험하므로 sensitivity를 우선 본다.
+
+---
+
+## 1. 논문별 정밀 프로토콜 분석
+
+### A. 임상척도 계량학 (코호트·평가자·시점 설계)
+
+#### A-1. Hsueh et al. 2009 `[실험]` — 4개 상지척도 동시 비교
+- **① 대상자:** 뇌졸중 **53명**(발병 후 14·30·90·180일 평가, **35명이 4회 완료**). 평가자간 신뢰도 분석은 **30명**(원 53명 중 23명이 48시간 내 재검사를 못해 제외 → 13명은 별도 만성 뇌졸중 독립표본). 유형·중증도별 분석은 표본 부족으로 불가(저자 명시)
+- **② 행동/설계:** 4개 척도(UE-FM, UE-STREAM, ARAT, WMFT) + Barthel Index(180일)를 물리치료사 1명이 시행. 평가자간 신뢰도는 **치료사 2명이 무작위·상쇄 순서로 2일 이내** 각각 시행. 검사-재검사는 다른 치료사가 **1주 간격 2회**. WMFT의 **시간 구성요소는 사용하지 않음**
+- **③ 획득:** 표준 임상 평가(장비 없음). floor/ceiling 비율, Spearman 동시타당도, 예측타당도, 반응성, ICC, SEM, MDC 산출
+- **④ 지표·단위:** 척도 점수(UE-FM 0–66, ARAT 0–57), floor·ceiling **% of sample**, ICC, SEM, **MDC(점수 단위)**
+- **⑤ 검증:** 척도 간 상호 비교 + Barthel Index를 외부 준거로
+  - 쌍별 Spearman **ρ ≥ .81**; 평가자간 ICC **≥ .92**(95% CI 하한 ≥.85); 검사-재검사 ICC **≥ .97**
+  - ARAT floor/ceiling: 14일 **41.5/9.4%**, 30일 **17.0/20.8%**, 90일 **11.3/20.8%**, 180일 **11.3/22.6%**
+  - UE-FM만 floor/ceiling 없음(14일 floor 9.4%, ceiling 5.7%)
+  - 평가자간 MDC: UE-FM **12.9**, UE-STREAM **3.9**, **ARAT 13.1**, WMFT **20.2**점
+  - 반응성 effect size **.52–.79**
+  - UE-FM MDC = 최고점의 **8%**, ARAT = **6%**
+- **우리 연구:** ARAT **MDC 13.1점**이 우리 자동 시스템의 최소 정밀도 목표값. "신뢰도가 낮다"는 주장은 ICC ≥.92로 반증됨
+
+#### A-2. Kristersson et al. 2019 `[실험]` — ARAT-2 단축판
+- **① 대상자:** 첫 발병 뇌졸중 + 상지 손상 성인 **117명**, **비선별** 모집(급성 뇌졸중 병동)
+- **② 행동/설계:** 발병 **3일·10일·4주** 3시점에 ARAT, FMA-UE, **ARAT-2**(2항목: 유리잔→유리잔 물 붓기 / 손을 머리 위에)를 시행. floor/ceiling은 **20% 초과** 시 존재로 정의. 변화 검정은 Wilcoxon signed-rank, **Bonferroni p<0.016**, 효과크기 r = z/√N
+- **③ 획득:** 표준 임상 평가. FMA-UE는 **반사 3항목 제외한 pure motor 60점 버전도 별도 산출**
+- **④ 지표·단위:** 척도 점수, floor/ceiling %, ARAT-2-FMA 상관 r, 변화 효과크기 r
+- **⑤ 검증:** ARAT·FMA-UE와 상호 비교
+  - ARAT-2 vs 타 척도 **r = 0.92–0.97**
+  - ARAT-2 변화 효과크기 **0.31–0.48**; ARAT·FMA-UE **0.44–0.53**
+  - ARAT floor: 3일 **38%**, 10일 **30.2%**, 4주 **24.1%**; ceiling 4주 **21.3%**
+  - ARAT-2 ceiling: 10일 **22.4%**, 4주 **32.4%**
+  - **FMA-UE floor·ceiling 전무**; FMA-UE(반사 제외) floor 3일 **34.5%**, 10일 **26.6%**, 4주 **12.1%**
+- **우리 연구:** 만성이면 ARAT **ceiling**, 급성이면 **floor**. 자동화 가치는 **포화 구간에서 운동학을 계속 측정하는 것**
+
+#### A-3. Hernández et al. 2019 `[실험]` — FMA-UE 항목수준 신뢰도
+- **① 대상자:** 연속 모집 뇌졸중 **60명**(여 48%, 평균 **65.9세**). 105명 스크리닝 → **21명이 인지저하로 제외**. 포함: 첫 발병, 발병 **4–9일** 입원, NIHSS >0, 18–90세. 제외: 실명·청각장애·사지 절단·소뇌성 뇌졸중, 협조 불가
+- **② 행동/설계:** 물리치료사 **2명이 연속 2일**에 독립적으로 FMA-UE 채점(발병 10일 이내). **순위불변(rank-invariant) 방법**으로 paired ordinal data 분석. 표본수는 10명 파일럿 결과 기반으로 60명 설정
+- **③ 획득:** 표준 FMA-UE(33항목, 항목당 0–2). floor/ceiling 기준 **15% 초과**
+- **④ 지표·단위:** **RP**(relative position), **RC**(relative concentration), **RV**(relative rank variation, 0–1), **PA**(percentage agreement, ≥70% 만족)
+- **⑤ 검증:** 두 평가자 간 일치
+  - 점수범위 **4–66점**, **floor 없음**, **13명(21.7%)이 만점 66점 = ceiling**
+  - 모든 항목 **PA > 90%**; 33개 중 **4개 항목**에서만 유의한 체계적 불일치(inter-rater 1개: forearm pronation within synergies; intra-rater 4개)
+  - 동일 검사자 반복 시 **상향 편향** 관찰
+  - subscale A와 총점 A–D에서 80% PA 도달에 **1점 차이 허용** 필요
+- **우리 연구:** 만점 근처 환자는 운동학 차이가 있어도 점수가 안 변한다 → **0–3 / 1–2 경계 구간에 집중 모집**해야 상관분석이 희석되지 않는다
+
+#### A-4. Valladares et al. 2024 `[실험·이차분석]` — FMA-UE·ARAT 정렬
+- **① 대상자:** **4개 전향 코호트 이차분석**. 급성/초기아급성 **n=133**(중앙값 9일), 아급성 **n=113**(중앙값 93일), 만성 **n=92**(중앙값 375일). 포함: 첫 일측성 허혈/출혈성, 18세 이상, 급성기 상지 운동결손(FMA-UE 또는 ARAT 또는 NIHSS arm ≥1)
+- **② 행동/설계:** ARAT 점수로 **5단계 활동수준**(no 0–10 / poor 11–21 / limited 22–42 / notable 43–54 / full 55–57)을 정의 → **ROC로 FMA-UE 절단점** 도출. MCID·MDC95와 비교
+- **③ 획득:** 훈련된 practitioner-researcher가 표준 프로토콜로 FMA-UE·ARAT 시행. 등록: **NCT03294187, NCT03522519, NCT03287739**; BASEC 2017-00948 / 2017-01070 / 2017-00889
+- **④ 지표·단위:** **AUC**, sensitivity, specificity, **weighted kappa**
+- **⑤ 검증:** ARAT 범주를 기준으로 FMA-UE 절단점 검증
+  - AUC **0.77–0.92**(급성), **0.86–0.94**(아급성), **0.74–0.93**(만성)
+  - 만성 'notable vs full'에서 **specificity 0.55**로 급락
+  - weighted kappa **0.76 / 0.83 / 0.81**; sensitivity 0.68–0.99, specificity 0.71–0.99
+- **우리 연구:** v5의 이론적 정당화 1순위. **"높은 일치 = 두 척도로 restitution과 compensation을 구분할 수 없다"** 는 저자 결론이 우리 문제의식의 직접 근거. 정상-고기능 경계(특이도 0.55)가 가장 흐릿함
+
+#### A-5. Pohl et al. 2024/2025 `[방법론·합의]` — FMA-UE 프로토콜 불일치
+- **① 참여:** 명목집단 합의과정(nominal group consensus). 뇌졸중 재활 전문가 패널
+- **② 설계:** **6개 서로 다른 FMA-UE 프로토콜**을 검토하고 항목별 지시·채점 기준 차이를 도출. 불일치 항목은 후속 합의로 이관
+- **③ 입력:** 각 프로토콜의 문서 지시문 + 교육용 영상
+- **④ 출력:** 불일치 목록 + 권고안. 사례 예시(range of FMA-UE scores)로 프로토콜 차이의 점수 영향을 시연
+- **⑤ 검증:** 정성적 합의(정량 검증 없음)
+  - 불일치 예: 손목 circumduction의 **팔꿈치 0° vs 90° 굴곡**, dysmetria·tremor를 자발운동 없는 환자에서 채점하는 방식, 손 동작 물체·지시, 일부 항목만 검사자 보조·자가 스트레칭 허용
+  - 널리 쓰이는 한 프로토콜의 **문서 지시와 교육 영상이 불일치**
+  - 저자 경고: 프로토콜 변이가 **Rasch 항목위계와 구성타당도·신뢰도 보고값을 위협**
+- **우리 연구:** 우리 데이터 수집 시 **참조한 프로토콜을 명시**하고 항목별 지시문을 데이터셋에 저장해야 한다. 안 하면 모델이 프로토콜 artifact를 학습한다
+
+---
+
+### B. 운동학 clinimetrics · SPARC · 보상 패턴
+
+#### B-1. Schwarz et al. 2019 `[메타/리뷰]` — 운동학 평가 체계적 고찰
+- **① 검색·선정:** PubMed·Embase·CINAHL·IEEE Xplore. PROSPERO **CRD42017064279**. **225개 연구, 총 N=6,197** 포함, **151개 운동학 지표**를 **5개 과제군 × 3개 측정시스템군**으로 분류
+- **② 추출:** 편향위험은 **COSMIN**, 근거수준은 **GRADE**
+- **③ 단위:** 과제(task) / 측정시스템 / 지표(metric)
+- **④ 결과:** clinimetrics를 실제 조사한 연구는 **30편·62개 지표**뿐 → 신뢰도 8편, 측정오차 5편, 수렴타당도 22편, **반응성 단 2편**. 최소 1개 속성 "충분" 판정 지표: **task/movement time, number of movement onsets, number of movement ends, path length ratio, peak velocity, number of velocity peaks, trunk displacement, shoulder flexion/extension**
+- **⑤ 검증:** 지표별 clinimetric 속성 충족 여부 판정 + 권고안 제시
+- **우리 연구:** **정당한 공백 주장의 근거.** SPARC·PAp·TPAp·TAPV를 쓴다면 **신뢰도(ICC)·측정오차(SEM/MDC)·수렴타당도·반응성** 4가지를 모두 보고해야 이 공백을 실제로 메운다
+
+#### B-2. Mohamed Refai et al. 2021 `[방법론]` — SPARC만이 valid
+- **① 입력:** 문헌에서 수집한 **32개 smoothness 지표**
+- **② 처리 1단계:** 수학적 기준 4가지로 **17개 제외** — (a) 무차원성, (b) 재현성, (c) 위치 변화율 기반, (d) 타 지표의 선형변환 아님
+- **③ 처리 2단계:** 시뮬레이션으로 잔여 지표 검정 — **Shape**(이동거리·시간 변화), **Harmonic disturbance**, **Measurement noise**, **Sub-movement** 지연. **reach-to-point와 reach-to-grasp 두 과제** 모델 사용. 판정 파라미터: %Δ, CE, SNR
+- **④ 결과:** 남은 지표 중 **13개가 시뮬레이션에서 기대대로 반응하지 않아 추가 탈락** → **SPARC만 두 과제 전 시뮬레이션 통과**. 노이즈 강건성 SPARC **high**
+- **⑤ 검증:** 수학적 정의 검증 + 시뮬레이션 민감도. **한계 발견:** SPARC는 **sub-movement 지연 0.2초 이상, 0.06초 단위 증가**일 때만 단조
+- **우리 연구:** SPARC를 주 지표로 선택하는 최고 수준의 방법론적 근거. 동시에 **결정적 제약**: **0.2초 미만 미세 지연은 SPARC가 단조성을 보장하지 않는다** → **14프레임에서 재계산 불가, 반드시 센서/추적에서 계산해 JSON 주입**
+
+#### B-3. Bayle et al. 2024 `[실험·부속연구]` — SPARC 임상계량학
+- **① 대상자:** **REM-AVC 시험 부속연구**. 아급성 편마비 **31명**(중앙값 발병 **38일**, 71% 남성, 중앙값 64세, 74% 허혈성, 45% 우세측 침범). REM-AVC 전체는 218명이나 다기관 3곳의 37명만 motion capture → 6명 제외 → **31명**
+- **② 행동/설계:** 재활 시작(**D0**)과 종료(**D30**)에 임상평가 + **3D 동작분석**. 과제는 **어깨 높이, 팔 길이 90% 거리** target으로 self-paced **reach-to-point 3회**. 두 그룹 모두 동일 치료량이므로 **단일 표본으로 pooling**
+- **③ 획득:** 3D 모션캡처(시스템 기종 접근 가능 본문에 미명시). **세션 내 test-retest = CoV**. 등록 **NCT01383512**
+- **④ 지표·단위:**
+  - **SPARC**(주파수영역) — Vthreshold=0.05, ωcmax=20 Hz
+  - **TDSM 3종:** LDLJ(log dimensionless jerk), nSUB(number of submovements), NARJ(normalized average rectified jerk)
+  - 보조: duration(s), trajectory length(mm), IoC(%), mean/peak velocity(mm/s)
+- **⑤ 검증:** ICC, CoV, 효과크기, Spearman 동시·예측타당도, Wilcoxon
+  - ICC: **SPARC 0.912**, LDLJ 0.911, nSUB 0.891, **NARJ 0.613**
+  - CoV: SPARC **8.9%**, LDLJ 9.1%, nSUB **33%**, NARJ **48%**
+  - 변화 효과크기: **SPARC 0.76**, LDLJ 0.65, NARJ 0.65, nSUB 0.59
+  - **D0 동시타당도:** SPARC–UE-FMA **.48**, –UE-FMAp **.56**, **–ARAT .68**, –IoC **−.87**, –duration **−.59**
+  - **D30:** SPARC–UE-FMA **.63**, –UE-FMAp .66, –ARAT **.46**
+  - **예측타당도(D0→D30):** UE-FMA **.57**, UE-FMAp .54, ARAT **.58**; TDSM은 임상지표와 유의 상관 없음
+  - D0 SPARC 중앙값 **−1.82**, D30 **−1.61** (건강인 참조 **−1.44**)
+- **우리 연구:** SPARC–ARAT **r=.68**이 현실적 상한, **ICC=.912**가 단일 카메라 도달 목표. ⚠️ **D0 r=.68 → D30 r=.46 하락**: 운동학–임상 상관은 **재활 후 감소**한다
+
+#### B-4. Saes et al. 2021 `[실험]` — SPARC 종단 동행
+- **① 대상자:** **EXPLICIT-stroke** 다기관(네덜란드 11개 병원) 전향 코호트. 첫 허혈성 반구 뇌졸중 **1주 이내**, 30초 독립 앉기 가능, **3주 내 물체 파지 가능**, 18–80세 → **40명**(남 22, 평균 **58.6±12.5세**). 제외: MMSE<23, 심폐·정형·기타 신경계 동반질환. 건강 참조 **12명**(나이·성별 매칭)
+- **② 행동/설계:** **1·2·3·4·5·8·12·26주** 총 8회 평가. 과제는 **5×5×5 cm 블록 reach-to-grasp** 3D 측정
+- **③ 획득:** **전자기식(electromagnetic) 3D motion tracking system**(기종 미명시). 임상: FM-UE, ARAT, Barthel Index, EmNSA(감각), NIHSS, Bamford 분류
+- **④ 지표·단위:** SPARC(무차원, 음수), FM-UE(0–66점). 분석은 **선형혼합모형**(개인내·개인간 효과 분리)
+- **⑤ 검증:** 종단 연관 + 건강인 참조값 비교
+  - **SPARC–FM-UE 종단 B = 31.73 (95% CI 27.27–36.20), p<.001**
+  - 개인내 **B = 30.85 (26.28–35.41)**, 개인간 **B = 50.59 (29.97–71.21)**
+  - 시간효과: **1→4주 유의(p<.05)**, **5주에 plateau**
+  - 건강인 SPARC 참조값 **−1.436 ± 0.038**; 환자는 모든 시점에서 건강인보다 낮음(p<.05/Ns)
+  - 저자 명시: "**SPARC는 FM-UE보다 ceiling effect를 덜 받는다**"
+- **우리 연구:** "운동학이 임상척도 ceiling을 보완한다"는 **직접 인용 가능 문장**. 5주 plateau → 우리 코호트도 **5주 이내 반복측정** 필요. ⚠️ 대상이 moderate–mild로 제한, 중증은 파지 자체가 불가
+
+#### B-5. Alt Murphy et al. 2012 `[실험]` — ARAT와의 직접 상관 (핵심 앵커)
+- **① 대상자:** **SALGOT** 코호트에서 첫 발병 뇌졸중 후 **1–12개월**, **FMA-UE ≤ 64**, drinking task 수행 가능한 **30명**. 제외: 팔 기능에 영향 주는 근골격·신경계 질환, 18세 미만, 스웨덴어 불가
+- **② 행동/설계:** 표준화 **drinking task** 5단계 — reaching → grasping → lifting → **1회 마시기** → 내려놓기 → 복귀. 컵은 **책상 앞모서리에서 30 cm**, 앉은 자세(허리 받침 있으나 고정 안 함, **보상운동 허용**). **5회 기록 중 중간 3회 평균**. self-paced
+- **③ 획득:** **5대 카메라 광학식 모션캡처 시스템**, **9개 반사마커**(손등·요골·팔꿈치·어깨·흉골·얼굴), 3D 좌표. 임상: FMA-UE, ARAT, ABILHAND
+- **④ 지표·단위:**
+  - **TMT** 총 이동시간(s), **NMU** 움직임 단위 수(진폭 **>20 mm/s**, 간격 **>150 ms**), **PAVE** 팔꿈치 최대 각속도(°/s), **TD** 체간 전방 최대 변위(mm)
+  - 운동학-임상 검증을 위해 **후진 다중회귀**
+- **⑤ 검증:** ARAT·FMA·ABILHAND를 준거로
+  - ARAT: **NMU r = .81**, **TMT r = .68**, **TD r = .63**
+  - FMA: **r = .38–.42**(더 약함)
+  - 회귀: **NMU + TD가 ARAT 분산 67% 설명**(고유기여 NMU **37%**, TD **11%**)
+  - **TD 단독 → FMA 분산 20%**; smoothness → ABILHAND 분산 **6%**
+  - 저자 결론: **운동학은 impairment보다 activity capacity와 더 강하게 연관**
+- **우리 연구:** **최우선 앵커.** r=.81이 목표 상한. ⚠️ **운동학→ARAT(r=.81)이 운동학→FMA(r=.38–.42)보다 훨씬 강하다** → **FMA 총점 예측을 목표로 잡으면 상관이 급락**한다
+
+#### B-6. Alt Murphy et al. 2011 `[실험]` — drinking task 정량 대비
+- **① 대상자:** 만성 뇌졸중 **19명** + 건강 대조 **19명**(평균 **57.3세**, 범위 41–78세, 10남/9녀, 모두 우세손). 환자는 FMA-UE 39–57(중등도)과 58–64(경증)로 층화
+- **② 행동/설계:** 표준화 drinking task(물 **100 mL**, 책상 앞모서리 **30 cm**, ≈팔 길이 80%). 앉은 자세, self-paced
+- **③ 획득:** 3D 광학식 모션캡처 **5대 카메라**. 19개 운동학 변수(시간·속도·전략·smoothness·관절협응·보상)를 **PCA**에 투입
+- **④ 지표·단위:** 총 이동시간(s), peak velocity(mm/s), elbow angular PV(°/s), time to PV(s), trunk displacement(mm), interjoint coordination(Pearson r). **effect size η²**
+- **⑤ 검증:** 정상 vs 환자, 경증 vs 중등도 3군 비교
+  - **PCA: eigenvalue >1인 5성분이 86% 분산 설명**, 13개 변수 추출
+  - 총 이동시간 **11.4±3.1 vs 6.49±0.83 s**; 중등도 **13.3** vs 경증 **9.30**
+  - Peak velocity **431±82.7 vs 616±93.8 mm/s**; 중등도 395 vs 경증 471
+  - Elbow angular PV **64.9±20.5 vs 121.8±25.3 °/s**; 중등도 53.3 vs 경증 78.0
+  - Time to PV **0.70±0.19 vs 0.47±0.08 s**
+  - **Trunk displacement 77.2±48.6 vs 26.7±16.8 mm**; 중등도 **101.7** vs 경증 **50.1**
+  - η² **0.22–0.62**, 대부분 p<.001
+  - **velocity 지표의 민감도·특이도 > 94.7%**(cutoff = 정상군 평균 − SD)
+  - 저자: **NMU, TMT, elbow PAV가 정상-환자 및 경증-중등도 구분에 최강**, 보상운동이 경증-중등도 구분에 추가 기여
+- **우리 연구:** **정상 26.7 mm vs 환자 77.2 mm 체간변위**, **616 vs 431 mm/s**가 우리 정상참조 출발점. ⚠️ **FMA-UE ≥39만 포함** → 중증 포함 시 참조값 무효
+
+#### B-7. Qiu et al. 2022 `[실험]` — PAp·TPAp·TAPV의 유일한 직접 연구
+- **① 대상자:** 중재시험 참여 **초기 아급성 뇌졸중 편의표본 8명**(**49–83세**, 기저 UEFMA **31–52**). 대조군 없음
+- **② 행동/설계:** **3시점** — 중재 전, 중재 직후(**약 18일 후**), 중재 **1개월 후**. 비환측은 1개월 시점에만 측정(참조). 과제: **흉골에서 10 cm 앞 물체**를 집어 **견봉쇄골관절에서 30 cm** 지점 target에 놓기(reach → grasp → transport → release)
+- **③ 획득:** **광학식 모션캡처**. 각 손가락 끝·MCP·PIP에 **active marker**, 손등·팔꿈치·어깨·흉골에 **passive marker 4개**. 카메라 대수·fps 미명시
+- **④ 지표·단위 (정의 명시):**
+  - **RGD** reach-grasp duration(s), **TLR** trajectory length ratio, **RTS** log-transformed dimensionless jerk(smoothness)
+  - **PAp** = reaching 중 index–thumb 최대 거리(m), **TPAp** = reach 시작→PAp(s)
+  - **PV** 최고 wrist tangential velocity, **TTPV** reach 시작→peak velocity(s)
+  - **TAPV** = wrist peak velocity→transport 시작(s)
+  - **RGC** = TPAp − TTPV (transport–grasp coupling, s)
+- **⑤ 검증:** UEFMA를 준거로 Pearson 상관 + 최적부분집합 회귀
+  - RGD **1.6→1.14→0.97 s**; TTPV **0.43→0.36→0.26 s**; **TAPV 1.17→0.79→0.70 s**; **PAp 0.08→0.10→0.10 m**; RGC **0.44→0.37→0.24 s**
+  - 사전–사후 유의: **RGD, PAp, RTS, TAPV**
+  - UEFMA 상관: RGD, TPV, TAPV, TLR, RTS, PAp **moderate–strong 유의**; RGC weak but significant
+  - **TPAp+PAp → adjusted R² 59.8, predicted R² 51.9, Cp 1.2**
+  - **TAPV+TPAp → adjusted R² 61.9, predicted R² 52.0, Cp 0.2**
+  - 1개월 시점에서 RTS·TLR은 **비환측과 동일 수준** 도달
+- **우리 연구:** PAp/TPAp/TAPV의 **유일한 직접 근거**이자 **유일한 N=8 한계**. ⚠️ **개별 Pearson r은 공식 접근 본문에서 확인 불가 → 인용 금지**. 표본을 늘리는 것만으로도 기여가 된다
+
+#### B-8. van Kordelaar et al. 2012 `[실험]` — 체간 보상 ↔ 병적 시너지
+- **① 대상자:** 뇌졸중 **46명**(48명 중 2명 캘리브레이션 오류 제외) + 건강 **12명**. 포함: 첫 일측성 발병(ACA/MCA 영역), 18–80세, 30초 독립 앉기, 물체 파지 가능, **MMSE ≥23**, UCO 5점, 심폐·정형 질환 없음
+- **② 행동/설계:** 앉아서 테이블 앞 **블록 reach-to-grasp 후 목표지점으로 이동**. 블록 위치는 **개인 최대도달거리(MRD)** 를 비환측으로 사전 측정해 개인화 — MRD는 "체간을 등받이에 붙인 상태에서 비환측으로 최대 도달한 손가락–책상모서리 거리". 과제 시 **체간 기여를 최소화하도록 설계**. 7회 반복의 평균 사용, self-paced
+- **③ 획득:** **Polhemus Liberty 전자기식 6-DOF 추적장치, 240 Hz**, 체간·견갑골·상완·전완
+- **④ 지표·단위:** 운동 시작/종료는 forearm sensor 최대속도의 **5%** 임계값으로 정의. 입력 변수: **Forward Trunk Rotation, Axial Trunk Rotation, Upward Shoulder Rotation, Elbow Flexion** 등 관절각(°). 분석은 **PCA + 다변량 로지스틱 회귀**
+- **⑤ 검증:** FMA 상지 시너지 유무를 종속변수로
+  - 평균 이동시간 환자 **1.93±1.48 s** vs 정상 **1.10±0.24 s**(p=.001)
+  - PCA: 환자군 **4성분 84.7%**, 정상군 **3성분 86.6%**
+  - 성분 1 = flexion synergy(shoulder abduction + elbow flexion)
+  - **성분 2(측방 체간회전이 shoulder 기여 부족 보상) → FMA 시너지와 유의 (p = .014)**
+  - **성분 3(전방 체간회전이 elbow flexion 부족 보상) → 유의 (p = .003)**
+  - **[Grasp] RCH/HTM 세부:** 해당 없음
+- **우리 연구:** **정상은 3성분, 환자는 4성분** → **환자가 더 많은 자유도/복잡한 전략을 쓴다**는 정량 근거. 성분 2·3을 **"측방 체간 보상 지수", "전방 체간 보상 지수"** 로 JSON에 명시 가능
+
+#### B-9. Schwarz et al. 2025 `[실험]` — 고기능 환자의 잔존 proximal 결손
+- **① 대상자:** **좌반구** 뇌졸중 **13명**(우세손, 지속적 상지 손상, 물체 파지 가능 = moderate-to-good 회복) + 나이·성별·우세손 매칭 건강 대조 **13명**. 제외: 18세 미만/80세 초과, mRS >3, MRI 금기. 모집: 함부르크-에펜도르프 대학병원. 윤리 **PV 6026**, STROBE 준수
+- **② 행동/설계:** 앉아서 각 손으로 **80회 unconstrained reach-to-grasp** — **폼볼 지름 10 cm**, 어깨 높이, 어깨선 정렬. 거리는 **체간 굴곡 없이 도달 가능하도록** 개인 조정. **양팔 각 4블록 × 20회**, self-paced, 각 trial 녹화 **7초**
+- **③ 획득:** **12대 Vicon 광학식 모션캡처, 200 Hz**. **반사마커 45개**(머리 5, 체간 10, 각 팔 15). 3T Prisma MRI로 병변위치 평가
+- **④ 지표·단위:** movement time(s), TTPVHD·TTPAHD(이동시간 %), smoothness(velocity peaks), **interjoint TTPV 타이밍 차이(%)**, **intrajoint shoulder TTPV 타이밍 차이(%)**. 분석은 **선형혼합모형(LMM)** + 우도비검정
+- **⑤ 검증:** 정상 vs 환자
+  - **원위부(end-point) 유의차 없음:** movement time **0.92 vs 0.96 s (p=.944)**; TTPVHD **40 vs 42% (p=.358)**; TTPAHD **22 vs 21% (p=.583)**; smoothness **1.02 vs 1.15 (p=.057, 경계)**
+  - **근위부 협응 유의차 있음:** interjoint elbow flexion–shoulder rotation **18 vs 14% (p=.019)**; intrajoint shoulder flexion–abduction **18 vs 11% (p=.008)**; flexion–rotation **1 vs 10% (p=.001)**
+- **우리 연구:** **end-point 지표가 정상화되어도 proximal timing은 다르다** → JSON에 **proximal timing 필드 필수**. ⚠️ N=13, well-recovered only, smoothness p=.057 경계 → SPARC 과도의존에 반대 근거
+
+#### B-10. Collins et al. 2018a `[메타/리뷰]` — reach-to-grasp 메타분석
+- **① 검색·선정:** MEDLINE·AMED·Embase. 뇌졸중 환자가 **환측 상지로 물체 reach-to-grasp**을 수행한 연구 + 신경학적 정상 대조군
+- **② 추출:** 편향위험 **Downs & Black 도구**. 합성은 **SMD(standardised mean difference)**
+- **③ 단위:** workspace(central/ipsilateral), 운동학 지표
+- **④ 결과:** **29개 연구, 뇌졸중 460명 + 대조 324명**. **peak velocity SMD −1.48 (95% CI −1.94 to −1.02)**; **trunk displacement SMD 1.55 (0.85 to 2.25)**
+- **⑤ 검증:** **포함연구의 편향위험이 unclear 또는 high**로 평가됨. 저자 결론: workspace가 일부 지표에만 영향
+- **우리 연구:** trunk displacement SMD 1.55 → 체간 보상이 최대 효과크기 중 하나. ⚠️ **편향위험 unclear~high**를 반드시 명시해야 강한 주장이 안 된다
+
+#### B-11. Collins et al. 2018b `[메타/리뷰]` — reach-to-target 메타분석
+- **① 검색·선정:** reach-to-target 한정(**reach-to-grasp, tapping, tracing, drawing 제외**). 46개 중 14개는 데이터 부족으로 제외 → **32개 연구**
+- **② 추출:** **뇌졸중 618명 + 건강 성인 429명**. 연구당 평균 뇌졸중 **17.2±9.9명**, 대조 **11.9±9.3명**. 평균 나이 **58.4±9.3 vs 54.0±10.0세**, 평균 발병 후 **25.6±23.1개월**. **26개 메타분석**, I²로 이질성
+- **③ 단위:** workspace × 운동학 지표
+- **④ 결과:** **21/26 유의**
+  - movement time: ipsilateral **2.57**(0.89–4.25), contralateral 2.08, central 1.44
+  - peak velocity: ipsilateral **−1.76**(−2.29 to −1.24), contralateral −1.69, central −1.12
+  - reach path ratio: central 0.92, ipsilateral 0.77, contralateral 0.81
+  - trunk contribution: central **1.42**, contralateral 1.44, ipsilateral 0.73
+  - smoothness: central 0.92, ipsilateral 1.19, contralateral 1.40
+  - elbow extension: contralateral **−1.10**, ipsilateral −0.80, **central −0.41 (비유의)**
+  - shoulder flexion: contralateral −1.19, ipsilateral −0.81, **central −0.95 (비유의)**
+  - accuracy: contralateral 0.70, ipsilateral 0.82, **central 0.52 (비유의)**
+  - I²: 낮음 10, 중등도 13, 높음 3
+- **⑤ 검증:** workspace별 하위 메타분석
+- **우리 연구:** ⚠️ **central workspace에서 elbow extension·shoulder flexion·accuracy가 비유의** → **물체를 정중선에 두면 차이가 줄어든다**. ARAT shelf transport는 central 조건에 가까우므로 **단순 도달 지표만으로는 정상-환자 구분이 약하다**
+
+---
+
+### C. 자동채점 (ML/DL)
+
+#### C-1. Kim et al. 2016 `[실험]` — Kinect + ANN
+- **① 대상자:** 편마비 뇌졸중 **41명**(일본 이타미 고세이 신경외과병원, 2017.09–2018.03 모집), **건강 15명**(20–80세, 35.4±13.4세)
+- **② 행동/설계:** FMA-UE 33항목 중 **13개** 선택 — flexor synergy 6(shoulder retraction/elevation/abduction/external rotation, elbow flexion, forearm supination), extensor synergy 3(shoulder adduction·internal rotation, elbow extension, forearm pronation), **hand to lumbar spine**, **shoulder flexion 0–90°**, **shoulder abduction 0–90°**, **shoulder flexion 90–180°**. 치료사가 채점하며 동시 녹화. **반복 횟수 미명시**
+- **③ 획득:** **Microsoft Kinect**, **30 Hz**, 피험자 **정면**에 배치(거리·높이 미명시). 상지 joint 위치 **31개 변수**(time, head/shoulder center/shoulder/elbow/wrist/hand 좌표)
+- **④ 지표·단위:** **PCA + ANN**으로 항목 점수(0/1/2) 예측. **log-transformed jerky score** (운동 매끄러움)도 산출. 단위: 정확도(%), Pearson r
+- **⑤ 검증:** 작업치료사 **1명**(FMA 경력 2년) 채점
+  - 항목별 정확도 **65–87%**, 13개 중 **9개가 70% 초과**; 4개(forearm supination, hand to lumbar spine, shoulder abduction 0–90°, shoulder flexion 90–180°)는 **60–70%**
+  - 13항목 합 예측 vs 실제 **r = 0.873**; 13항목 합 vs **FMA 33항목 전체 r = 0.799**
+  - Log(jerky): 편마비 **1.81±0.76** vs 비편마비 **1.21±0.43**(p<.0001)
+  - Jerky vs Brunnstrom arm stage **ρ = −0.387 (n=27, p=.046)**
+- **우리 연구:** **13개 항목만으로 전체 FMA와 0.8 상관** → 2항목으로 얻을 수 있는 상관의 **현실적 하한**. ⚠️ jerky–Brunnstrom ρ=−0.387은 **단일 smoothness 지표가 중증도를 잘 대표하지 못한다**는 경고
+
+#### C-2. Li et al. 2022 `[실험]` — RealSense + Leap + FSR
+- **① 대상자:** 편마비 뇌졸중 **20명**(남 15/여 5, **58.95±10.58세**), 상하이 화산병원. **표본수 근거 명시:** Pearson **r=0.9**, Fisher CI 폭 **ω=0.3**, **α=0.01** → **n=20**
+- **② 행동/설계:** FMA-UE **30개 자발운동 항목 = 17개 동작**. **Shoulder/Elbow 4개 동작(I, II, III, V)은 각 2회**, **나머지는 환측·비환측 각 1회**. 항목 13·16을 "shoulder flexion 180°"로 통합. 각 동작 전 **지시 영상** 재생 후 무보조 시도. 환자는 의자에 앉아 디스플레이 정면
+- **③ 획득:**
+  1. **Intel RealSense D435** — **30 fps**, 트라이포드, **환자 정면**, skeleton SDK로 **18관절 3D 좌표**. Shoulder/Elbow + Coordination/Speed 담당 (거리·높이 미명시)
+  2. **Leap Motion** — **200 fps**, 손·손가락 전용, **pitch 각도 조절 가능한 전용 지지대**에 고정. Wrist/Hand 담당
+  3. **FSR 5개** — **10 Hz**, **5개 파지 도구에 각각 부착**. Grasp 담당
+- **④ 지표·단위:** **SSA(singular spectrum analysis)** 로 denoising(저역통과 필터와 비교 후 SSA 채택; embedding→SVD→grouping→reconstruction). 분절은 **평균보다 큰 endpoint velocity의 첫/마지막 프레임** 자동 검출. 지표: joint 3D 좌표(mm), **wrist joint position offset(mm)**, 힘(FSR 전압). 분류: Shoulder/Elbow **Random Forest**, 나머지 **rule-based**
+- **⑤ 검증:** ① 치료사 **1명**의 FMA 채점 ② **Vicon**을 위치 기준으로
+  - 치료사 대비 **r = 0.981 (p<0.01)**, 온라인 시뮬레이션 **r = 0.982**
+  - 항목 평균 정확도 **80.83%**, macro F1 **80.97%**, precision 81.11%, sensitivity 81.22%, specificity 90.40%, 평균 **MAE 0.21점**
+  - **RealSense vs Vicon wrist offset: 동작 I 54 mm, II 43 mm, III 138 mm, V 150 mm → 평균 96 mm** (Kinect V2 보고값 72 mm보다 큼)
+- **우리 연구:** **평균 96 mm 오차**가 구슬(15 mm) 수준 aperture를 원리적으로 무의미하게 만든다. 그들이 **Leap Motion으로 손을 우회**했다는 사실이 단일 RGB-D의 한계를 스스로 인정한 설계
+
+#### C-3. Zamin et al. 2023 (BIONICS) `[실험]` — 스마트폰 단일 카메라
+- **① 대상자:** Memorial Hermann 병원 재활병원 입원 **급성·아급성 편마비 뇌졸중 45명**. 최소 1회 FMA 녹화 완료자. MMSE >24
+- **② 행동/설계:** FMA를 **2일 간격**으로 시행하며 활동 항목 녹화. **16/33 항목(49%)** 채점. 반복·휴식 미명시
+- **③ 획득:** 카메라 **1080p, 60 Hz**, **거리 3–5 m**, 삼각대 높이 **1.5 m**. 파이프라인: **YOLOv3**(환자 bounding box) → **HDRNet**(신체 **19관절**) + 별도 **손 모델(21관절)**. 비디오당 **15프레임** 샘플링
+- **④ 지표·단위:** 프레임별 관절 좌표 → 3D tensor(2채널 × n프레임 × 관절). 모델 4종 비교: **dilated CNN / CNN / CNN–RNN / XGBoost**. 출력은 FMA 항목 점수 분류
+- **⑤ 검증:** 치료사 FMA 채점
+  - dilated CNN **82.7±1.6%**, CNN **80.7±1.7%**, CNN–RNN **76.4±1.6%**, XGBoost **78.3±2.2%**
+  - FMA 범주별 그룹 예측 상관 **0.83–0.951, 평균 0.89**
+  - 최저 성능 항목 **wrist circumduction**(샘플 부족 + 시작/끝 식별 곤란)
+  - 저자 한계: 급성기에서 일부 항목 채점 불가 → **불완전 점수 샘플 다수**, 환자 1명이라도 항목 누락 시 전체 제외
+- **우리 연구:** **15프레임**으로 76–83%를 얻은 직접 선례(우리 14프레임과 조건 유사). ✅ **결정적:** 그들은 **분류**까지만 했고 **속도·가속도 기반 연속 지표를 추정하지 않았다** → 우리 공백 주장 성립 지점
+
+#### C-4. Wang et al. 2024 `[실험]` — 가장 큰 표본의 임상검증
+- **① 대상자:** **2021–2023년** 재활병동 입원 편마비 환자 **95명**, **단면** 설계
+- **② 행동/설계:** reflex 외 항목은 **환자 영상 + force test device readout**으로 학습한 ML로 산출, **reflex 점수는 회귀 알고리즘**으로 도출. 비디오 기반 수동 채점과 비교
+- **③ 획득:** **depth camera** + force test device(FSR 기반). 기종·해상도·fps·거리 **미명시**
+- **④ 지표·단위:** 항목별 ordinal 점수의 **sensitivity, specificity, percent agreement, Cohen's kappa**; 총점의 **correlation·ICC**
+- **⑤ 검증:** 동시 준거타당도(치료사 채점)
+  - **대부분 환자가 치료사 개입 없이 평가 완료**
+  - 자동 채점이 **대부분 항목에서 비디오 수동 채점보다 우수**
+  - **자동 총점 계수 0.960**
+  - **FSR 기반 force test 항목의 타당도는 상대적으로 낮음**
+  - 한계: 단면, 단일기관, 환자 단위 분할 여부 미명시
+- **우리 연구:** **N=95, 총점 계수 0.960**이 자동 FMA의 현재 임상적 상한. "치료사 없이 완료"는 자동 안내 프로토콜 작동 증거. ⚠️ **force 항목 실패** → 우리가 힘을 영상에서 추정하는 구슬 과제는 더 어렵다
+
+#### C-5. Zhou et al. 2025 `[실험]` — IMU 3동작으로 FMA-UE 70% 추정
+- **① 대상자:** 뇌졸중 **11명**(재활병원). 총 FMA **13–97점**, UE-FMA **7–66점**
+- **② 행동/설계:** IMU를 **팔과 체간**에 부착(4개). 일상활동 대표 **3개 volitional reaching motion**만 수행. FMA-UE 항목 중 **70%** 추정. **Leave-one-subject-out 교차검증**
+- **③ 획득:** **IMU 4개**(팔·체간). 샘플링 레이트 미명시
+- **④ 지표·단위:** windowed IMU 시계열 → FMA-UE 항목 점수 예측. 비교실험으로 **체간 기반 특징(보상전략)과 손 센서 특징의 기여** 분리
+- **⑤ 검증:** 치료사 FMA 채점. **LOSO 정규화 RMSE 7%** — 저자 표현으로 "FMA-UE의 MCID 및 MDC와 비슷하거나 그 이하". 체간 특징 제거 시 성능 저하
+- **우리 연구:** **"체간 기반 특징이 성능에 중요하다"**는 직접 근거 → JSON에 **trunk displacement 필수**. LOSO(환자단위 분할) 모범 사례
+
+#### C-6. Deb et al. 2022 `[방법론]` — ST-GCN 재활운동 채점
+- **① 입력 데이터:** **KIMORE**(전신 5운동, Parkinson·요통·뇌졸중 혼합; GPP 34명 + CG 44명)와 **UI-PRMD**(건강인 **10명**, 10운동, 각 10회 정상·비정상)
+- **② 설계:** ST-GCN 확장 — (1) ST-GCN 뒤에 **LSTM**을 붙여 **variable-length 입력**과 **연속 점수 회귀**(기존 방법은 고정길이 분류만), (2) **ConvLSTM 기반 self-attention**으로 관절별 역할 가중치 산출
+- **③ 입력 형태:** skeleton body-joint 좌표의 graph. **KIMORE는 50점 Likert 기반 점수**
+- **④ 출력·단위:** 연속 평가 점수(regression). 지표: MAD, RMSE, MAPE(RAST-G@ 계열 비교 연구 기준)
+- **⑤ 검증:** KIMORE·UI-PRMD에서 기존 exercise assessment 방법 대비 개선. 관절별 attention이 운동마다 다름을 시각화
+- **우리 연구:** ST-GCN을 재활 채점에 쓴 표준 참조문헌. ⚠️ **ARAT/FMA 항목 채점 데이터셋이 아니다** → "ST-GCN 94%"를 ARAT 기대성능으로 인용 금지
+
+#### C-7. Ahmed & Rikakis 2025 `[실험·preprint]` — 3시점 비디오 + HBM (ARAT)
+- **① 대상자:** **50명 뇌졸중 환자**, **500 segments**(segment당 view별 약 **100프레임**, **30 FPS**). ARAT 점수 **2와 3만 필터링해 이진 라벨 0/1로 변환**(클래스당 250개). 데이터 출처는 선행 stroke rehabilitation study(Ahmed et al. 2024)
+- **② 행동/설계:** ARAT 과제(블록 grasp → 목표로 transport → release)를 수행. 태스크를 movement phase(movement initiation / grasping / transporting / releasing)로 분절. ARAT 점수는 임상가가 task completion + movement quality(trunk stabilization, wrist hand aperture 등)로 부여. **80/20 분할, seed 42** — **segment 단위로 기술됨(patient-disjoint 여부 명시 없음)**
+- **③ 획득:** **동기화 카메라 3대 = ipsilateral(동측면), contralateral(반대측면), top(상부)**. 기종·해상도·fps **미명시**
+- **④ 지표·단위:** 3개 파이프라인 — (1) **SlowFast R50**(Kinetics 사전학습), slow 2 frames/stride 4 + fast 8 frames/stride 1, 입력 [4,3,2,224,224]/[4,3,8,224,224]; (2) **I3D**; (3) **TimeSformer 기반 Transformer** + **OpenPose keypoint + object location**, 입력 **[4, 32, 224, 224, 6]**(4 keypoint + 2 object 좌표를 채널로). 특징 차원 **2304/1024/768**. 조기융합 **6912D→512D**; 후기융합 view 가중치 **0.4/0.35/0.25**, 모델 가중치 **0.35/0.35/0.30**. **HBM 2종**: kinematic(잠재 **5층×50노드**), semantic(**3층×30노드**)
+- **⑤ 검증:** 임상가 ARAT 점수
+  - Transformer 단일모델 **87.1%**
+  - **후기융합 89.0% validation accuracy**, **ARAT 점수 일치도 91.0%**
+  - HBM이 movement quality 10개 구성요소에 대해 **92% 일치**
+  - Grad-CAM이 grasping 중 hand·wrist에 집중함을 확인
+- **우리 연구:** 다중시점 + 계층 중간표현의 선례. ⚠️ **점수 2/3만 사용 → 0·1점(중증) 환자 완전 배제**, segment 단위 분할, preprint
+
+#### C-8. Ahmed et al. 2024 (TNSRE) `[실험]` — 운동학↔임상개념 계층 HBM
+- **① 대상자:** 뇌졸중 생존자의 상지 치료과제 **478개 비디오**. (medRxiv 선행판: 임상가가 **440개 비디오**를 채점 + **비손상자 140개 비디오** 추가)
+- **② 행동/설계:** 임상가가 **task · segment · composite movement feature** 3수준으로 평가 → **3계층 HBM**(task/segment/composite) 구성. **ΔHBM** 상관그래프로 컴퓨터 추출 kinematics와 임상가 평가 composite features를 **task–segment 조합별** 연결. 이후 **역방향 cascade 확률** 도출
+- **③ 획득:** 비디오 기반(HBM은 운동학 특징 사용). 선행판에서 **frame-wise segmentation accuracy 87.85±0.58**, **block-segmentation 98.46±1.6**, 세 번째 인터페이스 버전 평균 **IRR 67%**
+- **④ 지표·단위:** HBM 계층 확률, ΔHBM 상관그래프(16 composite × 20 kinematic features), reverse cascade probability
+- **⑤ 검증:** 임상가 라벨
+  - **평가자 불일치 98 케이스 중 95%를 HBM이 해결**
+  - kinematics와 task–segment 조합 정렬 **90% 이상**
+  - 한계: **완전자동 임상시험 아님**(임상가 라벨이 학습 필수 입력), 라벨 IRR 67%가 상한 결정
+- **우리 연구:** **"수치 → 임상개념 → 구간 → 과제" 계층 확률 중간층이 실제 작동**한다는 가장 직접적 근거 → Stage 2 설계 근거. **HBM을 반드시 baseline으로 포함**해야 VLM 효과와 계층효과를 분리 가능
+
+---
+
+### D. VLM / LLM
+
+#### D-1. Li et al. 2026 `[실험]` — VLM으로 뇌졸중 영상 평가 (실패 증거)
+- **① 대상자:** **동료심사판: 건강 20명 + 뇌졸중 51명**(총 71명). **arXiv판: 29 + 51** → **인용 시 버전 명시 필수**. FMA 과제 부분집합: **건강 4명 + 뇌졸중 24명**. 뇌졸중은 FMA 기준 mild/moderate/severe 3층
+- **② 행동/설계:** (1) **ADL 기반 재활**, (2) **FMA 장애평가** 두 맥락. FMA는 훈련된 전문가 감독 하 **33항목**, 각 0–2점. **Coordination/Speed만 특수 처리** — 손가락을 코와 무릎 사이 **5회 빠르게** 왕복
+- **③ 획득:** **RGB 카메라 2대 직교 배치, 피험자 2 m 이내**, **Ninox(Noraxon)**, **1088 × 704 px**, **60 또는 100 fps**. 실제 재활 체육관 환경
+- **④ 지표·단위:**
+  - 활동 식별: 비디오에서 **균일 8프레임** + 9활동 설명
+  - **FMA 채점: 대부분 항목 균일 8프레임**(95%가 10초 미만이라 충분하다고 가정). **Coord/Speed는 0.267초당 8프레임** 세분화, 속도 항목은 좌우 누적 터치 **5회 초과 최소시점** 비교
+  - 모델: **Qwen2.5-VL-7B**(활동), **32B**(dose), **72B**(FMA)
+  - 프롬프트: **Chain-of-Thought** / **Rule-based QA**(이진 질문 연쇄)
+  - **운동학 지표 산출 없음. 필터 없음**(영상 프레임 직접 입력)
+- **⑤ 검증:** 전문가 FMA + **ONES**(영상 무시, 항상 1점) 기준선, dose에 **Markov**(전이통계만) 기준선
+  - **예측 FMA가 severity 전 구간에서 essentially constant**
+  - CoT·QA 모두 **ONES와 유사 오차**; **어떤 항목도 일관 정답 없음**
+  - dose는 **Markov와 유사**; 최적화·후처리 후 구조화 과제에서만 mild/control count가 **±25%(arXiv)/±30%(PLOS)** 이내
+  - 활동식별만 성공: **healthy 87.2%(88 videos) vs stroke 73.5%(452 videos)**
+  - **실패 모드 3종:** (i) **Large object bias**(검은 매트·손목밴드에 끌려 combing을 RTT로 오분류, 왼손 물병 때문에 손 귀속 오류), (ii) **2D semantics 과신**(0.533초 구간에서 시각적 근접성을 물리적 접촉으로 오해, 2회 파지 구분 실패), (iii) **Hallucination**(FMA 0점 중증 환자의 shoulder flexion에서 **움직임을 환각하고 성공 보고**)
+- **우리 연구:** **우리 14프레임이 이 논문의 8프레임과 사실상 동일 조건**. 이들은 영상+지침만 주었다 → 우리는 **운동학 JSON 추가**가 유일한 차이. `Flatlining`은 현상명, `Kinematic Blindness`는 우리 해석적 명칭
+
+#### D-2. Tang et al. 2025 `[실험]` — 특징 주입 + 프롬프트 엔지니어링
+- **① 대상자:** **뇌졸중 0명.** UI-PRMD **건강 10명**(10운동 × 정상·비정상 각 10회, 우세측), REHAB24-6 **피험자 10명**(남 6/여 4, **25–50세**)
+- **② 행동/설계:** UI-PRMD 10운동(deep squat, hurdle step, inline lunge, side lunge, sit-to-stand, straight leg raise, shoulder abduction/extension/internal-external rotation/scaption). REHAB24-6 6운동(Ex1 arm abduction, Ex2 arm VW, Ex3 push-ups, Ex4 leg abduction, Ex5 leg lunge, Ex6 squats). 물리치료사가 **정상 5회 이상 + 의도적 오류 5회 이상** 수행 지시, **다리 선택 등 자유도 부여**
+- **③ 획득:** UI-PRMD **Kinect depth camera, 30 fps, 22관절(x,y,z)**. REHAB24-6 **RGB 카메라 2대**(수평 Camera17, 수직 Camera18), **30 FPS**, **41개 모션캡처 마커 + 26개 skeleton joint**, 총 **65 recording, 184,825 프레임, 1,072 repetition**(정상/오류 약 90개씩, Ex3만 약 50개), **temporal segmentation 2–5초**
+- **④ 지표·단위:** 운동별 **3–5개 운동특이 특징**(관절각·몸통각·골반 안정성 등) → `num_frames × num_features`. **필터·보간법 미명시**. 프롬프트: zero-shot, **1–5-shot**, CoT, **certainty**(0–1), **probability**, CoT+certainty → 2단계 role-play 피드백
+- **⑤ 검증:** 데이터셋 binary 정오 라벨 + LSTM·ST-GCN 비교
+
+| 설정 | UI-PRMD Acc/F1 | REHAB24-6 Acc/F1 |
+|---|---|---|
+| 3-shot | 0.68 / 0.76 | 0.63 / 0.70 |
+| **Certainty (최고)** | **0.76 / 0.79** | **0.70 / 0.73** |
+| Probability | 0.68 / 0.71 (AUC-ROC 0.70) | 0.67 / 0.71 (AUC-ROC 0.72) |
+| LSTM | 0.87 / 0.92 | 0.60 / 0.61 |
+| **ST-GCN** | **0.94 / 0.96** | 0.63 / 0.70 |
+
+  - **3-shot 최적, 4-shot에서 0.42로 급락**
+  - **과신:** certainty/probability가 정답 여부 무관하게 **0.8–1.0**에 몰림
+  - **CoT 자체 임계값 오류:** shoulder abduction에서 "160°는 기대 150°보다 훨씬 높다"고 스스로 기준을 만들고 이후 샘플을 그 기준으로 분류 → 물리치료사 기준(**160° 미만이 비최적**)과 **반대**
+  - **재현성 제약:** GPT-4o **random seed 설정 불가**
+- **우리 연구:** 특징 주입 구조의 직접 선례. **"CoT가 자체 임계값을 만든다" → 임계값은 우리 JSON이 공급해야 한다**. ⚠️ UI-PRMD에서는 ST-GCN이 LLM을 크게 앞선다 → DL baseline 필수
+
+#### D-3. Xing et al. 2025 (LLM-FMS) `[실험]` — 전문가 규칙 + 골격 특징 → LLM
+- **① 대상자:** **45명**(베이징체육대학, 윤리 **2021156H**). FMS 7동작의 **15개 난이도 표현**
+- **② 행동/설계:** FMS 동작 영상에서 **keyframe 추출** → **3계층 의미주석**(점수 / 채점 세부설명 / 관련 신체부위). **단일 FMS 전문가가 약 40시간** 주석(일관성 목적)
+- **③ 획득:** **RTMPose**로 골격 추출. **단일 keyframe(정지 영상)** 사용 — 동적 시계열 아님. 카메라 사양 미명시
+- **④ 지표·단위:** 기준 keyframe과 **cosine similarity**로 대표 keyframe 선택 → **전문가 채점규칙으로 산출한 각도·위치 지표**를 프롬프트에 삽입 → LLM이 점수 + 상세 근거 생성
+- **⑤ 검증:** FMS 점수 ground truth. **Accuracy 0.91**(비교 방법 중 최고), maF1 **0.87**, Kappa **0.82**(Lin et al.·Dual-Stream보다는 약간 낮음)
+- **우리 연구:** **"골격 특징 + 전문가 규칙 → 프롬프트 → LLM 점수+근거"가 이미 가능**함을 보인 직접 선례. ⚠️ **JSON·구조화 프롬프트 자체는 우리 기여가 아니다.** 차별점은 **정적 keyframe vs 우리 14프레임 시간 시계열**
+
+#### D-4. UbiPhysio 2024 `[실험]` — 임상가 설계 특징 + retrieval 증강
+- **① 대상자:** **104명**(119명 모집, **15명은 IMU 드리프트로 pose 검사 후 제외**). 홈과 유사한 환경에서 **25종 일상활동·운동** → **9,548 action instance**(각 2–20초)
+- **② 행동/설계:** **임상 물리치료사 3인 위원회**가 참여자 선정기준·동작 목록·세션 절차를 설계, 운동 패턴 주석, 워크숍으로 **low/high-demand 피드백 지식베이스** 구축. 머리·어깨 등 24관절 중 일부로 biomechanical features 계산
+- **③ 획득:** IMU 기반 pose(모션캡처). **특징 315개 = 기존 연구 287개 + 본 연구 신규 28개**. 데이터 **85/5/10% 분할, subject overlap 없음**
+- **④ 지표·단위:** (1) self-supervised feature quantization → discrete action token, (2) **Seq2Seq 언어모델**(T5 small/base/large/3B, Llama 2 7B, ChatGLM2 6B)이 action type + movement pattern을 텍스트로 기술, (3) **retrieval-enhanced LLM(GPT-4, 2023-08-03 버전)** 이 사용자 프로필(나이, 통증 0–10, TUG) + 지식베이스 결합해 피드백 생성. 평가: **BLEU, Rouge(F), Cider, BertScore**
+- **⑤ 검증:** 주석 대비 언어지표 + Wilcoxon signed-rank, Friedman test. 임상가·사용자 주관평가
+  - **T5 large + window 64 + action-conditioned instruction tuning**이 최고
+  - retrieval-enhanced 피드백이 일반 조언보다 전문적
+  - 한계: 대상은 **일상활동·운동이지 ARAT 아님**, 전신 24관절 기반(손가락 미세운동 미포함), 임상척도 점수 예측 없음
+- **우리 연구:** **JSON 스키마를 임상가와 공동설계**해야 하는 이유의 선례. **피험자 단위 분할(85/5/10)** 명시가 모범 프로토콜
+
+#### D-5. BiomechGPT 2025 `[실험]` — motion token + language model
+- **① 대상자:** **71.1시간 생체역학 데이터, 750명** — 하지 절단 보철 사용자, 뇌졸중 등 신경계 질환 포함. **다중카메라 또는 단일 스마트폰 비디오**
+- **② 행동/설계:** 표준 임상 결과평가 중심(overground walking, TUG, L-test, four-square-step test(FSST), functional gait). 활동 유형·보행 손상·원인·보조기기·임상평가 수행·낙상력 라벨링
+- **③ 획득:** **VQ-VAE tokenizer**(codebook **512개 × 512차원**)로 서로 다른 body model의 motion을 **paired data 없이 공유 latent space**에 임베딩하는 **cross-format tokenizer** 설계
+- **④ 지표·단위:** Gemma 3 **1B/4B/12B** + MedGemma-1.5(4B)를 **QLoRA**(rank/alpha 32, dropout 0.1)로 instruction tuning. **10개 과제 = 6 분류 + 4 회귀**. 회귀는 temperature 0.5/top_p 0.5로 **5회 샘플링 후 중앙값**
+- **⑤ 검증:** ground-truth 라벨
+  - **Activity classification F1 = 0.91**; **impairment presence F1 = 0.88**; assistive device presence F1 = 0.96
+  - Diagnosis type F1 = 0.69; assistive device type F1 = 0.71
+  - 회귀(Pearson r): **cadence 0.95, speed 0.96, TUG 0.88, FSST 0.89**
+  - Instruction-following 실패율 **0.041%**
+  - 3-way ANOVA: **모델 크기(p<.001)와 데이터셋 크기(p=0.002) 유의**, task set 비유의(p=0.598)
+  - 단일 스마트폰 비디오로도 다중카메라와 유사
+- **우리 연구:** 운동을 token으로 바꿔 언어모델에 넣으면 임상 수치를 **r=0.88–0.96**으로 예측 → **전이 근거**. ⚠️ **gait/mobility 중심, 상지 파지·ARAT 아님**. tokenizer 학습에 71시간/750명 필요 → 우리 규모에서는 **명시적 JSON 주입**이 현실적
+
+---
+
+### E. 정상 파지 다양성 · 시너지 · GMM
+
+#### E-1. Herbst et al. 2020 `[실험]` — 파지 패턴의 개인 고유성
+- **① 대상자:** 건강 **31명**(남 19/여 12, 평균 **26세**, 좌손 4명). 정형·신경계 질환 없음. 윤리: Technion IRB **21–2017**
+- **② 행동/설계:** **5개 물체** 파지. 각 시행을 손 시작부터 초기 위치 복귀까지 잘라 **reach / grasp / release** 3구간으로 정의. **10% 피험자는 후속 세션에서 재측정**(시간 의존성 확인용)
+- **③ 획득:** **동작캡처 + 힘센서**로 kinematics/kinetics 동시 측정. 특징 = 손가락별 2각도(θ₁ 근위지골–중수골, θ₂ 지절 굴곡) + 힘 벡터 = **15 특징 × 500 프레임 = 7,500차원**
+- **④ 지표·단위:** **t-SNE**(perplexity 10–15) → **가중 kNN**(k=10, 가중치 = 거리⁻²) → **5-fold CV**. 민감도 분석은 물체당 **32,751개 특징 조합 전수 탐색**(미선택 특징은 N(0,1) 노이즈로 대체)
+- **⑤ 검증:** 피험자 라벨
+  - **총 1,083 파지 인스턴스**
+  - 피험자 분류 정확도 **95.48%**(31 dense cluster, 각 약 5시행)
+  - reach+grasp만 정규화(250+250)하면 **91.90%**
+  - **손 크기 순 혼동행렬:** 비슷한 손 크기끼리 혼동이 몰리지만 **크게 다른 손 크기 사이에도 오분류** → 손 크기가 유일 원인 아님
+  - **특징 집합 선택에 따라 clustering 성공률 약 45% 차이**
+  - **엄지가 가장 중요한 구분 특징**
+- **우리 연구:** "정상인도 손 크기로 설명되지 않는 개인 고유 파지 패턴" → **단일 평균 비교 부적절** 근거. ⚠️ **GMM이 아니라 t-SNE+kNN**이므로 우리 계획의 "GMM"을 이 논문에 귀속시키면 안 된다
+
+#### E-2. Jarque-Bou et al. 2019 `[실험]` — 77명 손 시너지
+- **① 대상자:** NinaPro DB1·DB2·DB5에서 **77명**(남 56/여 21, 우수 69/좌수 8, **28.8±3.96세**)
+- **② 행동/설계:** **20개 파지 × 6회 반복**. 각 반복을 **1,000 프레임으로 리스케일**(reach·grasp·release 전 구간 포함)
+- **③ 획득:** **CyberGlove II**(22센서)의 보정된 관절각 **17개 DoF**. 필터: **2차 양방향 저역통과 Butterworth, 5 Hz**
+- **④ 지표·단위:** 피험자별 **PCA**(**eigenvalue >1** 기준) + **varimax 회전** → 총 **418개 PC**. **hierarchical clustering**(cutoff = pairwise distance 80) → **23개 그룹** → 최종 **분산 80% 이상 설명하는 12개 시너지**. 지표: 설명분산(%)
+- **⑤ 검증:** 피험자 간 시너지 공통성
+  - 피험자당 평균 설명분산 **83.06 ± 2.96%**
+  - **12 시너지 > 80%**, **첫 3개 > 50%**: (1) 3–5지 MCP 굴곡+내전, (2) 수장궁 + 손목 굴곡, (3) 엄지 대립
+  - **첫 3개 시너지만 절반 이상 피험자에서 공통**; 나머지(엄지-검지 협응 등)는 **피험자 간 변이 큼**
+  - 저자: 피험자 수가 **이전 연구의 7배 이상**, 필요 시너지 수가 **기존 문헌의 2배 이상**
+- **우리 연구:** **정상 파지의 필요 차원이 12개 수준** → 6차원 GMM의 근거이자 **차원을 낮게 잡으면 정보손실** 경고. baseline에 **피험자별 PCA+Varimax+clustering**을 반드시 포함해야 GMM 단독 주장이 방지된다
+
+#### E-3. Jarque-Bou et al. 2020 `[실험]` — ADL에서의 subject-specific 시너지
+- **① 대상자:** 우세손 **24명**(남 12/여 12). 손 길이 **186.0±11.3 mm**, 손 너비 **81.6±6.5 mm**. **50세 이하로 제한**(노화 효과 배제)
+- **② 행동/설계:** ICF 기준으로 선정한 **24개 실생활 ADL**을 **실제 물체**로 수행(예: 물 마시기 — 컵 반쯤 채우고 3초간 마시고 원위치)
+- **③ 획득:** **Cyberglove 16개 관절각, 75 Hz**. **정규 ROM 데이터로 스케일링**(피험자 간 비교 가능하게)
+- **④ 지표·단위:** 피험자별 PCA + **Varimax**(sparsity 유도), 피험자당 **첫 4개 PC**. 각 시행을 1,000 프레임 리스케일. cluster별 **core synergy** + prevalence/relevance/similarity 지표
+- **⑤ 검증:** 피험자 간 시너지 공유
+  - 피험자당 4 PC가 평균 **77.3 ± 1.9%** 분산 설명(모두 eigenvalue >1)
+  - **총 96 시너지**, **부하값의 25%만 |0.25| 초과**(sparse)
+  - **처음 두 core synergy = 손가락 굴곡, 모든 피험자에서 존재**
+  - 나머지 = 엄지 관절 / 엄지-검지 / 수장궁 / 손가락 내전의 조합 → **피험자별 다른 조합**
+  - Bartlett 구형성 검정 p<0.01(모든 피험자)
+- **우리 연구:** **정상 참조모형이 (a) 공통 core + (b) 개인 조합의 2층 구조**여야 한다는 근거. "4 PC로 77.3%"는 6차원 선택의 참조값이지만 **6차원이 최적이라는 근거는 없다**. ⚠️ 50세 이하 제한 → 고령 코호트에는 **연령 정상 참조군 별도 필요**
+
+#### E-4. Romero et al. 2010 `[방법론]` — GPLVM + GMM/GMR 파지 모델링
+- **① 대상자:** **5명** 피험자, **31개 파지 유형**(로봇공학적 목적, underactuated hand 설계)
+- **② 설계:** **Polhemus 자기식 트래커**로 5개 손끝의 위치(3) + quaternion(4) = **35차원**. 각 시행에서 **30개 등간격 샘플** → 총 **4,650 datapoint**
+- **③ 처리:** **GPLVM**(RBF + bias + noise 커널, back constraints, PPCA 초기화)으로 **2차원 latent space** 생성 → 각 파지 시간열에 **GMM**을 EM(**k-means 초기화**)으로 적합 → **GMR**로 평균·분산을 가진 연속 경로 생성 → 경로 유사도로 clustering
+- **④ 지표·단위:** latent 좌표(2D), Gaussian 성분 수, reconstruction error. 파지별 경로(mean + variance)
+- **⑤ 검증:** PCA·Isomap·LLE와 비교
+  - GPLVM이 **inter-grasp 분리도 우수, inter-subject 분산 낮음, 시간 연속성 보존 우수**
+  - PCA: 궤적이 좁은 호에 몰려 분리 불가. Isomap: star 형태로 branch가 파지 유형과 대응 안 함. LLE: 의미 구조 없음
+  - **Gaussian 3개 초과는 적합 품질을 개선하지 못함**
+  - GMR 경로 clustering → **5개 cluster**
+- **우리 연구:** **GMM 선례의 유일한 근거**이자 **결정적 약점**(N=5, 로봇공학, 임상검증 전무, 자기식 트래커). ⚠️ **Gaussian 3개로 충분하다는 결과는 6-component GMM이 과잉일 수 있다는 반대 신호** → Gaussian 수 선택 근거(BIC + bootstrap stability) 필수
+
+---
+
+### F. 무마커 신뢰도·타당도
+
+#### F-1. Faity et al. 2022 `[실험]` — Kinect v2 vs Vicon
+- **① 대상자:** **건강 성인 26명**. **뇌졸중 환자 없음** — **덤벨을 들고** 손-도달 과제를 수행해 뇌졸중 유사 행동 유도(저자 명시)
+- **② 행동/설계:** **seated horizontal reaching task**, 덤벨 착용. 캘리브레이션에 **양팔 벌림·팔꿈치 편 정적 자세** 필요 → 저자가 **뇌졸중 환자에게 부적합**하다고 지적. 반복 횟수·세션 시간 미명시
+- **③ 획득:** **Kinect v2: 환자 정면, 거리 1.50 m, 높이 1.40 m, 25 landmarks, 30 Hz, 직사광 회피** vs **Vicon 6카메라, 100 Hz, Nexus 2**, 동시 기록. Vicon 정적 오차 **0.15±0.025 mm**, 동적 **<2 mm**
+- **④ 지표·단위:** 필터 **2차 Butterworth 저역통과 2.5 Hz**(전/후 모두 보고). 지표: trunk displacement(mm), shoulder displacement(mm), trunk anterior flexion(°), trunk rotation(°), elbow extension(°), movement time(s), path length ratio, time-to-peak velocity(s), **NVP**, peak velocity
+- **⑤ 검증:** ICC(one-way, consistency), r², RMSE, NRMSE, **Bland–Altman**. Koo & Li 기준
+
+| 지표 | ICC | 판정 | 편향 |
+|---|---|---|---|
+| Trunk displacement | **0.93** | excellent | — |
+| Shoulder displacement | 0.88 | good | — |
+| Trunk anterior flexion | 0.82 | good | 과소 −1.22°(−35.3%) |
+| **Trunk rotation** | **0.38** | **poor** | 과소 −4.10°, 최대 20° |
+| Elbow extension | 0.55 | moderate | **과대 +13.95°(+62.5%)** |
+| Movement time(필터 후) | **0.76** | good | — |
+| Path length ratio(필터 후) | 0.51 | moderate | 과대 |
+| Time to peak velocity(필터 후) | 0.55 | moderate | 과소 |
+| **Number of velocity peaks(필터 후)** | **0.38** | **poor** | 과대 |
+| **Peak velocity(필터 후)** | **0.21** | **poor** | 과대 |
+
+  - **필터 전:** movement time 0.64, path ratio **−0.12**, time-to-PV 0.19, NVP **−0.30**, peak velocity **−0.05** → 필터 없으면 대부분 사용 불가
+  - **물리적 원인:** Kinect가 도달 초기에 **전완과 팔걸이를 혼동**하고 손 위치를 순간 오인·보정 → **국소 속도 피크 인위 생성** → jerk·NVP·path ratio·peak velocity 과대
+  - **권고:** "**trunk rotation은 20°를 넘지 않으면 해석하지 말 것**"
+- **우리 연구:** **peak velocity ICC 0.21, NVP ICC 0.38** → **SPARC·TAPV와 동일 계열**이 무마커 최취약 영역. trunk displacement ICC 0.93만 신뢰 가능. 우리가 이 표를 **뇌졸중 환자 + 파지 과제**에서 재작성하는 것이 기여 #1
+
+#### F-2. Lafayette et al. 2023 `[실험]` — RGB-D/RGB 4종 비교
+- **① 대상자:** 건강 **6명**(남 5/여 1, **21.5±1.37세**, 키 1.69±0.12 m, 몸무게 63.65±7.33 kg). 윤리 UFPE opinion **3.225.381**
+- **② 행동/설계:** 상지·하지 움직임 **각 60회 기록**, **센서 위치 조건 2가지**. 대상 운동: shoulder abduction/adduction·horizontal abduction/adduction·rotation, elbow flexion/extension, hip flexion/extension·abduction/adduction·rotation, knee flexion/extension
+- **③ 획득:** **Microsoft Kinect v2**(RGB-D), **Intel RealSense D415**(RGB-D), **Orbbec Astra**(RGB-D), **Google MediaPipe**(RGB 단일). **Qualisys 모션캡처를 금표준**으로 동기 기록
+- **④ 지표·단위:** **절대오차(EA, °)**, **RMS(°)**, **Pearson 상관**. RealSense는 MediaPipe 추정 2D 관절을 **depth 이미지와 상관시켜 3D 좌표**로 변환
+- **⑤ 검증:** Qualisys 대비
+  - 전체 EA: **MediaPipe 8.57±3.06°**, RealSense 11.56±4.38°, Astra 11.60±3.71°, Kinect v2 12.65±5.99°
+  - **상지:** MediaPipe **9.98±3.79°**, RealSense 11.56±3.74°, Astra 12.36±4.27°, **Kinect 16.01±6.72°**
+  - 하지: MediaPipe 7.16±1.21°, Kinect 9.30±2.62°
+  - 임상 맥락: **단완/장완 각도계 오차 10–14°, 인간 각도측정 오차 12.78°**
+  - MediaPipe가 가장 낮은 중위오차·RMS·분산. **Kinect는 상지에서 최악, 하지에서는 양호**
+- **우리 연구:** **RealSense D415 상지 11.56°**를 전제로 설계. ⚠️ **N=6, 건강인, 단일 관절 각도(ROM)만** — **속도·smoothness 지표는 전혀 다루지 않았다**. 각도 오차 10°가 미분 시 어떻게 증폭되는지는 미지
+
+#### F-3. Hamilton et al. 2024 `[실험]` — HRNet vs MediaPipe vs Qualisys
+- **① 대상자:** 건강 지원자 **22명**(여 16/남 6, **36.9±11.6세**, 체중 75.9±15.8 kg, 키 1.7±0.1 m, BMI 26.1±3.8). 상·하지 병력 없음
+- **② 행동/설계:** **5개 활동** — seated knee extension, prone knee flexion/extension, elbow flexion/extension, sit-to-stand (양측)
+- **③ 획득:** **HRNet**(17 keypoints, COCO 학습) vs **MediaPipe**(33 keypoints, encoder-decoder + regression) vs **Qualisys** marker-based 3DMA. Qualisys Track Manager로 3 마커로 관절각 계산
+- **④ 지표·단위:** **CoV**(%), **ICC**, ROM(°). 판정: ICC >0.9 excellent, 0.75–0.9 good, 0.5–0.75 moderate, <0.5 poor
+- **⑤ 검증:** Qualisys 대비
+  - 대부분 **CoV < 10%**
+  - **Elbow flexion/extension ROM ICC: MediaPipe 0.92, HRNet 0.94**
+  - Seated knee extension: MediaPipe 0.95, HRNet 0.87
+  - **Sit-to-stand knee: ICC 0.41(두 모델 모두)** → 복합 전신 동작 실패
+  - Prone knee flexion/extension: MediaPipe 0.81, HRNet 0.63
+  - 저자: flexion/extension 계열이 sit-to-stand 같은 복합 동작보다 일관성 높음
+- **우리 연구:** 팔꿈치 굴곡/신전 **ICC 0.92–0.94**는 MediaPipe 사용 근거. ⚠️ **sit-to-stand ICC 0.41** → **"단일 관절은 좋고 다관절 협응은 나쁘다"**. ARAT 파지는 다관절+손가락+물체 상호작용으로 **불리한 조건**
+
+#### F-4. Scano et al. 2020 `[실험]` — workspace별 RGB-D 신뢰도
+- **① 대상자:** 건강 성인 **15명**
+- **② 행동/설계:** **point-to-point**와 **exploration** 두 유형의 상지 움직임을 **3개 workspace 구역(중앙, 우측, 좌측)** 에서 수행. **각 acquisition을 2회 반복**해 test-retest 확보
+- **③ 획득:** **Kinect V2** vs **Vicon** 동시 측정
+- **④ 지표·단위:** 관절각(°), joint center 위치, **ICC**(dataset 간, 구역별·운동별)
+- **⑤ 검증:** Vicon 대비 test-retest ICC
+  - Point-to-point ICC: 우측 **0.81**, 중앙 **0.82**, 좌측 **0.73**
+  - Exploration ICC: 우측 **0.84**, 중앙 **0.75**, 좌측 **0.62**
+  - **shoulder internal-external rotation과 forearm pronation-supination 오차가 무시할 수 없음**
+  - **exploration이 point-to-point보다 오차 큼**; 좌측 구역 재현성 최악(가림 추정)
+  - ANOVA + Tukey HSD, α=0.05
+- **우리 연구:** **회전 DoF와 pronation/supination이 무마커 취약점** → 구슬 과제는 **엄지-검지 맞섬(opposition)** 을 요구하므로 정면 노출. 좌측 workspace ICC 0.62–0.73 → **환측을 strata로 보고**해야 함
+
+#### F-5. Lee et al. 2025 `[메타/리뷰]` — 단일카메라 어깨 ROM 체계적 고찰
+- **① 검색·선정:** 9개 DB, **2022년 12월까지**. 2,976건 → **14개 연구**. COSMIN 방법론 질 평가
+- **② 추출:** 단순(one-directional) vs 복합(multi-directional) 어깨 운동으로 구분. 검사자 내/간 신뢰도, 타당도
+- **③ 단위:** 장치(Kinect V2 12편, Azure Kinect 3편, **RealSense 2편**), 운동 유형
+- **④ 결과:** 검사자 내 신뢰도는 6개 연구에서 **일관되지 않음**; 단순 운동(외전·굴곡)이 복합 운동보다 신뢰도 높고 이질성 낮음. 타당도 12편도 일관되지 않음
+- **⑤ 검증:** 상관 기반: 외전 **72.7%(8/11)** good 이상, 굴곡 **54.5%(6/11)**, 내외회전 **57.1%(4/7)**. Bland–Altman 연구 약 절반이 외전·굴곡에서 **약 10° LoA**. **RealSense 유일 연구(Gauci et al. 2023, N=30)는 회전 good, 굴곡·외전 excellent**. COSMIN 방법론 질 **inadequate ~ very good**
+- **우리 연구:** **"RealSense를 쓴 연구는 총 2편뿐"** → 공백 주장이 정량적으로 성립. complex movement에서 신뢰도가 무너진다 → 단순 ROM 검증만으로 파지 과제 타당도를 주장할 수 없다
+
+#### F-6. Tannús et al. 2026 `[실험]` — MediaPipe exergame으로 FMA 추정
+- **① 대상자:** **만성 뇌졸중 12명**, 양측 **24개 상지** 중 **환측 14개**. FMA 4군 층화(severe ≤20 / moderate 21–45 / mild >45 / control). **FMA는 10년 이상 경력 물리치료사 1명**이 표준 절차로 채점, **게임플레이·처리 결과에 눈가림**
+- **② 행동/설계:** **게임화된 도달 과제** — 치료와 평가를 동시 수행. 반복 횟수·세션 길이·휴식 미명시
+- **③ 획득:** **표준 RGB 카메라 1대 + Google MediaPipe**. 기종·해상도·fps·거리 **미명시**. 게임에 쓰는 **동일 카메라**가 모션캡처 겸함
+- **④ 지표·단위:** **16개 kinematic/spatiotemporal 특징**. 핵심: **hand aperture**, 2D movement area, travelled distance, **hand angle**, ROM, **shoulder–elbow coordination**. **경량 다중 선형회귀**(복잡한 ML보다 우수). 필터·보간법 미명시
+- **⑤ 검증:** FMA 점수
+  - **50/50 hold-out:** 최적 오차모델 **R² = 0.89, Spearman ρ = 0.92, RMSE = 4.42**; 다른 모델 ρ = 0.99이나 R² = 0.52, RMSE = 9.89
+  - **LOOCV: ρ = 0.67–0.82, R² = 0.32–0.55**
+  - 심각도 분류 **86–93%**(오분류는 인접 범주 간만)
+  - control limbs(비환측)를 대조로 사용
+- **우리 연구:** **hand aperture가 FMA 핵심 특징** → PAp 선택의 독립 지지. ⚠️ **hold-out R² 0.89 vs LOOCV R² 0.32–0.55** → **환자 단위 CV를 주 결과로** 삼아야 하는 직접 반증 사례
+
+#### F-7. Unger et al. 2026 `[실험·preprint]` — 임상 루틴 ARAT에 3대 웹캠 삽입
+- **① 대상자:** **20명 혼합 신경계**(뇌졸중 **10**, 파킨슨병 **6**, 기타 신경계 **4**), **남 15/여 5**, 평균 **71.2±9.9세**(범위 55–90). **47회 세션, 총 1,304 trial → 130개(10.0%) 이상치 제외 → 1,174 trial 분석**. 모집이 아니라 **cereneo 클리닉 정기 ARAT 세션에 삽입**. 윤리 **EKNZ 2024-00196**
+- **② 행동/설계:** **표준 ARAT 19항목 전체**를 **실제 임상 루틴대로** 시행. **치료사가 태블릿 앱으로 각 trial start/stop 실시간 표시 + 임상 ARAT 점수 동시 부여**. 반복·휴식 미명시(루틴 세션)
+- **③ 획득:** **웹캠 3대 = Logitech Brio 4K, 1280 × 720 px, 60 Hz**, 평가 테이블 주변 **ad-hoc** 배치. 거리·각도·높이 **미명시**. depth 없음
+- **④ 지표·단위:**
+  - **미분가능 생체역학 알고리즘**으로 재구성(저자: 뇌졸중 상지 재구성에서 gold-standard OMC 대비 이미 검증됨)
+  - **전처리: zero-phase 4차 Butterworth 저역통과, 컷오프 5 Hz**
+  - **이상치 제외: 해당 ARAT 점수 그룹의 IQR × 3.0 초과 시 trial 제외**
+  - **품질지표: mean reprojection error(px)** = 검출 2D keypoint와 재구성 3D 관절 재투영의 유클리드 거리, keypoint·view·frame 평균
+  - **7개 시계열**(관절각 θ, 각속도 ω, 선속도 v, 변위 d × shoulder flexion / elbow extension / shoulder abduction / trunk) → **10개 raw metric**(peak 또는 ROM)
+  - **smoothness 지표 의도적 제외**(저자 근거: 카메라 수가 적은 임상 환경에서 kinematic jitter 취약)
+  - 도메인 복합점수: **ROM 4 / Velocity 3 / Compensation 3**
+  - **정규화: Q75 앵커 백분율**(100% = ARAT Score 3 세션의 해당 지표 75th 백분위, 0% = 과제 코호트 최소). 보상 지표는 **Q25를 100% 앵커로 역방향**. 값은 clipping하지 않음
+  - **MCID = 15 percentage point(pp)**
+  - **건강 대조군 없이 Score 3 세션을 정상 참조로 근사**
+- **⑤ 검증:**
+  - **mean reprojection error = 12.5 ± 3.0 px**(중앙값 12.1, IQR 10.5–14.0). 허용범위 **10–20 px** 내(실험실 기준 5–10 px보다 높음)
+  - **중증도 무관:** Score 0 = 13.9 px vs Score 1 = 11.4 px(최대격차 2.5 px). **H(3) = 9.85, p = .020**이나 **η²H = 0.0053 < 0.06**(무시 가능)
+  - **Tier 1(0/1 vs 2/3): 7개 분석군 중 6개에서 AUC 0.91–1.00**, pick-and-place(Grasp/Grip/Pinch) **AUC 0.96 → >0.99**
+  - **Tier 2(2 vs 3): Tier 1보다 일관되게 낮음**
+  - **최강 개별 판별지표: elbow extension ROM r = 0.77–0.93**, peak velocity도 유사
+  - ARAT 포화(만점) 이후에도 **도메인 복합점수 ≥15 pp(1 MCID)** 변화 검출
+- **우리 연구:** 우리와 가장 유사한 문제설정. **"ARAT 만점 이후에도 운동학이 개선을 검출"** → 우리 민감도 주장 근거. **Q75 앵커 + 보상 Q25 반전 + MCID 15 pp**를 JSON 설계에 차용 가능. ⚠️ **그들도 smoothness를 포기**했다 → 우리 SPARC·TAPV 시도는 **더 어려운 조건**이며 이를 기여로 서술해야 한다
+
+#### F-8. Ahmed & Rikakis 2026 (xAARA) `[실험·preprint]` — 692개 모델 불확실성 인식 ARAT 엔진
+- **① 대상자:** 전체 설계 코호트 **105명**(연령 **23–93세, 평균 60.8**, **남 63/여 42**, **우측 50/좌측 55**, severe **38** / moderate **38** / mild **22** / recovered **7**). 본 분석 **뇌졸중 88명, 788 exercise**(모든 계층에서 다평가자 주석 완전한 환자만). **물리치료사 5명 중 각 recording을 2명이 독립 채점**. 외부 검증 **임상의 4명**
+- **② 행동/설계:** **ARAT 전체** 치료사 감독 하 수행. 채점 계층: ① 과제점수, ② **4개 phase 점수** {0,1,2,3} — **IP / T / MTR / PR**, ③ **12개 movement-quality composite 이진평가**. **평가자 채점시간 2.7±0.65분/task**. 반복·휴식 미명시
+- **③ 획득:** **동기화 카메라 3대** — **ipsilateral side view / top-down / contralateral 2.5× zoom**(손가락·수지 배열 해상도 확보 목적). 기종·해상도·fps·거리 **미명시**
+- **④ 지표·단위:**
+  - **3개 표현:** **CTR-GCN**(body+hand+object graph skeleton), **VideoMAE**(view별 appearance), **HBM handcrafted kinematics**(관절각·속도·**smoothness**·workspace 사용·**hand aperture**)
+  - 파이프라인: detectors(신체·손·물체 landmark) → **signal enhancer(self-attention imputation)** → **movement-phase segmentation**
+  - **SAFT**: phase별 토큰 × (CTR-GCN, VideoMAE) × (ipsilateral, top-down) = **4 source**, 각 **128차원** 투영, **[CLS]** + source embedding + phase-index embedding, **4-head self-attention 2층**
+  - **692 component model**(task 198 / phase 62 / quality 432), **10 model family**
+  - 융합: **Dynamic Bayesian Network + entropy-gated Product-of-Experts**, 저신뢰 **판정 보류**
+- **⑤ 검증:** ① 임상의 합의 점수(2명 독립) ② **hierarchical Bayesian label model**로 라벨 엔트로피 정량화
+  - **라벨 엔트로피(nats):** 단일 치료사 표준 프로토콜 **0.459** → 다시점 리뷰+2명 **0.147** → +phase 구조 **0.036** → 완전 계층 **0.004**
+  - **최종: 88명/788 exercise에서 task accuracy 94.2%(κ = 0.934), phase accuracy 81.3%(κ = 0.727)**
+  - **예측 불확실성:** 단일모델 0.599 → 다시점 합의 0.148(**75.3% 감소**) → 완전 구성 0.023(**96.1% 감소**)
+  - task-level: skeleton 77.5%, appearance 78.6%, handcrafted kinematic baseline 81.6%, **ipsilateral skeleton+appearance 87.4%(κ = 0.847)**
+  - phase-level: **appearance 기반 융합 최고 78.8%(κ = 0.719)**
+  - **주관적 채점 구간에서 최소 1명 평가자와 100% 일치**, 범위 밖 점수 **0건**
+  - 외부 임상의 4명이 검증하고 **도입 의향**
+- **우리 연구:** **"ARAT 다중시점 + 불확실성 + 계층설명 + 보류"는 이미 수행됨**. 우리 차별점은 **수치를 생성형 VLM에 언어로 주입하는 경로** — xAARA는 운동학을 **모델 내부 표현**으로만 쓴다. **hand aperture가 handcrafted kinematic 구성요소에 명시** → PAp 선택의 독립 지지
+
+---
+
+### G. 데이터셋·표준 문서 (프로토콜 기준 자료)
+
+#### G-1. Yozbatiran et al. 2008 `[방법론·표준]` — ARAT 표준화
+- **① 대상:** ARAT 표준 시행 지침. 참고 물성표(Table A2)와 항목별 채점 지침(Table A1/A3) 제공
+- **② 설계:** Lyle 원형의 모호성을 제거하기 위해 **물체 물성·배치 좌표·시간 기준·계층 중단 규칙**을 수치화. 제작 가이드(파인 목재, 크리켓 볼·숫돌·구슬·볼베어링·알루미늄 관·플라스틱 컵·와셔·볼트 구매처·규격) 제공
+- **③ 입력:** 19항목, 4 소척도, 4점 척도
+- **④ 출력:** 항목별 점수표(좌/우), 소척도 소계, 총점 57
+- **⑤ 검증:** 원 저자 지침 대비 표준화 개선. **원 보고서에 없던 세부**(신체 자세, 물체 위치, 항목 최대 허용시간)를 명시. 저자 지적: "abnormally long"의 시간 정의 부재, 물체 재료·무게·크기의 출처 불명확이 **기관 간 점수 분산 원인**
+- **우리 연구:** 우리 프로토콜의 **물성·배치 정본**. 이 표를 논문에 그대로 제시하면 재현성이 확보된다
+
+#### G-2. Černek et al. 2024 (REHAB24-6) `[데이터셋]`
+- **① 대상:** **10명**(남 6/여 4, **25–50세**, 다양한 체력). 물리치료사가 정상 5회 이상 + 의도적 오류 5회 이상 수행 지시
+- **② 설계:** **6개 운동**(Ex1 arm abduction, Ex2 arm VW, Ex3 push-ups, Ex4 leg abduction, Ex5 leg lunge, Ex6 squats). **다리 선택 등 자유도 부여**, 오류 유형은 물리치료사가 개별 제안
+- **③ 획득:** **65 recording, 184,825 프레임(30 FPS)**, **RGB 비디오 2대**(수평 Camera17, 수직 Camera18), **3D/2D 41개 모션캡처 마커** + **26개 skeleton joint**
+- **④ 라벨:** **1,072 repetition**에 대해 **temporal segmentation(start/end frame, 대부분 2–5초)** + **binary correctness label**(운동당 약 90개, Ex3만 약 50개) + 운동 방향 + 조명 조건
+- **⑤ 검증:** 2D/3D pose estimation 방법의 성능 비교 + similarity 기반 운동 수행 판별 가능성
+- **우리 연구:** Tang 2025의 입력 데이터 원천. **30 FPS, 2카메라, 26관절** 조건이 우리와 유사 → 비교 가능한 벤치마크지만 **ARAT 아님**
+
+---
+
+## 2. 통합 비교 요약 테이블
+
+### 2-1. 실험·임상 연구 (ARAT/FMA/상지 운동학)
+
+| 논문 | 피험자 (환자/대조) | 과제 및 반복 | 장비 (수/사양/배치) | 핵심 지표 (단위) | Gold standard 대비 결과 |
+|---|---|---|---|---|---|
+| Hsueh 2009 | 53(35 완료) / — | 4척도, 발병 14·30·90·180일 | 표준 임상평가 | 척도점수, floor/ceiling %, ICC, MDC | 상호비교: ρ≥.81, ICC≥.92/.97, ARAT MDC **13.1점** |
+| Kristersson 2019 | 117 / — | ARAT, ARAT-2, FMA-UE @3d·10d·4w | 표준 | floor/ceiling % | ARAT floor 38→24%, ceiling 21.3%; FMA-UE 무포화 |
+| Hernández 2019 | 60 / — | FMA-UE 33항목, 치료사 2명 연속 2일 | 표준 | RP·RC·RV, PA | PA>90% 전 항목, **ceiling 21.7%** |
+| Valladares 2024 | 133+113+92 / — | FMA-UE + ARAT (4코호트) | 표준 | AUC, sens/spec, weighted κ | AUC 0.74–0.94, κ .76/.83/.81, 만성 특이도 **0.55** |
+| Alt Murphy 2011 | 19 / 19 | drinking task(물 100 mL, 30 cm) | **광학식 5카메라** | 시간·속도·관절각·체간(mm, °/s) | 체간 **77.2 vs 26.7 mm**, PV **431 vs 616 mm/s**, sens/spec >94.7% |
+| Alt Murphy 2012 | 30 / — | drinking task 5단계, **5회 중 중간 3회 평균** | **광학식 5카메라 + 반사마커 9개** | TMT, NMU, PAVE, TD | ARAT: NMU **r=.81**, TMT .68, TD .63; NMU+TD **R²=.67** |
+| Bayle 2024 | 31 / — | reach-to-point **3회**, D0/D30 | 3D 모션캡처(기종 미명시) | **SPARC**, LDLJ, nSUB, NARJ | ICC SPARC **.912**; SPARC–ARAT **r=.68**(D0) → .46(D30) |
+| Saes 2021 | 40 / 12 | 5×5×5 cm 블록 reach-to-grasp, 8시점 | **전자기식 3D 추적** | SPARC, FM-UE | 종단 **B=31.73**; 5주 plateau; 건강 SPARC **−1.436±0.038** |
+| Qiu 2022 | 8 / — | 흉골 10 cm→견봉 30 cm, 3시점 | 광학식(active+passive marker) | **PAp, TPAp, TAPV**, RTS, RGC | TPAp+PAp adj.R² **59.8**; TAPV+TPAp **61.9** |
+| van Kordelaar 2012 | 46 / 12 | 블록 reach-to-grasp+이동, 7회 평균 | **Polhemus Liberty, 240 Hz** | 관절각(°), PCA 성분 | 4성분 84.7%(환자) vs 3성분 86.6%(정상); 성분2 p=.014, 성분3 p=.003 |
+| Schwarz 2025 | 13 / 13 | reach-to-grasp 10 cm 볼, **80회/팔** | **Vicon 12대, 200 Hz, 마커 45개** | 이동시간, TTPV, 근위 timing(%) | 원위부 비유의(p=.944 등); 근위부 **p=.019 / .008 / .001** |
+| Kim 2016 | 41 / 15 | FMA **13/33항목**, 반복 미명시 | **Kinect 30 Hz, 정면** | 관절좌표, jerky score | 항목 65–87%, 13항목 **r=.873**, 전체 FMA **r=.799** |
+| Li 2022 | 20 / — | FMA **30/33항목 = 17동작**, 일부 2회 | **D435 30fps 정면 + Leap 200fps + FSR 5개(10 Hz)** | 18관절 좌표, offset(mm), force | 치료사 **r=.981**; 정확도 80.83%, MAE .21; **Vicon offset 평균 96 mm** |
+| Zamin 2023 | 45 / — | FMA **16/33항목**, 2일 간격 | **1080p 60 Hz, 3–5 m, 삼각대 1.5 m** | 19+21 keypoint, 15프레임 | dilated CNN **82.7%**; 그룹 r 평균 **.89** |
+| Wang 2024 | 95 / — | FMA (reflex 외 ML + reflex 회귀) | **depth camera + FSR**(사양 미명시) | sens/spec/kappa/ICC | **총점 계수 .960**; force 항목 타당도 낮음 |
+| Zhou 2025 | 11 / — | **3개 reaching motion** | **IMU 4개(팔·체간)** | FMA-UE 항목(70%) | **LOSO NRMSE 7%**; 체간 특징 중요 |
+| Faity 2022 | — / 26 | seated reaching(덤벨), 반복 미명시 | **Kinect v2 정면 1.50 m/높이 1.40 m/30 Hz** vs **Vicon 6대 100 Hz** | 10 지표(각도·시간·비율) | **trunk 0.93 / rotation 0.38 / NPE 0.38 / PV 0.21**; 필터 2차 2.5 Hz |
+| Lafayette 2023 | — / 6 | 상·하지 운동 각 **60회 기록**, 위치조건 2 | **Kinect v2 / RealSense D415 / Astra / MediaPipe** vs **Qualisys** | 절대오차(°), RMS, r | 상지: MediaPipe **9.98°**, Intel 11.56°, Astra 12.36°, Kinect 16.01° |
+| Hamilton 2024 | — / 22 | 5개 활동(seated/prone knee, elbow, sit-to-stand) | **HRNet / MediaPipe** vs **Qualisys** | CoV(%), ICC, ROM(°) | Elbow ICC **0.92(M)/0.94(HRNet)**; sit-to-stand **0.41** |
+| Scano 2020 | — / 15 | point-to-point / exploration, 3구역, 2회 | **Kinect V2** vs **Vicon** | ICC | p2p **.81/.82/.73**, expl **.84/.75/.62** |
+| Tannús 2026 | 12(24지) / 비환측 | 게임화 도달 과제, 반복 미명시 | **RGB 1대 + MediaPipe**(사양 미명시) | **16 특징**, hand aperture 핵심 | hold-out **R²=.89, ρ=.92**; **LOOCV R²=.32–.55**; 심각도분류 86–93% |
+| Unger 2026 | 20 / — | **ARAT 19항목, 루틴세션**, 1,174 trial | **Brio 4K 웹캠 3대, 1280×720, 60 Hz, ad-hoc** | 10 metric(peak/ROM), smoothness 제외 | **reprojection 12.5±3.0 px**; Tier1 **AUC 0.91–1.00**; elbow ROM **r=.77–.93**; MCID 15 pp |
+| Padilla-Magaña 2022a | 12 / 25 | **ARAT Grasp·Grip·Pinch 16활동**, 반복 미명시 | **CyberGlove II**(18센서, <1°, 3°, 70 g) | 각도(°), FROM/ROM/aROM/sROM | gold standard 없음; **MCP 굴힘↓, RH 4지 PIP↑** = 보상 |
+| Padilla-Magaña 2022b | — / 25 | ARAT 16검사 **×각 3회** | CyberGlove II + **FSR 5개** | 11관절 각도(°) + 힘(N) | 힘 **Grasp 8.2 N / Grip 6.61 N / Pinch 3.89 N** |
+| Padilla-Magaña 2022c | 12+25 (1,088 샘플) | 위 데이터 재사용, **전부 ARAT 2–3점** | 데이터 글러브 | 11관절각 + 활동/소척도(14 features) | **SVM 97.8% / RF 97.1% / KNN 94.8%** |
+| Ahmed 2024 (HBM) | 478 비디오 | ARAT 치료과제, 3수준 임상가 채점 | 비디오 기반 | HBM 계층 확률, ΔHBM | 평가자 불일치 **98건 중 95% 해결**; 정렬 **>90%** |
+| Ahmed & Rikakis 2025 | 50 / — | ARAT(점수 **2·3만**), 500 segments | **3시점**(ipsi/contra/top), 사양 미명시 | SlowFast/I3D/TimeSformer + HBM | 후기융합 **89.0%**, 점수일치 **91.0%**, HBM **92%** |
+| xAARA 2026 | 88 / — | ARAT + 4 phase + 12 quality, 채점 2.7±0.65분 | **3대 동기화**, contra **2.5× zoom** | CTR-GCN + VideoMAE + HBM(hand aperture) | **94.2%(κ=.934)**, phase 81.3%(κ=.727), 불확실성 **96.1%↓** |
+| Li 2026 (VLM) | 51 / 20 | ADL + FMA 33항목(Coord/Speed 5회 왕복) | **RGB 2대 직교, 2 m 이내, 1088×704, 60/100 fps** | **운동학 없음**, 8프레임 | **essentially constant**, ONES 수준; 활동식별 87.2%/73.5% |
+| Tang 2025 | **0** / 10+10 | UI-PRMD 각 10회, REHAB24-6 정상·오류 각 ~90 | Kinect 30fps/22관절; RGB 2대/30FPS/41마커/26관절 | 운동별 3–5 특징 | LLM 최고 **0.76/0.79**(UI-PRMD), **0.70/0.73**(REHAB24-6); ST-GCN **0.94/0.96** |
+| Xing 2025 | 45 / — | FMS 7동작 15난이도, **1,812 keyframe** | **RTMPose**, 단일 keyframe | 전문가규칙 각도·위치 지표 | **Accuracy 0.91**, maF1 0.87, κ 0.82 |
+| UbiPhysio 2024 | 104 / — | 25활동, **9,548 instance**(2–20초) | IMU 기반 pose, 315 특징 | BLEU/Rouge/Cider/BertScore | T5 large 최고; retrieval 피드백 우세 |
+| BiomechGPT 2025 | 750 / — | 임상 이동성 평가(TUG, FSST 등) | 다중카메라 또는 **단일 스마트폰** | VQ-VAE 토큰(512×512), 10 과제 | F1 **.91/.88/.96**; r **.95/.96/.88/.89** |
+| Herbst 2020 | — / 31 | **5개 물체 파지, 1,083 인스턴스** | 동작캡처 + 힘센서, 7,500차원 | t-SNE + kNN | 피험자 분류 **95.48%** |
+| Jarque-Bou 2019 | — / 77 | **20 파지 × 6회**, 1,000프레임 리스케일 | **CyberGlove II, 17 DoF, Butterworth 5 Hz** | PCA+Varimax → 시너지 | **12 시너지 >80%**, 첫 3개 >50% |
+| Jarque-Bou 2020 | — / 24 | **24 ADL**, 실물체 | **Cyberglove 16관절, 75 Hz**, ROM 스케일링 | 피험자별 4 PC | **77.3±1.9%**; 첫 2개 = 손가락 굴곡(전원 공통) |
+| Romero 2010 | — / 5 | **31 파지 유형** | **Polhemus 35차원, 4,650 pt** | **GPLVM 2D + GMM(≤3) + GMR** | PCA/Isomap/LLE보다 우수; 5 cluster |
+| Lee 2025 (review) | 14 연구 | 어깨 ROM | Kinect V2 12 / Azure 3 / **RealSense 2** | ICC, LoA, COSMIN | 외전 72.7% good+, 굴곡 54.5%, 회전 57.1% |
+| Schwarz 2019 (review) | **225 연구, N=6,197** | 151 지표 | 5과제 × 3시스템군 | COSMIN, GRADE | clinimetrics 조사는 **30편·62지표**뿐 |
+| Collins 2018a (meta) | 29 연구, 460+324 | reach-to-grasp | — | SMD | PV **−1.48**, trunk **1.55** |
+| Collins 2018b (meta) | 32 연구, 618+429 | reach-to-target | — | SMD, I² | 21/26 유의; central에서 일부 비유의 |
+| Mohamed Refai 2021 | 32 지표 | 시뮬레이션 4종 × 2과제 | — | 수학기준 + 시뮬레이션 | **SPARC만 valid**; 0.2초 한계 |
+| Pohl 2024/2025 | 전문가 패널 | **6개 프로토콜** 검토 | — | 불일치 목록 | 프로토콜 변이가 타당도 위협 |
+| Yozbatiran 2008 | 표준문서 | ARAT 19항목 | — | 물성표·배치좌표 | 표준화 정본 |
+
+---
+
+## 3. 시사점 및 한계점
+
+### 3-1. 선행연구가 공통으로 놓친 6가지
+
+**① 오차 → 판단 전파 사슬이 검증되지 않았다**
+- Li 2022는 **RealSense 평균 96 mm** 오차를 보고했지만 그 오차가 점수·판단 오류로 어떻게 연결되는지 검증하지 않았다(r=.981은 오차 존재 하에 나온 값).
+- Faity 2022는 **peak velocity ICC 0.21, NVP ICC 0.38**을 보고했지만 임상·AI 판단에 미치는 영향은 다루지 않았다.
+- **공백:** "센서 오차 → 지표 오차 → 모델 판단 오차"의 전파를 정량화한 연구가 없다.
+
+**② "영상만 vs 영상+수치" 조건 비교가 없다**
+- Li 2026 = **영상+지침만**(실패), Tang 2025 = **특징만**(건강인), Xing 2025 = **정적 keyframe+규칙**(성공했으나 동적 아님), xAARA = 운동학을 **내부 표현**으로만 사용.
+- **공백:** 동일 환자·동일 영상에서 조건을 통제 비교한 연구가 없다.
+
+**③ 품질 기반 입력 선별이 전무**
+- Li 2022는 SSA denoising만(시행별 선택 없음), Unger 2026은 **IQR × 3.0 일괄 제외**(130/1,304 = 10.0%), xAARA는 **출력** 신뢰도 기반 defer.
+- **공백:** "이 시행의 PAp는 가림 때문에 못 믿으니 VLM에 넘기지 말자"는 **입력 수준 품질 결정**이 없다.
+
+**④ 0/1/2/3 전 구간 + 환자 단위 분할을 동시에 충족한 연구가 없다**
+- Ahmed & Rikakis 2025는 **점수 2와 3만** 사용 → 0·1점(중증) 완전 배제, **segment 단위 분할**(patient-disjoint 불명).
+- Unger 2026은 전 구간을 다루지만 **trial 단위 이상치 제외**이며 환자 단위 분할 명시가 제한적.
+
+**⑤ smoothness 지표를 무마커 임상환경에서 검증한 연구가 없다**
+- Faity 2022: **NVP ICC 0.38, peak velocity 0.21** → 사실상 실패.
+- Unger 2026: **smoothness를 의도적으로 제외**(jitter 취약).
+- Bayle 2024·Saes 2021: SPARC를 검증했지만 **광학식/전자기식** 장비.
+- **공백:** **RGB-D/웹캠에서 SPARC·TAPV의 타당도를 검증한 연구가 0편**이다. 이것이 우리의 핵심 과학적 공백이다.
+
+**⑥ 손가락 수준(aperture·pinch)에서 골드 스탠다드 검증이 0편**
+- Padilla-Magaña는 **손가락을 측정했으나 검증하지 않았고**(장갑이라 검증 대상 아님), Li 2022는 검증했으나 **Leap Motion으로 손을 우회**했고, Unger 2026은 **손가락 aperture를 지표 목록에 두지 않았다**.
+- **공백:** ARAT 항목 12(구슬 1.5 cm)의 aperture를 카메라로 측정하고 Vicon과 대조한 연구가 없다.
+
+**⑦ 카메라 사양 보고가 불완전**
+- Li 2022(거리·높이), xAARA(기종·해상도·fps), Tannús(전부), Unger(거리·각도) 미명시. Faity 2022만 **1.50 m / 1.40 m**를 명시.
+
+### 3-2. 우리 연구가 차별화할 핵심 포인트 5개
+
+1. **오류 → 판단 대응(counterfactual) 실험:** 동일 환자 영상 고정, 수치 오류 수준만 조작 → (도움 / 악화 / 무시) 3분기 분리. Li 2026의 **3개 실패 모드**(motion hallucination / 접촉 오해 / 물체 편향)를 각각 종속변수로 측정.
+2. **품질 기반 입력 선택 + 동일개수 무작위 제거 대조군:** 전체 제공 / 품질선택 / 무작위 제거 / 무수치 4조건으로 "정보 감소 효과"와 "품질 선택 효과"를 분리.
+3. **ARAT 항목 3(55 g)·항목 12(5.4 g)의 비접촉 계측 오차 최초 정량화:** Faity 2022의 지표별 표를 **뇌졸중 환자 + 파지 과제**에서 재작성. 특히 그들이 실패한 **순간 속도·미분 지표**에 **SPARC·TAPV로 정면 도전**(Unger 2026은 smoothness를 포기해 회피).
+4. **4-class 전 구간 + 환자 단위 CV:** Ahmed 2025의 이진화 회피, Tannús 2026의 **hold-out R² 0.89 vs LOOCV 0.32–0.55** 격차를 반증 사례로 인용.
+5. **사양 완전 공개 + ARAT 표준 물성표 제시:** 선행연구 4편이 미명시한 카메라·거리·각도·조명·시행 수·휴식을 전부 보고.
+
+### 3-3. 반드시 피해야 할 과잉 주장 8개
+
+| 금지 주장 | 반증 근거 |
+|---|---|
+| "ARAT 손 과제 운동학을 처음 측정" | Padilla-Magaña 2022a/b |
+| "ARAT 점수로 정상-환자 구분이 안 된다" | Padilla-Magaña 2022c: 2–3점 구간에서 **SVM 97.8%** |
+| "JSON·구조화 프롬프트·특징 주입이 최초" | Tang 2025, Xing 2025 |
+| "운동학+영상 결합이 최초" | Unger 2026, xAARA 2026, BiomechGPT |
+| "불확실성·설명·판정 보류가 최초" | xAARA 2026(96.1% 감소, defer) |
+| "ARAT가 포화돼도 운동학은 개선을 검출한다는 것이 최초" | Unger 2026(≥15 pp 변화 검출) |
+| "GMM으로 정상 하위유형을 처음 모델링" | Romero 2010(GPLVM+GMM), Jarque-Bou 2019/2020(clustering) |
+| "모든 VLM은 FMA 채점에 실패한다" | Li 2026은 **Qwen2.5-VL-72B + 이 프로토콜** 한정, 수치 주입 조건은 미검증 |
+
+### 3-4. 즉시 착수 순서
+
+1. ARAT 표준 배치·물성 고정(**선반 37 cm, 항목 3 = 55 g, 항목 12 = 5.4 g**)
+2. 카메라 사양 확정 + 완전 공개(선행연구 미명시 항목)
+3. **Faity 2022 형식(ICC/r²/RMSE/Bland–Altman + 필터 전후)** 으로 Vicon 동시검증 → 지표별 표를 뇌졸중 환자에서 재작성
+4. **Unger 2026의 Q75 앵커 정규화 + MCID 15 pp** 를 참조해 JSON percentile 필드 정의
+5. **품질규칙 + 무작위 제거 대조군 포함 4조건** VLM 오류전파 실험
+6. **DL baseline(ST-GCN, 선형회귀) + HBM baseline** 을 동일 분할에서 비교
+
+---
+
+## Sources
+
+1. Yozbatiran N, Der-Yeghiaian L, Cramer SC (2008). *A Standardized Approach to Performing the Action Research Arm Test.* Neurorehabil Neural Repair. https://doi.org/10.1177/1545968307305353 · PDF: https://mahilab.rice.edu/sites/default/files/page-files/Yozbatiran_ARAT_2007.pdf
+2. Hsueh IP et al. (2009). *Psychometric Comparisons of 4 Measures for Assessing Upper-Extremity Function in People With Stroke.* Phys Ther. https://doi.org/10.2522/ptj.20080285
+3. Kristersson T, Persson HC, Alt Murphy M (2019). *Evaluation of a short assessment for upper extremity activity capacity early after stroke.* J Rehabil Med 51(4):257–263. https://doi.org/10.2340/16501977-2534
+4. Hernández ED et al. (2019). *Intra- and inter-rater reliability of Fugl-Meyer Assessment of Upper Extremity in stroke.* J Rehabil Med. PMID 31448807. https://doi.org/10.2340/16501977-2590
+5. Valladares B et al. (2024). *The association between dexterity and upper limb impairment during stroke recovery.* Front Neurol. PMID 39224885. https://doi.org/10.3389/fneur.2024.1429929
+6. Pohl J et al. (2024/2025). *Interpreting Variations in Fugl-Meyer Assessment Protocols.* Arch Phys Med Rehabil. https://doi.org/10.1016/j.apmr.2024.10.004
+7. Schwarz A, Kanzler CM, Lambercy O, Luft AR, Veerbeek JM (2019). *Systematic Review on Kinematic Assessments of Upper Limb Movements After Stroke.* Stroke 50(3):718–727. PMID 30776997. https://doi.org/10.1161/STROKEAHA.118.023531
+8. Mohamed Refai MI et al. (2021). *Smoothness metrics for reaching performance after stroke. Part 1.* J NeuroEng Rehabil. PMID 34702281. https://doi.org/10.1186/s12984-021-00949-6
+9. Bayle N et al. (2024). *Measurement properties of movement smoothness metrics... moderate to severe subacute stroke.* J NeuroEng Rehabil. https://doi.org/10.1186/s12984-024-01382-1
+10. Saes M et al. (2021). *Smoothness metric during reach-to-grasp after stroke: part 2.* J NeuroEng Rehabil. https://doi.org/10.1186/s12984-021-00937-w
+11. Alt Murphy M, Willén C, Sunnerhagen KS (2018/2012). *Movement kinematics during a drinking task are associated with the activity capacity level after stroke.* Neurorehabil Neural Repair. PMID 22647879. https://doi.org/10.1177/1545968312448234
+12. Alt Murphy M, Willén C, Sunnerhagen KS (2011). *Kinematic variables quantifying upper-extremity performance after stroke during reaching and drinking from a glass.* Neurorehabil Neural Repair. PMID 20829411. https://doi.org/10.1177/1545968310370748
+13. Qiu Q et al. (2022). *Evaluation of Changes in Kinematic Measures of Three Dimensional Reach to Grasp Movements...* IEEE EMBC 2022:5107–5110. PMID 36086392. https://doi.org/10.1109/EMBC48229.2022.9871891
+14. van Kordelaar J, van Wegen EEH, Kwakkel G (2012). *Unraveling the interaction between pathological upper limb synergies and compensatory trunk movements...* Exp Brain Res 221:251–262. https://doi.org/10.1007/s00221-012-3169-6
+15. Schwarz A et al. (2025). *Compensatory Proximal Adjustments Characterize Effective Reaching Movements After Stroke.* Stroke. https://doi.org/10.1161/STROKEAHA.124.049336
+16. Kim WS, Cho S, Baek D, Bang H, Paik NJ (2016). *Upper Extremity Functional Evaluation by Fugl-Meyer Assessment Scoring Using Depth-Sensing Camera in Hemiplegic Stroke Patients.* PLoS ONE 11(7):e0158640. https://doi.org/10.1371/journal.pone.0158640
+17. Li Y et al. (2022). *A Novel Automated RGB-D Sensor-Based Measurement of Voluntary Items of the Fugl-Meyer Assessment for Upper Extremity.* Brain Sci 12(10):1380. https://doi.org/10.3390/brainsci12101380
+18. Zamin SA et al. (2023). *aBnormal motION capture In aCute Stroke (BIONICS).* Neurorehabil Neural Repair 37(9):591–602. PMID 37592867, PMC10602593. https://doi.org/10.1177/15459683231184186
+19. Wang Z et al. (2024). *Clinical validation of automated depth camera-based measurement of the Fugl-Meyer assessment for upper extremity.* Clin Rehabil 38(8):1091–1100. PMID 38693881. https://doi.org/10.1177/02692155241251434
+20. Zhou YM et al. (2025). *Estimating Upper Extremity Fugl-Meyer Assessment Scores From Reaching Motions Using Wearable Sensors.* IEEE J Biomed Health Inform. PMID 40031831. https://doi.org/10.1109/JBHI.2025.3542037
+21. Deb S, Islam MF, Rahman S, Rahman S (2022). *Graph Convolutional Networks for Assessment of Physical Rehabilitation Exercises.* IEEE TNSRE 30:410–419. https://doi.org/10.1109/TNSRE.2022.3150392 · Code: https://github.com/fokhruli/STGCN-rehab
+22. Ahmed T, Rikakis T (2025). *Automated ARAT Scoring Using Multimodal Video Analysis, Multi-View Fusion, and Hierarchical Bayesian Models.* arXiv:2505.01680. https://arxiv.org/abs/2505.01680
+23. Ahmed T, Rikakis T, Kelliher A, Wolf SL (2024). *A Hierarchical Bayesian Model for Cyber-Human Assessment of Movement in Upper Extremity Stroke Rehabilitation.* IEEE TNSRE 32:3157–3166. PMID 39186425. https://doi.org/10.1109/TNSRE.2024.3450008
+24. Li V, Kamalakannan N, Parnandi A, Schambra H, Fernandez-Granda C (2026). *Vision-language models for human motion understanding: Lessons from stroke rehabilitation.* PLOS Digit Health 5(7):e0001506. PMID 42406872. https://doi.org/10.1371/journal.pdig.0001506
+25. Li V et al. (2025). *The Potential and Limitations of Vision-Language Models for Human Motion Understanding.* arXiv:2511.17727. https://arxiv.org/abs/2511.17727
+26. Tang J, Abedi A, Colella TJF, Khan SS (2025). *Rehabilitation Exercise Quality Assessment and Feedback Generation Using Large Language Models with Prompt Engineering.* arXiv:2505.18412. https://arxiv.org/abs/2505.18412 · Code: https://github.com/jessicaxtang/exercisellm
+27. Xing Q, Xing X, Guo P, Tang Z, Shen Y (2025). *LLM-FMS: A fine-grained dataset for functional movement screen action quality assessment.* PLOS ONE 20(3):e0313707. PMID 40067873. https://doi.org/10.1371/journal.pone.0313707
+28. Unger et al. (2026). *Markerless Motion Capture in Routine Clinical Upper Limb Assessments: Validity and Insights Beyond Ordinal Scoring.* arXiv:2607.23608. https://arxiv.org/html/2607.23608
+29. Ahmed T, Rikakis T et al. (2026). *Enhancing Clinician Decision-Making via Uncertainty-Aware Multi-Expert Fusion for Stroke Rehabilitation (xAARA).* arXiv:2606.24960. https://arxiv.org/html/2606.24960
+30. Padilla-Magaña JF, Peña-Pitarch E, Sánchez-Suarez I, Ticó-Falguera N (2022). *Quantitative Assessment of Hand Function in Healthy Subjects and Post-Stroke Patients with the Action Research Arm Test.* Sensors 22(10):3604. PMID 35632013. https://doi.org/10.3390/s22103604
+31. Padilla-Magaña JF, Peña-Pitarch E, Sánchez-Suarez I, Ticó-Falguera N (2022). *Hand Motion Analysis during the Execution of the Action Research Arm Test Using Multiple Sensors.* Sensors 22(9):3276. PMID 35590966. https://doi.org/10.3390/s22093276
+32. Padilla-Magaña JF, Peña-Pitarch E (2022). *Classification Models of Action Research Arm Test Activities in Post-Stroke Patients Based on Human Hand Motion.* Sensors 22(23):9078. PMID 36501779. https://doi.org/10.3390/s22239078
+33. Herbst Y, Zelnik-Manor L, Wolf A (2020). *Analysis of subject specific grasping patterns.* PLoS ONE 15(7):e0234969. PMID 32640003. https://doi.org/10.1371/journal.pone.0234969
+34. Jarque-Bou NJ, Scano A, Atzori M, Müller H (2019). *Kinematic synergies of hand grasps.* J NeuroEng Rehabil 16:63. https://doi.org/10.1186/s12984-019-0536-6
+35. Jarque-Bou NJ, Sancho-Bru JL, Vergara M (2020). *Sharing of hand kinematic synergies across subjects in daily living activities.* Sci Rep 10:6116. https://doi.org/10.1038/s41598-020-63092-7
+36. Romero J, Feix T, Ek CH, Kjellström H, Kragic D (2010). *Spatio-Temporal Modeling of Grasping Actions.* IEEE/RSJ IROS 2010. https://www.csc.kth.se/~dani/RSS/feix.pdf
+37. Faity G, Mottet D, Froger J (2022). *Validity and Reliability of Kinect v2 for Quantifying Upper Body Kinematics during Seated Reaching.* Sensors 22(7):2735. PMID 35408349. https://doi.org/10.3390/s22072735
+38. Lafayette TBG et al. (2023). *Validation of Angle Estimation Based on Body Tracking Data from RGB-D and RGB Cameras for Biomechanical Assessment.* Sensors 23(1):3. PMID 36616603. https://doi.org/10.3390/s23010003
+39. Hamilton RI et al. (2024). *Comparison of computational pose estimation models for joint angles with 3D motion capture.* J Bodyw Mov Ther. PMID 39593603. https://doi.org/10.1016/j.jbmt.2024.04.033
+40. Scano A et al. (2020). *Analysis of Upper-Limb and Trunk Kinematic Variability: Accuracy and Reliability of an RGB-D Sensor.* MTI 4(2):14. https://doi.org/10.3390/mti4020014
+41. Lee U, Lee S, Kim SA, Kim Y, Lee S (2025). *Validity and reliability of single camera markerless motion capture systems with RGB-D sensors for measuring shoulder range-of-motion: a systematic review.* Front Bioeng Biotechnol 13:1570637. PMID 40486204. https://doi.org/10.3389/fbioe.2025.1570637
+42. Tannús J, Valentini C, Naves E (2026). *AI-driven low-cost rehabilitation exergame as a lightweight framework for stroke assessment.* npj Digit Med 9:196. https://doi.org/10.1038/s41746-026-02383-1
+43. UbiPhysio (2024). *Support Daily Functioning, Fitness, and Rehabilitation with Action Understanding and Feedback in Natural Language.* arXiv:2308.10526. https://arxiv.org/abs/2308.10526
+44. BiomechGPT (2025). *Extending Motion-Language Models to Clinical Motion Understanding.* arXiv:2505.18465. https://arxiv.org/abs/2505.18465
+45. Collins KC, Kennedy NC, Clark A, Pomeroy VM (2018a). *Getting a kinematic handle on reach-to-grasp: a meta-analysis.* Physiotherapy 104(2):153–166. https://doi.org/10.1016/j.physio.2017.10.002
+46. Collins KC, Kennedy NC, Clark A, Pomeroy VM (2018b). *Kinematic Components of the Reach-to-Target Movement After Stroke... Systematic Review and Meta-Analysis.* Front Neurol 9:472. PMID 29988530. https://doi.org/10.3389/fneur.2018.00472
+47. Černek A, Sedmidubský J, Budíková P (2024). *REHAB24-6: Physical Therapy Dataset for Analyzing Pose Estimation Methods.* LNCS:18–33. https://doi.org/10.1007/978-3-031-75823-2_2 · Dataset: https://zenodo.org/records/13305826
+
+### 확인된 미명시 항목 (Blocked / Unverified)
+
+| 논문 | 미명시/미확인 항목 |
+|---|---|
+| Padilla-Magaña 2022a | 환자편 **반복 횟수·세션 길이·휴식 시간** |
+| Li 2022 | RealSense **카메라 거리·높이** |
+| Li 2026 | 포함·제외기준 상세 |
+| Tang 2025 | **저역통과 필터·보간법**, 포함·제외기준 |
+| Unger 2026 | **카메라 거리·각도·높이**, 환자 선정기준 (필터 4차 Butterworth 5 Hz는 확인됨) |
+| xAARA 2026 | **카메라 기종·해상도·fps**, **전처리 필터 종류·컷오프**, 반복·휴식 |
+| Bayle 2024 | 3D 모션캡처 **시스템 기종** |
+| Saes 2021 | 전자기식 추적 **시스템 기종** |
+| Qiu 2022 | 카메라 **대수·fps**, **개별 Pearson r** |
+| Tannús 2026 | **카메라 기종·해상도·fps·거리**, **필터·보간법**, 과제 **반복 횟수** |
+| Wang 2024 | depth camera **기종·해상도·fps**, 환자 단위 분할 여부 |
+| Xing 2025 | 카메라 사양 |
+| Zamin 2023 | 반복·휴식 시간 |
+| 국소 공백 | **ARAT 항목 3·12 특화 관절각 오차(Vicon 대비)** 를 보고한 연구 **0편**; **RGB-D에서 SPARC·TAPV 타당도 검증** 연구 **0편** |
