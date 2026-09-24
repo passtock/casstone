@@ -1,0 +1,10 @@
+K1 == 생성기 기대값 15.00 mm PASS got 15.0
+K2 == 생성기 기대값 135.0 mm/s PASS got 135.0014
+K1·K2 모두 사용가능 PASS {'k1': True, 'k2': True, 'reasons_k1': [], 'reasons_k2': []}
+L2 JSON 생성 PASS 
+max_gap == 0.40초 PASS got 0.400
+K1 보류 + 값 null PASS ['Q2(gap 0.40s>0.3s)', 'Q3(48<50)']
+K1 보류(Q3) PASS ['Q3(40<50)']
+검출 카운트 == 10 PASS {'ok': 180, 'hand_consistency_fail': 10}
+edge_frac == 0.60 PASS got 0.60
+K1 보류(Q4) PASS ['Q4(edge 0.60)']

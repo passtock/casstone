@@ -1,0 +1,570 @@
+# -*- coding: utf-8 -*-
+"""
+L1 파이프라인 — 실제 파일 입력판 (v6 프로토콜 §6·§8 실행기)
+=============================================================
+
+`k1k2_reference.py`(합성 오라클)의 **실데이터 입력 버전**이다.
+세션 폴더를 읽어 시행별 K1·K2·Q·T를 계산하고 L2 JSON을 쓴다.
+**치구 135기록과 건강인/환자 촬영에 바로 쓸 수 있다.**
+
+입력 구조 (프로토콜 §6)
+-----------------------
+data/H01/
+  meta.json                            # intrinsics·fps·해상도
+  L1_track/H01_T1_t01_landmarks.csv    # 프레임별 랜드마크
+  L0_raw/H01_T1_t01_depth/*.png        # 16-bit, 값 = depth(mm)
+출력
+  L2_metric/H01_T1_t01.json            # K1·K2·Q·T + 사용가능 판정
+
+landmarks CSV 헤더
+------------------
+frame,t_s,thumb_u,thumb_v,index_u,index_v,wrist_u,wrist_v,occlusion_state,edge_mixing_suspect
+- 랜드마크 없음 = 빈 칸
+- occlusion_state ∈ visible / partially_occluded / not_assessable / (빈칸)
+- edge_mixing_suspect ∈ 0 / 1
+
+⚠️ 이 스크립트는 **계산기**다. 파이프라인 자체의 정당성은 k1k2_reference.py의
+   오라클(T1~T6)로 검증되어 있고, 이 스크립트의 **파일 I/O 경로**는
+   --selftest로 검증한다.
+
+실행:
+  python experiments/l1_pipeline/k1k2_from_files.py --selftest
+  python experiments/l1_pipeline/k1k2_from_files.py --session data/H01
+  python experiments/l1_pipeline/k1k2_from_files.py --session data/H01 --q1-min 0.7
+"""
+
+import argparse
+import csv
+import glob
+import io
+import json
+import math
+import os
+import statistics
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
+try:
+    import numpy as np
+    import cv2
+    _HAVE_CV = True
+except Exception:
+    _HAVE_CV = False
+
+WRIST, THUMB_TIP, INDEX_FINGER_TIP = 0, 4, 8
+
+# --- 프로토콜 §8 동결 파라미터 ---------------------------------------------
+WINDOW_K = 5
+MIN_VALID_FRAC = 0.5
+MAX_GAP_S = 0.1            # K2 계산 시 프레임 간격 상한
+HAND_DIST_LO_MM = 60.0
+HAND_DIST_HI_MM = 230.0
+
+Q2_MAX_GAP_S = 0.3         # 초과 시 보류
+Q3_MIN_SAMPLES = 50        # 미만 시 보류
+Q4_MAX_EDGE_FRAC = 0.5     # 초과 시 보류
+Q5_MAX_NA_FRAC = 0.5       # 초과 시 보류
+
+
+# ===========================================================================
+# 1. 입력 읽기
+# ===========================================================================
+def load_meta(session_dir):
+    with io.open(os.path.join(session_dir, "meta.json"), encoding="utf-8") as f:
+        return json.load(f)
+
+
+def read_landmarks(path):
+    """CSV -> 레코드 리스트. 반환: [{'frame','t_s','uv':{pt:uv|None}, 'occ','edge'}]"""
+    recs = []
+    with io.open(path, encoding="utf-8-sig", newline="") as f:
+        for row in csv.DictReader(f):
+            def num(k):
+                v = (row.get(k) or "").strip()
+                if v == "":
+                    return None
+                try:
+                    return float(v)
+                except ValueError:
+                    return None
+            uv = {}
+            for key, name in (("thumb", THUMB_TIP), ("index", INDEX_FINGER_TIP),
+                              ("wrist", WRIST)):
+                u, v = num(key + "_u"), num(key + "_v")
+                uv[name] = (int(round(u)), int(round(v))) if (u is not None and v is not None) else None
+            edge = (row.get("edge_mixing_suspect") or "").strip()
+            recs.append({
+                "frame": int(float(row["frame"])),
+                "t_s": num("t_s"),
+                "uv": uv,
+                "occ": (row.get("occlusion_state") or "").strip(),
+                "edge": 1 if edge in ("1", "true", "True") else 0,
+            })
+    return recs
+
+
+def _imwrite16(path, arr):
+    """16비트 깊이 PNG 저장.
+
+    🚨 왜 cv2.imwrite를 직접 안 쓰는가:
+    OpenCV(Windows)는 **비ASCII 경로에서 조용히 False를 반환**한다.
+    우리 작업 폴더가 `C:\\Users\\...\\바탕 화면\\...` 이므로
+    cv2.imwrite를 쓰면 **깊이 프레임이 전부 저장되지 않는다**(CSV만 남아 원인 파악이 어렵다).
+    → imencode + numpy.tofile 을 쓴다. 실패하면 예외를 올린다.
+    """
+    ok, buf = cv2.imencode(".png", arr)
+    if not ok:
+        raise RuntimeError("PNG 인코딩 실패: %s" % path)
+    buf.tofile(path)
+    if not os.path.exists(path) or os.path.getsize(path) == 0:
+        raise RuntimeError("깊이 PNG 저장 실패(경로 문제): %s" % path)
+    return True
+
+
+def _imread16(path):
+    """16비트 깊이 PNG 읽기 (비ASCII 경로 안전)."""
+    if not os.path.exists(path):
+        return None
+    try:
+        data = np.fromfile(path, dtype=np.uint8)
+    except Exception:
+        return None
+    if data.size == 0:
+        return None
+    return cv2.imdecode(data, cv2.IMREAD_UNCHANGED)
+
+
+class DepthSeq:
+    """L0_raw/<trial>_depth/*.png 를 프레임 번호로 조회."""
+
+    def __init__(self, folder, depth_scale=1.0):
+        self.folder = folder
+        self.scale = depth_scale
+        self.cache = {}
+        self.files = {}
+        for p in glob.glob(os.path.join(folder, "*.png")):
+            stem = os.path.splitext(os.path.basename(p))[0]
+            try:
+                self.files[int(stem)] = p
+            except ValueError:
+                continue
+
+    def get(self, frame):
+        if frame not in self.files:
+            return None
+        if frame in self.cache:
+            return self.cache[frame]
+        raw = _imread16(self.files[frame])
+        if raw is None:
+            return None
+        if raw.ndim == 3:
+            raw = raw[:, :, 0]
+        arr = raw.astype(np.float64) * self.scale
+        arr[arr <= 0] = 0.0
+        self.cache[frame] = arr
+        return arr
+
+
+# ===========================================================================
+# 2. 기하 계산 (k1k2_reference.py와 동일 규칙)
+# ===========================================================================
+def median_window_np(arr, u, v, k=WINDOW_K, min_frac=MIN_VALID_FRAC):
+    h, w = arr.shape
+    half = k // 2
+    if u < 0 or v < 0 or u >= w or v >= h:
+        return None, 0.0
+    v0, v1 = max(0, v - half), min(h, v + half + 1)
+    u0, u1 = max(0, u - half), min(w, u + half + 1)
+    patch = arr[v0:v1, u0:u1]
+    valid = patch[patch > 0]
+    frac = patch.size and (valid.size / float(k * k))
+    if frac < min_frac or valid.size == 0:
+        return None, frac
+    return float(np.median(valid)), frac
+
+
+def backproject(u, v, d_mm, intr):
+    return ((u - intr["cx"]) * d_mm / intr["fx"],
+            (v - intr["cy"]) * d_mm / intr["fy"], d_mm)
+
+
+def dist3(a, b):
+    return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2)
+
+
+def p95(xs):
+    if not xs:
+        return None
+    s = sorted(xs)
+    k = 0.95 * (len(s) - 1)
+    lo = int(math.floor(k))
+    hi = min(lo + 1, len(s) - 1)
+    return s[lo] + (s[hi] - s[lo]) * (k - lo)
+
+
+def surface_point(arr, uv, intr):
+    if uv is None or arr is None:
+        return None, "no_landmark"
+    d, frac = median_window_np(arr, uv[0], uv[1])
+    if d is None:
+        return None, "no_valid_depth(%.2f)" % frac
+    return backproject(uv[0], uv[1], d, intr), "ok"
+
+
+def hand_consistency(wrist_pt, tip_pt):
+    if wrist_pt is None or tip_pt is None:
+        return False, None
+    dd = dist3(wrist_pt, tip_pt)
+    return (HAND_DIST_LO_MM <= dd <= HAND_DIST_HI_MM), dd
+
+
+# ===========================================================================
+# 3. 시행 처리
+# ===========================================================================
+def process_trial(session_dir, meta, trial_id, depth_scale=1.0):
+    lm_path = os.path.join(session_dir, "L1_track", trial_id + "_landmarks.csv")
+    depth_folder = os.path.join(session_dir, "L0_raw", trial_id + "_depth")
+    recs = read_landmarks(lm_path)
+    seq = DepthSeq(depth_folder, depth_scale) if _HAVE_CV else None
+    intr = meta
+
+    pts = []            # (t_s, wrist|None, thumb|None, index|None, reason dict, edge, occ)
+    counts = {}
+    for r in recs:
+        arr = seq.get(r["frame"]) if seq else None
+        wp, wr = surface_point(arr, r["uv"][WRIST], intr)
+        tp, tr = surface_point(arr, r["uv"][THUMB_TIP], intr)
+        ip, ir = surface_point(arr, r["uv"][INDEX_FINGER_TIP], intr)
+        for nm, rs in ((WRIST, wr), (THUMB_TIP, tr), (INDEX_FINGER_TIP, ir)):
+            counts[rs.split("(")[0]] = counts.get(rs.split("(")[0], 0) + 1
+        for nm, p, rs in ((THUMB_TIP, tp, tr), (INDEX_FINGER_TIP, ip, ir)):
+            ok, dd = hand_consistency(wp, p)
+            if not ok and p is not None:
+                counts["hand_consistency_fail"] = counts.get("hand_consistency_fail", 0) + 1
+                if nm == THUMB_TIP:
+                    tp, tr = None, "hand_consistency_fail(%.0fmm)" % (dd or -1)
+                else:
+                    ip, ir = None, "hand_consistency_fail(%.0fmm)" % (dd or -1)
+        pts.append({"t": r["t_s"], "wrist": wp, "thumb": tp, "index": ip,
+                    "edge": r["edge"], "occ": r["occ"]})
+
+    # --- 관찰 구간 T ---
+    ts = [p["t"] for p in pts if p["t"] is not None]
+    T = (max(ts) - min(ts)) if len(ts) >= 2 else 0.0
+
+    # --- K1 (엄지-검지) ---
+    k1_vals, k1_mask = [], []
+    for p in pts:
+        good = p["thumb"] is not None and p["index"] is not None
+        k1_mask.append(good)
+        if good:
+            k1_vals.append(dist3(p["thumb"], p["index"]))
+    k1 = p95(k1_vals)
+
+    # --- K2 (손목 속도) ---
+    k2_vals, k2_pairs, prev = [], 0, None
+    for p in pts:
+        if p["wrist"] is None:
+            prev = None
+            continue
+        if prev is not None and p["t"] is not None and prev[1] is not None:
+            dt = p["t"] - prev[1]
+            if 0 < dt <= MAX_GAP_S:
+                k2_vals.append(dist3(p["wrist"], prev[0]) / dt)
+                k2_pairs += 1
+        prev = (p["wrist"], p["t"])
+    k2 = p95(k2_vals)
+
+    # --- Q ---
+    n = len(pts)
+    n_pairs_valid = sum(k1_mask)
+    n_points_total = 3 * n
+    n_points_valid = 0
+    for p in pts:
+        n_points_valid += (1 if p["wrist"] is not None else 0) \
+            + (1 if p["thumb"] is not None else 0) \
+            + (1 if p["index"] is not None else 0)
+    q1_pair = (n_pairs_valid / float(n)) if n else 0.0
+    q1_pt = (n_points_valid / float(n_points_total)) if n_points_total else 0.0
+    max_gap = _max_gap_s(pts, k1_mask)
+    n_edge = sum(p["edge"] for p in pts)
+    n_na = sum(1 for p in pts if p["occ"] == "not_assessable")
+    q = {
+        "q1_pair_valid_ratio": round(q1_pair, 4),
+        "q1_point_valid_ratio": round(q1_pt, 4),
+        "q2_max_gap_s": round(max_gap, 4),
+        "q3_valid_samples_k1": len(k1_vals),
+        "q3_valid_samples_k2": k2_pairs,
+        "q4_edge_mixing_frac": round(n_edge / float(n), 4) if n else 0.0,
+        "q5_not_assessable_frac": round(n_na / float(n), 4) if n else 0.0,
+    }
+    return {"trial_id": trial_id, "task": trial_id.split("_")[1] if "_" in trial_id else "",
+            "observation_window_s": round(T, 4),
+            "k1_thumb_index_surface_p95_mm": None if k1 is None else round(k1, 4),
+            "k2_wrist_surface_speed_p95_mm_s": None if k2 is None else round(k2, 4),
+            "t": {"n_frames": n, "counts": counts},
+            "q": q}
+
+
+def _max_gap_s(pts, mask):
+    """mask가 False인 구간의 최대 시간 길이(초)."""
+    best, start = 0.0, None
+    for p, good in zip(pts, mask):
+        if not good and start is None:
+            start = p["t"]
+        elif good and start is not None:
+            if p["t"] is not None and start is not None:
+                best = max(best, p["t"] - start)
+            start = None
+    if start is not None and pts and pts[-1]["t"] is not None:
+        best = max(best, pts[-1]["t"] - start)
+    return best
+
+
+def apply_q_rules(rec, q1_min=0.0):
+    """프로토콜 §8의 Q 규칙으로 사용가능/보류를 판정한다."""
+    q = rec["q"]
+    reasons = []
+    if q["q1_pair_valid_ratio"] < q1_min:
+        reasons.append("Q1(%.2f<%.2f)" % (q["q1_pair_valid_ratio"], q1_min))
+    if q["q2_max_gap_s"] > Q2_MAX_GAP_S:
+        reasons.append("Q2(gap %.2fs>%.1fs)" % (q["q2_max_gap_s"], Q2_MAX_GAP_S))
+    if q["q4_edge_mixing_frac"] > Q4_MAX_EDGE_FRAC:
+        reasons.append("Q4(edge %.2f)" % q["q4_edge_mixing_frac"])
+    if q["q5_not_assessable_frac"] > Q5_MAX_NA_FRAC:
+        reasons.append("Q5(NA %.2f)" % q["q5_not_assessable_frac"])
+    k1_ok = not reasons and q["q3_valid_samples_k1"] >= Q3_MIN_SAMPLES
+    k2_ok = (not reasons) and q["q3_valid_samples_k2"] >= Q3_MIN_SAMPLES
+    r_k1 = list(reasons)
+    r_k2 = list(reasons)
+    if q["q3_valid_samples_k1"] < Q3_MIN_SAMPLES:
+        r_k1.append("Q3(%d<%d)" % (q["q3_valid_samples_k1"], Q3_MIN_SAMPLES))
+    if q["q3_valid_samples_k2"] < Q3_MIN_SAMPLES:
+        r_k2.append("Q3(%d<%d)" % (q["q3_valid_samples_k2"], Q3_MIN_SAMPLES))
+    rec["usable"] = {"k1": bool(k1_ok), "k2": bool(k2_ok),
+                     "reasons_k1": r_k1, "reasons_k2": r_k2}
+    # 보류된 값은 null로 표시 (프로토콜 §9)
+    if not k1_ok:
+        rec["k1_thumb_index_surface_p95_mm"] = None
+    if not k2_ok:
+        rec["k2_wrist_surface_speed_p95_mm_s"] = None
+    return rec
+
+
+def process_session(session_dir, q1_min=0.0, write=True):
+    meta = load_meta(session_dir)
+    lm_files = sorted(glob.glob(os.path.join(session_dir, "L1_track", "*_landmarks.csv")))
+    out = []
+    for p in lm_files:
+        trial_id = os.path.basename(p).replace("_landmarks.csv", "")
+        rec = process_trial(session_dir, meta, trial_id,
+                            depth_scale=meta.get("depth_scale", 1.0))
+        rec["provenance"] = {
+            "session": os.path.basename(session_dir.rstrip("/\\")),
+            "camera_model": meta.get("camera_model", ""),
+            "fx": meta.get("fx"), "fy": meta.get("fy"),
+            "cx": meta.get("cx"), "cy": meta.get("cy"),
+            "fps": meta.get("fps"), "q1_min": q1_min,
+            "units": {"k1": "mm", "k2": "mm/s", "t": "s"},
+            "pipeline": "l1_pipeline/k1k2_from_files.py",
+        }
+        rec = apply_q_rules(rec, q1_min)
+        out.append(rec)
+        if write:
+            d = os.path.join(session_dir, "L2_metric")
+            os.makedirs(d, exist_ok=True)
+            with io.open(os.path.join(d, trial_id + ".json"), "w", encoding="utf-8") as f:
+                json.dump(rec, f, ensure_ascii=False, indent=2)
+    return out, meta
+
+
+# ===========================================================================
+# 4. 오라클 (파일 I/O 경로 검증)
+# ===========================================================================
+def _write_synthetic_session(root, w=640, h=480, fx=500.0, fy=500.0, n=60,
+                             z=750.0, thumb_index_mm=15.0, step_px=3.0,
+                             gap_frames=(0, 0), bg_thumb_frames=(0, 0),
+                             edge_frac=0.0, na_frac=0.0, fps=30.0):
+    """합성 세션을 디스크에 쓴다.
+
+    ⚠️ 기대값을 **생성기가 직접 계산해서 반환**한다. 손으로 계산하지 않는다
+       (이전 판에서 손계산 기대값이 틀려 오라클이 오탐한 적이 있다).
+    반환: (meta, expected)  expected = {"k1_mm":..., "k2_mm_s":..., "n_bg":...}
+    """
+    os.makedirs(os.path.join(root, "L1_track"), exist_ok=True)
+    os.makedirs(os.path.join(root, "L0_raw", "SYN_T1_t01_depth"), exist_ok=True)
+    mm_per_px = z / fx
+    d_px = thumb_index_mm / mm_per_px              # 요구 K1을 픽셀 차이로 환산
+    d_px = float(int(round(d_px)))                 # 정수 픽셀(양자화)
+    eff_k1_mm = d_px * mm_per_px
+    eff_k2_mm_s = step_px * mm_per_px * fps
+
+    # 손이 화면 안에 머무는지 확인 (초과 시 오라클이 무의미해진다)
+    u0, v0 = 200, 160
+    assert u0 + step_px * (n - 1) + 8 < w, "합성 궤적이 프레임 폭을 벗어남"
+    assert v0 + 8 < h, "합성 궤적이 프레임 높이를 벗어남"
+    assert 60.0 <= (50 * mm_per_px) <= 230.0, "손목-손끝 거리가 손-일관성 범위 밖"
+
+    meta = {"participant_id": "SYN", "group": "selftest",
+            "camera_model": "SYNTHETIC", "width": w, "height": h, "fps": fps,
+            "fx": fx, "fy": fy, "cx": w / 2.0, "cy": h / 2.0,
+            "depth_scale": 1.0, "aligned_to": "color"}
+    with io.open(os.path.join(root, "meta.json"), "w", encoding="utf-8") as f:
+        json.dump(meta, f, ensure_ascii=False, indent=2)
+
+    n_edge = int(round(edge_frac * n))
+    n_na = int(round(na_frac * n))
+    rows = []
+    for i in range(n):
+        t = i / fps
+        arr = np.full((h, w), 2400, dtype=np.uint16)          # 배경
+        u = int(round(u0 + step_px * i))
+        v = v0
+
+        def disc(cu, cv_, r, d):
+            y0, y1 = max(0, cv_ - r), min(h, cv_ + r + 1)
+            x0, x1 = max(0, cu - r), min(w, cu + r + 1)
+            if y0 >= y1 or x0 >= x1:
+                return
+            yy, xx = np.ogrid[y0:y1, x0:x1]
+            m = (yy - cv_) ** 2 + (xx - cu) ** 2 <= r * r
+            arr[y0:y1, x0:x1][m] = d
+
+        in_gap = gap_frames[0] <= i < gap_frames[1]
+        if in_gap:
+            rows.append([i, "%.6f" % t, "", "", "", "", "", "", "", ""])
+            _imwrite16(os.path.join(root, "L0_raw", "SYN_T1_t01_depth",
+                                    "%06d.png" % i), arr)
+            continue
+
+        thumb_v = v - 50
+        index_v = thumb_v + int(d_px)
+        disc(u, v, 6, int(z))                       # wrist
+        bg = bg_thumb_frames[0] <= i < bg_thumb_frames[1]
+        disc(u, thumb_v, 4, 2400 if bg else int(z))  # thumb (배경이면 배경깊이)
+        disc(u, index_v, 4, int(z))                  # index
+
+        occ = "partially_occluded" if bg else "visible"
+        if i < n_na:
+            occ = "not_assessable"
+        edge = 1 if i < n_edge else 0
+        rows.append([i, "%.6f" % t, u, thumb_v, u, index_v, u, v, occ, edge])
+        _imwrite16(os.path.join(root, "L0_raw", "SYN_T1_t01_depth",
+                                "%06d.png" % i), arr)
+
+    with io.open(os.path.join(root, "L1_track", "SYN_T1_t01_landmarks.csv"),
+                 "w", encoding="utf-8", newline="") as f:
+        wr = csv.writer(f)
+        wr.writerow(["frame", "t_s", "thumb_u", "thumb_v", "index_u", "index_v",
+                     "wrist_u", "wrist_v", "occlusion_state", "edge_mixing_suspect"])
+        wr.writerows(rows)
+
+    expected = {"k1_mm": round(eff_k1_mm, 6), "k2_mm_s": round(eff_k2_mm_s, 6),
+                "n_frames": n, "n_bg": max(0, bg_thumb_frames[1] - bg_thumb_frames[0]),
+                "n_edge": n_edge, "n_na": n_na,
+                "gap_s": (gap_frames[1] - gap_frames[0]) / fps if gap_frames[1] > gap_frames[0] else 0.0}
+    return meta, expected
+
+
+def selftest():
+    if not _HAVE_CV:
+        print("cv2/numpy 없음 — selftest 불가"); return False
+    import shutil
+    base = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_selftest")
+    if os.path.isdir(base):
+        shutil.rmtree(base)
+    os.makedirs(base)
+    log = []
+    ok_all = True
+
+    def chk(name, cond, detail=""):
+        nonlocal ok_all
+        print("  %-46s %s  %s" % (name, "PASS" if cond else "FAIL", detail))
+        log.append("%s %s %s" % (name, "PASS" if cond else "FAIL", detail))
+        ok_all = ok_all and bool(cond)
+
+    def run(tag, **kw):
+        q1 = kw.pop("q1_min", 0.7)
+        root = os.path.join(base, tag)
+        os.makedirs(root)
+        meta, exp = _write_synthetic_session(root, **kw)
+        recs, _ = process_session(root, q1_min=q1, write=True)
+        return recs[0], exp, root
+
+    print("[S1] 정상 세션 (파일 -> JSON 전 구간)")
+    r, exp, root = run("good", n=60, thumb_index_mm=15.0, step_px=3.0)
+    chk("K1 == 생성기 기대값 %.2f mm" % exp["k1_mm"],
+        r["k1_thumb_index_surface_p95_mm"] is not None
+        and abs(r["k1_thumb_index_surface_p95_mm"] - exp["k1_mm"]) < 0.05,
+        "got %s" % r["k1_thumb_index_surface_p95_mm"])
+    chk("K2 == 생성기 기대값 %.1f mm/s" % exp["k2_mm_s"],
+        r["k2_wrist_surface_speed_p95_mm_s"] is not None
+        and abs(r["k2_wrist_surface_speed_p95_mm_s"] - exp["k2_mm_s"]) < 1.0,
+        "got %s" % r["k2_wrist_surface_speed_p95_mm_s"])
+    chk("K1·K2 모두 사용가능", r["usable"]["k1"] and r["usable"]["k2"], str(r["usable"]))
+    chk("L2 JSON 생성", os.path.exists(os.path.join(root, "L2_metric", "SYN_T1_t01.json")))
+
+    print("[S2] 0.4초 결측 -> Q2로 보류")
+    r2, exp2, _ = run("gap", n=60, gap_frames=(20, 32))
+    chk("max_gap == %.2f초" % exp2["gap_s"],
+        abs(r2["q"]["q2_max_gap_s"] - exp2["gap_s"]) < 0.04,
+        "got %.3f" % r2["q"]["q2_max_gap_s"])
+    chk("K1 보류 + 값 null", r2["usable"]["k1"] is False
+        and r2["k1_thumb_index_surface_p95_mm"] is None, str(r2["usable"]["reasons_k1"]))
+
+    print("[S3] 유효 샘플 40개(<50) -> Q3로 보류")
+    r3, exp3, _ = run("few", n=40)
+    chk("K1 보류(Q3)", r3["usable"]["k1"] is False
+        and any("Q3" in x for x in r3["usable"]["reasons_k1"]),
+        str(r3["usable"]["reasons_k1"]))
+
+    print("[S4] 배경에 찍힌 랜드마크 %d건 -> 손-일관성 검사" % 10)
+    r4, exp4, _ = run("bg", n=60, bg_thumb_frames=(20, 30))
+    chk("검출 카운트 == 10", r4["t"]["counts"].get("hand_consistency_fail", 0) == 10,
+        str(r4["t"]["counts"]))
+
+    print("[S5] edge_mixing 60%% -> Q4로 보류")
+    r5, exp5, _ = run("edge", n=60, edge_frac=0.6, q1_min=0.0)
+    chk("edge_frac == 0.60", abs(r5["q"]["q4_edge_mixing_frac"] - 0.6) < 0.02,
+        "got %.2f" % r5["q"]["q4_edge_mixing_frac"])
+    chk("K1 보류(Q4)", r5["usable"]["k1"] is False
+        and any("Q4" in x for x in r5["usable"]["reasons_k1"]),
+        str(r5["usable"]["reasons_k1"]))
+
+    print("")
+    print("오라클 종합: %s" % ("ALL PASS" if ok_all else "FAIL 있음"))
+    print("※ 합성 데이터다. 실제 카메라·손 성능이 아니다.")
+    out = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                       "results", "l1_files_oracle.txt")
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    with io.open(out, "w", encoding="utf-8") as f:
+        f.write("\n".join(log) + "\n")
+    print("[saved] %s" % out)
+    return ok_all
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--session")
+    ap.add_argument("--q1-min", type=float, default=0.0)
+    a = ap.parse_args()
+    if a.selftest:
+        sys.exit(0 if selftest() else 1)
+    if not a.session:
+        print(__doc__); return
+    recs, meta = process_session(a.session, q1_min=a.q1_min, write=True)
+    for r in recs:
+        print("%-16s K1=%s  K2=%s  usable=%s/%s" % (
+            r["trial_id"],
+            r["k1_thumb_index_surface_p95_mm"], r["k2_wrist_surface_speed_p95_mm_s"],
+            r["usable"]["k1"], r["usable"]["k2"]))
+    print("\n[%d trials] L2_metric/ 에 JSON 기록" % len(recs))
+
+
+if __name__ == "__main__":
+    main()

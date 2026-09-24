@@ -1,0 +1,667 @@
+# 연구계획서 v6 — 단일 RGB-D 파지 평가에서 운동학 측정 오류의 VLM 채점 전파와 품질 기반 입력 선택
+
+**기준일:** 2026-09-22 · **v6.1 개정:** 2026-09-24 (차별점 재설계 반영)
+**개정 근거:** `outputs/03-검증/systematic-search-novelty-audit.md` §11~§14 (Semantic Scholar 9질의 + OpenAlex 4질의 확장 검색, 최근접 경쟁자 C1~C5 발견)
+**지위:** **정본.** 연구 질문·근거·절차·분석을 모두 담은 단일 계획서다.
+**이력 문서:** `experiment-plan-v6-naive.md`(설계 이력 전체), `protocol-v6-frozen.md`(현장 실행 체크리스트), `outputs/.drafts/experiment-plan-v6-verification.md`(검증 감사 원장). 셋 다 보존하되 **충돌 시 이 문서가 우선**한다.
+**근거 등급:** `A`=1차 원문 직접 확인 · `B`=2차 자료(초록·공식문서) · `C`=자체 계산·합성 · `D`=미검증 가정
+**동결 절차:** 최종 편집 후 `sha256sum outputs/research-plan-v6.md` 실행, 해시·날짜를 아래에 기록
+`해시: ______________  날짜: ________`
+
+---
+
+## 0. 한 장 요약
+
+| 항목 | 내용 |
+|---|---|
+| **질문** | **품질로 선택한 수치**를 주면 VLM 항목 채점 오차가 줄어드는가 — 그리고 그 대가는 **과잉 보류**인가? (측정 오류의 전파는 **기전**으로 함께 본다) |
+| **과제** | ARAT **3번**(5 cm 블록 55 g) + **12번**(엄지–검지 구슬 1.6 cm, 5.4 g) |
+| **장비** | 단일 RGB-D 1대(D455, 1280×800/1280×720, **30 fps**), 원본 전체 저장 |
+| **VLM** | Qwen2.5-VL-72B-Instruct (Li 2026과 동일), greedy, 0-shot 동일 템플릿 |
+| **대상(10주용)** | 환자 15명(개발 3 + 본평가 12), 건강인 16명(개발 6 + 검증 10) |
+| **주 결과** | **PR-1** 게이팅 효과(A2 전체수치 vs A3 품질선택, 같은 영상·같은 라벨) · **PR-2** 게이팅의 고유 가치(A3 vs R 같은 양 무작위 제거) |
+| **1급 기술 결과** | **보류율(A3)** · **(보류율, MAE) Pareto 곡선**(Q1 sweep) — 게이팅의 **대가**를 숨기지 않는다 |
+| **정답** | **3층으로 분리** — 임상 참조(치료사 점수)=채점의 정답 / 물리 참조(치구·3D)=수치 오차의 정답 / 관측 참조(2인 주석)=품질의 정답 |
+| **범위 밖** | 정상 GMM·군집화·정상 참조모형, 전체 ARAT/FMA 대체, 새 VLM 학습, 임상 점수 대체 주장 |
+
+---
+
+## 1. 연구 질문과 가설
+
+### 1.1 한 문장 질문
+> 단일 RGB-D가 손과 물체의 가림 속에서 만든 수치를 **VLM이 얼마나 잘못 신뢰하는가**, 그리고 **측정 품질이 확인된 수치만 주면** 그 잘못된 신뢰가 줄어드는가?
+
+### 1.2 가설 (방향을 사전에 적는다)
+
+| # | 가설 | 지지 관측 | 반증 관측 | 사전 근거 |
+|---|---|---|---|---|
+| **H1** | **품질 게이팅이 채점 오차를 줄인다** (게이팅 효과) | `MAE(A3) < MAE(A2)` | A3 ≈ A2 | Tang 2025: 예시 3개 최적, **4개에서 0.42로 붕괴** → 정보량·정보 품질이 성능을 바꾼다 |
+| **H2** | **품질 규칙이 무작위 제거보다 낫다** (고유 가치) | `MAE(A3) < MAE(R)` | A3 ≈ R | 게이팅의 이득이 "숫자를 덜 봐서"인지 "나쁜 숫자를 안 봐서"인지 구분해야 한다 |
+| **H3** | **게이팅의 이득은 보류율과 함께 움직인다** (대가) | (보류율, MAE) Pareto에서 이득 구간이 좁음 | 보류율과 무관하게 이득 | Selective "Selective Prediction"(ACL 2024, arXiv:2402.15610): **과잉 보류**가 명명된 실패 모드 |
+| **H4** | 영상은 수치와 **다른 정보**를 준다 | A3 < A4 | A4 ≈ A3 | Li 2026: 활동 인식 **87.2%/73.5%**는 되지만 항목 점수는 평탄 |
+| **H5** | *(기전, **탐색적으로 격하**)* 수치 오류가 커지면 채점 오차도 커진다 | bias_3u 주입 시 MAE↑ | 오염에 둔감 | Li 2022: 센서 96 mm 오차 상태에서 r=0.981. **단 Li 2026·ST-VLM이 "VLM은 수치를 못 읽는다"를 이미 보였으므로 어느 방향이든 재확인 위험** |
+
+### 1.3 주 결과 (확증적, Holm 보정)
+
+| # | 정의 | 왜 이것이 주 결과인가 |
+|---|---|---|
+| **PR-1** | `G_i = MAE_i(A2) − MAE_i(A3)` **(게이팅 효과)** | **같은 영상·같은 라벨**에서 **수치 집합만** 바꾼다 → 라벨 품질 변동이 상쇄되고, **개입(게이팅)의 인과 효과**를 본다 |
+| **PR-2** | `E_i = MAE_i(R) − MAE_i(A3)` **(게이팅의 고유 가치)** | A3는 A2보다 **정보가 적다**. "숫자를 덜 보여준 탓"을 통제해야 **품질 규칙 자체의 기여**가 남는다 |
+
+**1급 기술 결과 (검정 아님, 반드시 보고):**
+- **보류율(A3)** = A3에서 Q 게이트가 수치를 버린 시행 비율 → **게이팅의 대가**를 수치로 드러낸다
+- **(보류율, MAE) Pareto 곡선** = Q1 임계값을 쓸어 얻는 트레이드오프 (⚠️ 컴퓨트 의존, §13)
+
+**나머지(`A2−A1`, `A3−A4`, A0/A0-time, 프레임 밀도, **큰 오차(≥2점) 비율**, bias_3u 기전, 설명 평가)는 전부 탐색적으로 강등**하고 보정 없이 CI·효과크기만 보고한다.
+
+> **왜 PR-1을 게이팅 효과로 바꿨는가:**
+> ① 임상 라벨 자체가 흐릿하다 (Valladares 2024: 만성 고기능군 'notable vs full' **특이도 0.55**). 라벨이 흐릿하면 "모델이 틀렸다"와 "라벨이 흐릿했다"를 구분할 수 없다. **PR-1은 같은 라벨을 양쪽에 쓰므로 이 문제에 면역**이다.
+> ② 이전 초안의 PR-1(**오염 전파**)은 **Li 2026(PLOS Digit Health, PMID 42406872)·ST-VLM이 "VLM은 재활 운동 수치를 못 읽는다"를 이미 보였으므로**, 어느 방향이든 **재확인**으로 보일 위험이 컸다 → **H5(기전, 탐색적)로 격하**했다.
+> ③ A2 vs A3는 **"게이팅 on/off"라는 순수 개입 비교**이며, R 조건이 정보량 교란을 제거한다. **정확히 2개의 확증적 검정**이 되어 Holm 보정 구조가 유지된다.
+
+---
+
+## 2. 배경: 왜 이 연구가 필요한가
+
+| 문제 | 근거 | 수치 |
+|---|---|---|
+| ① **임상 척도가 이미 포화된다** | Kristersson 2019 (N=117), Hernández 2019 (N=60) | ARAT 발병 3일째 **바닥 38%**, 4주째 천장 21.3%; FMA-UE 만점 **21.7%** |
+| ② **점수는 맞아도 수치는 틀릴 수 있다** | **Li 2022** (N=20, RealSense vs Vicon) | 손목 위치 **평균 96 mm** 오차인데 치료사 점수와 **r=0.981** |
+| ③ **VLM 단독으로는 채점이 안 된다** | **Li 2026** (건강 20 + 환자 51) | 예측 FMA가 **중증도 무관 평탄**, "무조건 1점" 기준선과 비슷, **0점 환자에게 환각** |
+
+**②와 ③ 사이의 빈칸이 우리 자리다: "수치가 틀리면 AI 채점도 틀리는가?"는 아직 아무도 답하지 않았다.**
+
+**동시에 이미 선행된 것(재주장 금지):** ARAT 손 과제 운동학 측정·건강인 비교(Padilla-Magaña 2022: 환자 12 + 건강 25, 2–3점 구간만으로 **SVM 97.8%**), JSON·특징 주입(Tang 2025, Xing 2025), 불확실성·보류(xAARA 엔트로피 0.459→**0.004 nats**), 운동학>순서형 점수(Unger 2026: ARAT 만점 이후에도 **MCID 15 pp** 검출), 영상+수치 결합(UbiPhysio, BiomechGPT).
+
+### 2.1 포지셔닝 표 — "이미 있는 것"과 "없는 것" (2026-09-24 확장 검색 반영)
+
+| 구성요소 | 이미 있는 것 | 출처 | **우리가 더하는 것** |
+|---|---|---|---|
+| 이미지 품질 게이트 → VLM 라우팅 | ✅ blur 3분류 게이트 + **selective prediction 형식화** | **Edges Before Embeddings**, arXiv:2606.25838 (2026-06-24) | **가림/추적실패 축** · **순서형 임상 점수** · **규칙 기반(학습 불필요)** |
+| 원격 재활 멀티미디어 품질 보증 | ✅ 과제인지형 QA | **NeuroSift**, JMIR 2026, doi 10.2196/91756, PMID 42612206 | **생성형 VLM** · **게이팅의 인과 효과 측정** |
+| VLM은 재활 수치를 못 읽음 | ✅ 건강 20 + 뇌졸중 51명 실증 | **Li 2026**, PLOS Digit Health 5(7):e0001506, PMID 42406872 | **그 실패를 게이팅이 완화하는지** |
+| VLM 보류/abstention | ✅ conformal 정책 · **over-abstention 명명** | Selective "Selective Prediction" ACL 2024 (arXiv:2402.15610) · arXiv:2502.06884 | **임상 순서형 채점에서의 보류** |
+| 순서형 채점 편향 | ✅ 중심경향 편향 감사 | **Auditing MLLM Raters**, arXiv:2605.16386 | **편향을 줄이는 개입(게이팅)으로서** |
+| 재활 MLLM 벤치마크 | ✅ 평가 패러다임·**안전 경계** | Ye 2026, Sci Rep, doi 10.1038/s41598-026-71999-w | **개입의 인과 결과** |
+| 품질 게이팅(골격 DL) | ✅ EVGS 2025 · JMIR Post Hoc QC · AGMA-PESS | §2 반박 참조 | **생성형 VLM 입력** |
+| RGB-D/depth로 FMA·ARAT 자동채점 | ✅ **임상 검증까지 완료** | Brain Sci 2022 (PMID 36291314) · Clin Rehabil 2024 (PMID 38693881) | (없음 — **이 축은 신규성 없음. 배경 인용만**) |
+
+**→ 따라서 신규성은 "제안"이 아니라 "측정"에 있다.** 문장을 **"우리가 처음 제안"이 아니라 "우리가 처음 측정"**으로 고정한다.
+
+---
+
+## 3. 설계 결정과 근거 대장
+
+**이 표가 이 계획서의 뼈대다.** 각 결정에 "왜 그렇게 정했는가"가 붙어 있다.
+
+| # | 결정 | 값 | 근거 | 등급 |
+|---|---|---|---|---|
+| 1 | **과제 2개** | ARAT 3번 + 12번 | Unger 2026: pick-and-place 계열 **AUC 0.96–>0.99**로 가장 잘 갈림. Yozbatiran 2008 물성표 | A |
+| 2 | **숫돌 측면집기 제외** | 제외 | 엄지–검지 끝 거리와 연결이 약함(v5 §1). 단 **왜 16활동→2항목으로 줄였는지 논문에 설명 의무**(Padilla-Magaña) | A |
+| 3 | **단일 RGB-D** | 1대 | Lee 2025 체계적 고찰: RealSense를 쓴 연구 **전 세계 2편**(Kinect V2 12편, Azure 3편) → 공백이 정량적으로 성립 | B |
+| 4 | **원본 프레임레이트** | ~~30 fps~~ → **실측 16.93 / 24.58 fps, dt 불규칙** | 🔴 **v6.1 실측**: 20260915 세션 **16.934 fps**(1825프레임 / 107.713초), 20260916 세션 **24.580 fps**. dt **불규칙**(0.0278–0.1423 s, 중앙 0.0553). **D455 스펙 30 fps와 불일치** → **per-frame timestamp 필수**(`video_timestamps.csv` 존재). Faity 2022: 30 Hz에서도 최대속도 ICC **0.21** 실패 | **A(실측)** |
+| 5 | **시행 수: 수집** | 연습 2 + 본 **5~15** (10주는 5 우선) | Frykberg 2021: **21개 중 18개 지표가 2–3회**로 ICC≥0.75. 단 **MT returning 8회, TTPV 환자 >9회**. SRRR2 합의 **≥15회** | A |
+| 6 | **모델 평가 시행** | 과제당 **본 1–3회** | 위와 동일. **“연습 제외 후 첫 3회”로 사전 고정**(사람이 고르지 않도록) | A |
+| 7 | **속도 지표 취약성 인정** | K2는 민감도 분석 필수 | Wagner 2008: **"peak velocity·TTPV·MT는 50% 이상 변해야 진짜 변화"**, ICC .04–.99, MDC 7.4–98.9% | A |
+| 8 | **프레임 샘플링** | 앞 5초 **10 Hz 목표** + 초과분 2 Hz, 상한 64, 640×480 | 14프레임은 5초 과제에서 0.47초만 덮어 0.3초 사건에 **0.8프레임**; 10 Hz면 **3.0프레임**. Zamin 2023(15프레임)·Li 2026(8프레임)보다 조밀. ⚠️ **실측 16.93 fps에서는 10 Hz가 8.47 Hz로 저하**(2프레임 간격). **하네스는 실제 fps 를 읽어 계산**한다(`run_vlm.py: frame_indices`) | C/A |
+| 9 | **닫힘 구간 기준** | 닫힘 ≈ **25% MT** | Jeannerod 1984: 저속기(닫힘)가 **~75% MT 이후 시작** → 0.5초 시행은 닫힘 125 ms(10 Hz로 1.25프레임) | B |
+| 10 | **수치 요약은 P95** | K1·K2 = P95 | 극단치 완화(v5 §5). Unger 2026은 정규화 앵커로 **Q75** 사용 | A |
+| 11 | **K1·K2 계산 10단계** | 별도 §5 | MediaPipe 공식 인덱스 + 자체 오라클 | B/C |
+| 12 | **손-일관성 검사** | 3D 거리(손목–손끝) ∈ **[60, 230] mm** | MediaPipe는 **가려진 관절도 예측**(공식 이슈 #3008) → 랜드마크가 배경에 찍힘. **오라클: 검사 OFF면 K1이 110배 오염(15→1654 mm)** | B/C |
+| 13 | **Q 규칙 임계값** | Q2 >0.3초 / Q3 <50샘플 / Q4·Q5 >50% → 보류 | 시뮬레이션: K2 P95 CV **4.0% @n=50 vs 13.3% @n=30** | C |
+| 14 | **Q1 임계값** | 개발 자료에서 **balanced accuracy 최대화**, **사람단위 2-fold** | 과적합 방지. **ARAT 점수·VLM 정답률로 고르기 금지** | B |
+| 15 | **조건 A0~A4 + R** | 별도 §6 | v5 §7 + **R 조건이 "정보량 통제"의 핵심** | A |
+| 16 | **오류 주입** | bias 1u/3u(전 값) + burst 3u(**시행 단위**) | 시뮬레이션: 3프레임 burst는 P95를 **+2.6% 이하**밖에 못 움직여 **모델 입력이 안 바뀜 = 실험 무효** | C |
+| 17 | **u의 정의** | 독립 기준 대비 **P95 절대오차**; 폴백 3D→치구→2D주석; **B안=기저값 10%/30%** | 상대변화율 = u/기저값. **u/기저값 > 0.10이면 "이미 오염" 라벨** | C |
+| 18 | **라벨: 평가자 2인** | 현장 치료사(전 시행) + 눈가림 영상 평가자(환자당 12영상) | Hernández 2019: 항목 일치 >90%, 갈리는 항목 4/33. xAARA: 2명·다시점으로 엔트로피 0.459→0.004 | A |
+| 19 | **가림 주석 2인 독립** | RGB만, VLM과 **동일한 10 Hz 프레임**, 3단계 | Scano 2020: 구역별 재현성 차이 | A |
+| 20 | **환자 분포 목표** | 0점 1–2 / **1점 ≥3 / 2점 ≥4** / 3점 2–3 (과제별) | Valladares 2024: 만성 고기능 특이도 **0.55** = 가장 흐릿한 경계가 1–2 구간 | B |
+| 21 | **VLM 모델** | Qwen2.5-VL-72B-Instruct | **Li 2026과 동일 모델** → 그들의 실패와 직접 비교 가능 | B |
+| 22 | **채점 기준 프로토콜** | Yozbatiran 2008 | Pohl 2024/2025: **6개 프로토콜이 불일치**(손목 돌리기 시 팔꿈치 0° vs 90°) → 정본 필요 | A |
+| 23 | **T1/T2의 K1 지위 구분** | T1=참고용, **T2=주 결과** | 3번 항목은 "thumb and fingers in opposition이면 어떤 파지든 허용" → 손가락 쌍 미강제. 12번은 **엄지+검지 패드 강제** | A |
+| 24 | **다중비교** | 확증 **PR-1·PR-2 2개만** Holm, 나머지 탐색적 | 6조건 × 다수 결과에서 유의성 하나로 결론 내지 않기 | C |
+| 25 | **사전등록** | 해시+날짜+8개 체크리스트 | 데이터 보기 전 동결 | C |
+| 26 | **중심축 = 게이팅 효과** | PR-1 = `MAE(A2)−MAE(A3)` | A2 vs A3는 **순수 개입 비교**(같은 영상·같은 라벨), R이 정보량 교란 제거 | C |
+| 27 | **과잉 보류를 1급 결과로** | 보류율 + (보류율,MAE) Pareto | Selective "Selective Prediction"(ACL 2024): **과잉 보류가 명명된 실패 모드**인데 임상 순서형 채점에서 비용 곡선은 측정된 적 없음 | B |
+| 28 | **오염 전파는 기전으로 격하** | H5, 탐색적 | Li 2026(PMID 42406872)·ST-VLM이 "VLM은 수치를 못 읽는다"를 이미 보임 → 재확인 위험 | A |
+| 29 | **A4 = Li 2026 "시각정보 제거 기준선" 대응** | 조건 추가 없음 | Li 2026: "dose 추정치가 시각정보 배제 기준선과 비슷" → 우리 **A4(수치만, RGB 없음)**가 그 대응물 | B |
+| 30 | **게이트 성격 명시** | 랜드마크 기하 규칙(학습 아님) | arXiv:2606.25838은 **학습된 MobileNetV3** 게이트 → 우리는 재현성·비용 우위(일반성은 열위)를 **정직하게** 쓴다 | B |
+
+---
+
+## 4. 실험 절차
+
+### 4.1 대상자와 규모
+
+| 집단 | 인원 | 시행 | 용도 |
+|---|---|---|---|
+| 건강인 개발 | **6** | 과제당 연습 2 + 본 5~15 | 파이프라인·가림 주석·Q 후보 개발 |
+| 건강인 독립 검증 | **10** | 동일 (사람 단위 독립) | 규칙 재현성 |
+| 환자 개발 | **3** | 동일 | 가림·채점 가능성, 프롬프트 동결 |
+| 환자 본평가 | **12** | 동일. **모델 평가는 과제당 본 1–3회** | PR-1·PR-2 |
+
+- **총 시행:** 건강인 16 × 34 = 544 / 환자 15 × 34 = 510 (5회 축소 시 각 224 / 210)
+- **VLM에 넣는 것:** 12명 × 2과제 × 3시행 = **72영상** (나머지는 재현성·추이 계산용)
+- **환자 범위:** 성인 일측성 뇌졸중, 임상적으로 안정, 앉아서 시도 가능. 기본 발병 후 3개월 이상.
+- ⚠️ **점수를 보고 유리한 사람을 제거·추가하지 않는다.** 실어증 진단이나 과제 실패만으로 제외하지 않는다.
+
+### 4.2 과제와 물성 (Yozbatiran 2008 정본)
+
+| | ARAT | 대상 | 배치 | 3점 기준 |
+|---|---|---|---|---|
+| **T1** | 3번 | 5 cm 목재 블록 **55 g** | 테이블 → **선반 37 cm 위** | **5초 이내 정상 수행** |
+| **T2** | 12번 | 구슬 **지름 1.6 cm, 5.4 g** | 하부 뚜껑(근위연 5 cm) → 선반 위 상부 뚜껑 | 5초 이내 + **엄지+검지 패드 맞섬** |
+
+| 환경 | 값 |
+|---|---|
+| 테이블 | 높이 **75 cm**, 너비 76, 깊이 49 |
+| 의자 | 좌면 **46 cm**, 팔걸이 없음. 몸통이 등받이에 **계속 접촉** |
+| 선반 | 테이블 면에서 **37 cm**; 근위연에서 **20 ± 5 cm** (길이 방향) |
+| 물체 위치 | 정중시상면과 액와선의 **중간** |
+| 채점 | **3=5초 이내 / 2=완료했으나 5–60초 또는 큰 어려움 / 1=60초 내 부분 / 0=60초 내 불가** |
+| 허용 | 물체를 떨어뜨리고 다시 들어올려도 **감점 없음**. 점수는 **최선 수행** 기준 |
+| 일반 | 각 항목 **60초 제한**, **한 손만** 사용, 소척도당 비환측 먼저 |
+
+⚠️ **두 항목 합계(0–6점)를 임상 점수로 쓰지 않는다.**
+⚠️ **T2에서 “지정 손가락 사용·패드 사용”은 부가 기록이 아니라 표준 채점 기준이다.**
+
+### 4.3 세션 대본 (치료사가 그대로 읽는 것)
+
+준비물: 의자·테이블·선반·블록·구슬·뚜껑 2개·무광 매트·카메라+삼각대·캘리퍼·채점 시트·타이머
+
+| 단계 | 시간 | 담당 | 내용 |
+|---|---|---|---|
+| 1 | 3분 | 연구자 | 카메라 프리셋 확인, 치구로 초점·노출 점검, **저장 시작** |
+| 2 | 2분 | 치료사 | 동의·안전 확인(통증·피로·지시 이해) |
+| 3 | 2분 | 치료사 | 자세: 등 접촉, 발바닥 지면, 머리 중립. **묶지 않음** |
+| 4 | 3분 | 치료사 | 지시문 낭독 + **연습 2회**(기록하되 분석 제외 표시) |
+| 5 | 6–8분 | 치료사 | **T1 본 시행** — “grasp the block that I have placed here, lift it up, and place then release it on top of that shelf.” 시행마다 즉시 채점 |
+| 6 | 2분 | — | 휴식 |
+| 7 | 6–8분 | 치료사 | **T2 본 시행** — “grasp the marble using these fingers, lift it up, and place it in the tin on top of the shelf.” 즉시 채점 |
+| 8 | 2분 | — | 휴식 |
+| 9 | 6–8분 | 치료사 | T1/T2 후반 시행(15회를 채우는 경우) |
+| 10 | 3분 | 연구자 | 파일 재생 확인, 누락 점검, **실제 소요시간 기록** |
+
+**순서:** `T1연습2 → T1본 → 휴식2분 → T2연습2 → T2본 → 휴식2분 → T1후반 → T2후반`
+**시행마다 과제·블록·시행번호 기록** → 시행 순서에 따른 추세를 분석에 넣는다 (Frykberg: 건강인에서 추세 유의).
+
+⚠️ 금지: 물체를 잡아주거나 손을 유도 / **성공·접촉 순간을 사람이 골라 입력**(주분석) / 실패 영상 삭제 / 점수 보고 대상자 제거·추가
+
+### 4.4 채점 시트
+
+파일 `S07_score.csv`, 필드:
+`participant_id, side, task, phase(practice|main), trial_index, score(0-3), time_s, finger_used, pad_used, voluntary_lift, reached_target, released, abnormal_arm, posture_loss, not_assessable, rater, blinded, note`
+
+- **현장 치료사:** 전 시행(1인 최대 30점)
+- **독립 영상 평가자:** 환자당 12영상(VLM이 보는 6 + 무작위 6), **전체 영상** 시청, 첫 점수·모델 출력에 **눈가림**
+  - ⚠️ **참조 평가자에게 모델과 같은 50프레임 제한을 적용하지 않는다** (불공정 비교 방지)
+- `finger_used`·`pad_used` 등은 **T2 채점 기준의 일부**이면서 **모델 입력에서는 제외**한다.
+
+### 4.5 장비·저장
+
+**카메라 (매 시행 전 체크)**
+- [ ] 작업거리 **0.65–0.85 m**, 엄지쪽 비스듬한 측면, 아래 **30–45도** (초기 후보, 확정 표준 아님)
+- [ ] RGB 1280×800 / depth 1280×720 / **30 fps**
+- [ ] 손 디테일 + 팔/상체 + **선반이 함께** 보이는가
+- [ ] 좌/우 마비별 **프리셋** 적용
+- [ ] 저장 항목: RGB · **원시 depth** · **장치 타임스탬프** · depth scale · 내/외부 파라미터 · 노출 · 펌웨어 · SDK
+- [ ] **🎥 저장 검증: `L0_raw/<trial>_depth/` 의 PNG 개수 == 프레임 수** (아니면 재촬영)
+
+**저장 계층**
+| 계층 | 내용 | 삭제 |
+|---|---|---|
+| **L0** | 원본 RGB·원시 depth(mm)·장치 타임스탬프·파라미터 | 금지 |
+| **L1** | 프레임 단위 랜드마크, 신뢰도, depth 유효 마스크 | 금지 |
+| **L2** | K1·K2·Q·T (시행 요약 JSON) | 재계산 가능 |
+| **L3** | VLM 입력 프레임(640×480) + 프롬프트 | 재생성 가능 |
+
+⚠️ **운동학 수치는 L1에서만 계산한다.** VLM 프레임에서 재계산하지 않는다.
+
+**🚨 데이터 저장 필수 규칙 (실측으로 발견)**
+| 규칙 | 내용 |
+|---|---|
+| **`cv2.imwrite` 금지** | OpenCV는 Windows **비ASCII 경로에서 조용히 False를 반환**한다. 실측: 한글 포함 절대경로 → **파일 0개** / 상대 ASCII → 성공 / `imencode+tofile` → 성공. 우리 경로가 `바탕 화면`을 포함하므로 **깊이 프레임이 전부 안 저장될 뻔했다** |
+| **우회 코드** | `ok, buf = cv2.imencode(".png", arr)` → `buf.tofile(path)` → `getsize>0` 확인 → 실패 시 **예외** |
+| **타임스탬프 정밀도** | `t_s`를 **최소 6자리**로. 4자리는 dt 양자화로 K2에 **~0.1% 편향**(135.0000 → 135.1351) |
+
+### 4.6 계측 검증 (주 1, 사람 없이 하루)
+
+**정적 치구 — 135기록:** 20/40/60/80/100 mm × 작업거리 3 × 방향 3 × 반복 3
+- **치구 정의:** 두 표면점 사이의 **참거리를 인코딩하는 무광 지그**(캘리퍼 확인). `measured_mm` = 파이프라인이 같은 두 표면점을 검출해 계산한 3D 거리
+- **판정:** 각 치구에서 **P95 절대오차 ≤ 참값의 10%**. 초과 시 그 규모 K1에 **"이미 오염" 라벨**
+- ⚠️ 치구는 **검출이 쉬운** 대상이다. 통과해도 **가린 손끝 3D 정확도가 검증된 게 아니다**
+
+**동적 기준 (사다리)**
+| 단계 | 확보물 | 얻는 u | 주장 가능 | 주장 금지 |
+|---|---|---|---|---|
+| L1 | OptiTrack/Vicon | 손의 3D 거리·속도 실제 오차 | Q를 "교정된 오차 기반"이라 부를 수 있음 | — |
+| L2 | 눈금 슬라이더 + 60 fps | 평면 속도 오차만 | u_K2 (평면 한정) | 3D 깊이 오차 |
+| L3 | 정적 치구 | 거리 스케일 오차 | u_K1 근사 대리값 | 속도 오차, 가린 손끝 |
+| L4 | 2D 주석만 | 없음 | 추적 품질(Q)만 | **"교정된 mm 오차 확률"** |
+| L5 | 아무것도 없음 + 일관성 점검 | 없음 | Q를 "관측/추적 품질 규칙"으로만 | 수치 정확도 주장 |
+
+**장비 없이 쓸 수 있는 일관성 점검 4종:** ① 알려진 크기 계열(물체 폭에 **비례**하는가 — 등식 아님) ② 좌우 대칭 ③ 시행 간 변동이 Frykberg 수준인가 ④ **치구를 작업자세 자리에 놓고** 재기
+
+**주입 방식 선택**
+| 안 | 정의 | 조건 |
+|---|---|---|
+| **A안** | bias 1u / 3u (u = 실측 P95 절대오차) | 치구가 10% 기준 통과 시 |
+| **B안** | **bias 10% / 30% of 기저값**, burst = 한 시행 +30% | **항상 실행 가능** |
+
+---
+
+## 5. 수치 계산 정의 (K1·K2·Q·T)
+
+| 이름 | 정의 | 금지 해석 |
+|---|---|---|
+| **K1** | **엄지끝·검지끝 표면점** 사이 거리의 P95 (mm) | ❌ 실제 최대 벌림 ❌ 관절 중심 거리 ❌ 접촉 여부 ❌ **PAp라고 부르기** |
+| **K2** | **손목 표면점** 3D 이동 속도의 P95 (mm/s) | ❌ 독립적 손가락 민첩성 ❌ 신경 회복량 |
+| **Q** | 유효 depth 비율·최장 결측·경계 혼합·가림 상태 | ❌ **환자의 중증도** |
+| **T** | 채점 관찰 구간 길이 (s) | ❌ "60초 관찰 = 60초 성공" |
+
+### 5.1 계산 10단계 (실행 코드로 구현됨)
+
+| # | 단계 | 사양 |
+|---|---|---|
+| 1 | depth 정렬 | depth를 **color에 정렬**(SDK) → 랜드마크 픽셀 = depth 픽셀 1:1 |
+| 2 | 랜드마크 | MediaPipe Hands 21점: WRIST=**0**, THUMB_TIP=**4**, INDEX_FINGER_TIP=**8** |
+| 3 | 표면점 | 랜드마크 픽셀 중심 **5×5 창 depth 중앙값**, 유효비율 **≥50%** |
+| 4 | 역투영 | 정렬된 intrinsics |
+| 5 | **손-일관성** | **3D 거리(손목–손끝) ∈ [60, 230] mm** 밖이면 무효 |
+| 6 | **K1** | 4–8번 거리, **양쪽 유효 프레임만**, 관찰 구간 **P95** |
+| 7 | **K2** | 0번 표면점 3D 속도, **연속 유효 쌍만**, **dt > 0.1초면 계산 안 함**, **P95** |
+| 8 | 필터 | 주 = **무필터**. Butterworth 2.5 Hz를 민감도로 병기. **효과 큰 쪽을 보고 고르기 금지** |
+| 9 | 타임스탬프 | **장치 타임스탬프**로 dt (6자리 이상) |
+| 10 | 검출 실패 | **하드 결측, 보간 금지** |
+
+**5단계가 왜 필수인가:** MediaPipe는 **가려진 관절도 예측한다**(공식 이슈 #3008) → 손가락이 물체 뒤에 있으면 랜드마크가 배경·물체에 찍힌다. **오라클 검증: 검사 ON이면 K1이 15.0 mm 유지, OFF면 1654.1 mm(110배 오염)**. 그리고 그 오염값은 "그럴듯하게" 나온다.
+
+**⚠️ 5단계가 못 잡는 오류:** 접촉 순간 손가락 패드와 물체 표면의 depth가 거의 같아 **랜드마크가 물체에 찍혀도 기하 검사로 구분 불가** → **가림 주석 대비 검출률을 결과표에 반드시 보고**한다. 검출률이 낮으면 K1 정의 변경 또는 T2 결론 제한.
+
+### 5.2 Q 규칙 (동결)
+
+| 요소 | 임계 | 근거 |
+|---|---|---|
+| Q2 최장 연속 결측 | **> 0.3초 → 보류(null)** | 닫힘 구간 ≈ 25% MT (Jeannerod 1984) |
+| Q3 유효 샘플 수 | **< 50 (30 fps에서 1.7초) → 보류** | K2 P95 CV 4.0% @n=50 vs 13.3% @n=30 |
+| Q4 경계 혼합 의심 | 파지 구간 프레임의 **>50% → 보류** | v5 §6.2 |
+| Q5 판단불가 주석 | 관찰 구간의 **>50% → 보류** | RGB 주석 2인 |
+| Q1 유효 depth 비율 | **개발 자료에서 확정** (balanced accuracy, 사람단위 2-fold) | 과적합 방지 |
+
+⚠️ 임계값을 **ARAT 점수나 VLM 정답률로 고르지 않는다.** 본평가 전에 동결한다.
+
+---
+
+## 6. 실험 조건 A0~A4 + R + 오류 주입
+
+| 조건 | 입력 | 확인 |
+|---|---|---|
+| **A1** | RGB 영상(§7 프레임) + 과제 지침 + T | 기준선 |
+| **A2** | A1 + **K1/K2 전부** | 숫자 추가 효과 |
+| **A3** | A1 + **Q 통과 K1/K2** | **품질 선택 (PR-2)** |
+| **A4** | A3와 같은 수치·지침·시간, **RGB 제외** | 영상의 추가 가치 |
+| **A0** | 로지스틱 회귀: K1·K2(시행 내 정규화)·Q 요약·T·과제 ID | 경량 통계모형 대조 |
+| **A0-time** | T·과제 ID만 | 시간 단서만의 효과 |
+| **R** | A2에서 A3와 **같은 양**을 품질 무관하게 제거 | "숫자를 덜 보여준 탓" |
+
+**R 배정 알고리즘**
+```
+for 지표 f in {K1, K2}:
+    n = |A3에서 f를 보류한 시행|
+    if n > 0.5 * N_trials: f는 R 비교에서 제외, "정보 없음" 표시
+    else: (전체 시행 − A3 보류 시행) 중에서 무작위로 n개 선택
+원래 하드 결측은 모든 조건에서 결측 유지 (R에서도 복원 금지)
+seed 3개: 20260922 / 20260923 / 20260924 → 환자별 평균
+```
+⚠️ A3에서 아무것도/전부 보류했다면 **"이 비교의 정보가 없음"** 을 표시한다.
+
+### 6.1 오류 주입
+
+| 항목 | 값 |
+|---|---|
+| **bias**(상수 편향) | 해당 시행 값 전부에 **+1u / +3u** |
+| **burst**(시행 단위 급등) | **한 시행의 값만 +3u** |
+| 대상 | **A2, A3만** |
+| 수준 | 원래 + 주입 4수준 |
+| 실행 수 | 72영상 × 주입 4 × 2조건 = **576 출력** (원래 432 재사용) |
+
+⚠️ **burst를 프레임 단위로 정의하지 않는다.** 3프레임 burst는 P95를 **≤+2.6%**밖에 못 움직여 **모델 입력이 안 바뀐다 = 실험 무효**.
+⚠️ `u / 기저 P95 > 0.10`인 지표에는 **"이미 오염" 라벨**.
+⚠️ u의 출처(A안/B안, L1~L5)를 논문에 명시한다.
+
+---
+
+## 7. VLM 입력과 프롬프트
+
+| 항목 | 값 |
+|---|---|
+| 원본 | **30 fps 유지** |
+| **주 설정** | 앞 **5.0초를 10 Hz = 50프레임** + 5초 초과분 2 Hz, **상한 64**, **640×480** |
+| 사건 구간 선택 | **사람이 고르지 않는다** |
+| 민감도(탐색적) | 8 / 16 / 32프레임 균등 샘플링, **시행 이동시간 3분위로 층화** |
+| 모델 | Qwen2.5-VL-72B-Instruct, greedy(temperature 0), max_new_tokens 고정 |
+| 기록 | revision hash · processor · 라이브러리 · dtype/양자화 · 하드웨어 · 시각 토큰 수 |
+| 반복 | 환자 고정 4명의 A1/A3 **2회 재실행**(변동 보고, **첫 실행이 주결과**) |
+
+### 7.1 프롬프트 (모든 조건 동일, 0-shot)
+```
+[과제 지침]  ARAT 항목 {N} ({물체}). 지시문: "{지시문}"
+[채점 기준]  3 = 5초 이내 정상 수행 (올바른 손·팔 움직임, 자세 유지)
+             2 = 완료했으나 5–60초 또는 큰 어려움
+             1 = 60초 내 부분 수행
+             0 = 60초 내 어떤 부분도 못함
+[관찰 구간]  T = {T} 초
+[운동학 수치]
+  thumb_index_surface_p95_mm = {K1 또는 null}
+  wrist_surface_speed_p95_mm_s = {K2 또는 null}
+[지침]  null은 신뢰 가능한 추정이 없다는 뜻이며, 장애나 0값이 아니다.
+[출력]  먼저 점수(0/1/2/3) 한 줄, 그 다음 최대 2문장의 근거.
+```
+⚠️ **A3에만 더 자세한 지침을 주지 않는다.** 조건별로 달라지는 것은 **수치의 유무·품질 선택뿐**이다.
+⚠️ **조건명을 프롬프트에 쓰지 않는다.** 모든 조건에 같은 설명·출력 요구를 쓴다.
+
+---
+
+## 8. 설명 평가 코드북
+
+대상: 각 출력의 **최대 2문장 근거**. 판정자는 **조건명·모델 점수에 눈가림**. 최대 2문장 단위로 라벨을 붙이고 근거 단서를 함께 기록. **20% 이중 코딩 → κ와 %일치 보고**, 불일치는 합의 또는 양쪽 보존.
+
+| 라벨 | 정의 |
+|---|---|
+| **supported** | **제공된 입력에서 직접 확인 가능** (영상 프레임 · 제공 수치 · T) |
+| **contradicted** | 입력의 명시된 사실과 **반대**이거나, **제공되지 않은 정보를 있다고 단정** |
+| **unverifiable** | 입력 근거로 확인 불가. **거짓이 입증된 것과 다르다** |
+
+**특수 코드(별도 집계):** `HC` 숨은 접촉을 확정 / `UJ` 미측정 관절각을 사실처럼 사용 / `NS` 근거를 아예 제시하지 않음
+
+**편향 방지:** "근거를 안 쓴 출력"이 유리해지지 않도록 **유용한 관찰 수**와 **review 비율**을 함께 보고한다.
+
+---
+
+## 9. 분석 계획
+
+| 구분 | 내용 |
+|---|---|
+| **분석 단위** | **환자.** 12명이 독립 표본. 72영상·주입본은 **반복 관측** |
+| **PR-1** | `G_i = MAE_i(A2) − MAE_i(A3)` **(게이팅 효과)** — 환자 단위 대응, **Holm** |
+| **PR-2** | `E_i = MAE_i(R) − MAE_i(A3)` **(게이팅의 고유 가치)** — 환자 단위 대응, **Holm** |
+| **1급 기술** | **보류율(A3)** + **(보류율, MAE) Pareto**(Q1 sweep, ⚠️ 컴퓨트 의존 — §13) |
+| **탐색적** | `A2−A1`(숫자 추가 효과), `A3−A4`(영상의 가치), A0/A0-time, 프레임 밀도 층화, 설명 평가, **큰 오차(≥2점) 비율 A2 vs A3**, **bias_3u 기전(H5)**. **CI·효과크기만** |
+| **구간** | **환자 단위 bootstrap** (10,000회, seed 고정) |
+| **추가** | 정확일치율, 선형 가중 κ, 과제별 혼동행렬, **0–1→3 과대평가 수와 분모**, 수치 가용률, 추적 실패를 잘못 수용한 비율, **반복 시행 간 변이**, **시행 순서 추세**, **Q 검사의 가림 주석 대비 검출률** |
+| **두 평가자** | 현장·독립 각각에 대해 MAE 산출. **불일치 시행은 "라벨 불확실"로 별도 집계** |
+| **실패 처리** | 기술적 재시도 **1회**. 실패를 제거하지 않는다. **손실 = 3**(0–3 척도의 최대 절대오차)으로 대체해 "실패 포함 손실" + 유효 MAE + 출력 성공률을 함께 보고. **실패를 0점으로 바꾸지 않는다** |
+
+**다중비교 (R8):** 확증적 = **PR-1, PR-2 두 개만** Holm(α=0.05). 나머지 전부 탐색적으로 표기.
+
+**🔧 구현으로 명확해진 사항 (코드 작성 중 발견):**
+① 초기 프로토콜 §9는 PR-1을 “주입 3u”라고만 적었는데, **+3u가 두 종류(bias/burst)** 다.
+→ **기전 분석(H5)은 bias_3u로 구현**하고 **burst_3u는 탐색적**으로 보고한다.
+→ 근거: 시뮬레이션에서 bias는 P95를 **선형으로** 밀지만 burst는 **≤+2.6%**밖에 못 움직였다(`experiments/results/u_sensitivity.txt`).
+② ⚠️ **기존 코드와 재설계가 불일치한다 (결함 D-12).** `experiments/analysis/analysis_harness.py`는 **현재 “오염 전파” PR-1**(`MAE(A3,주입3u) − MAE(A3,원래)`)을 구현하고 있다.
+→ **재설계 후에는 `MAE(A2) − MAE(A3)`와 `MAE(R) − MAE(A3)` 두 대응비교를 PR-1·PR-2로 올리고, 기존 오염전파 경로는 탐색적(H5)로 내려야 한다.**
+→ **오라클 A1~A6은 재사용 가능**(부트스트랩·Holm·가중κ는 조건 이름과 무관). **배선만 교체**하면 된다.
+
+**🔧 지표 정의 명확화:** 조건별 MAE 표는 **환자별 MAE의 평균(환자 동등 가중)** 이다. 전체 시행을 풀링한 평균이 아니다(분석 단위=환자). 실패 출력은 유효 MAE에서 제외하고 **실패포함 손실(손실=3)** 을 별도 열로 둔다.
+**"유의성 한 개"로 결론을 만들지 않는다.** PR이 CI를 0 포함하면 **"이 표본에서 방향 확인 안 됨"** 으로 쓴다.
+
+---
+
+## 10. 판정표
+
+| 관측 | 허용되는 결론 |
+|---|---|
+| **PR-1 유의 (A3 < A2)** | 이 표본·과제에서 **품질 게이팅이 채점 오차를 줄임** |
+| **PR-1 비유의 (A3 ≈ A2)** | 이 표본에서 **게이팅의 채점 개선을 확인하지 못함** (모델이 수치를 안 읽거나, 보류량이 작거나, 표본이 작음) |
+| **PR-2 유의 (A3 < R)** | **게이팅의 고유 가치 확인** — "숫자를 덜 봐서"가 아니라 **품질 규칙이 기여** |
+| **PR-2 비유의 (A3 ≈ R)** | 게이팅의 이득이 **정보량 감소 효과로 설명될 수 있음** → 고유 기여 미확인 |
+| **보류율 높음 + PR-1 유의** | 이득은 있으나 **좁은 구간에서만** 성립 → 보류–정확도 절충으로 보고 |
+| **보류율 높음 + PR-1 비유의** | **과잉 보류가 대가만 남김.** 게이팅이 실용적으로 무익 |
+| **큰 오차(≥2점) 비율이 A3에서 감소** | 평균이 아니라 **위험 감소** — 안전성 관점의 이득 (탐색적) |
+| A0/A4가 더 좋음 | **VLM 영상 입력의 추가 가치는 입증 안 됨** |
+| H5(기전) 비유의 | 이 표본에서 **수치 오류 전파를 확인하지 못함** (모델이 수치를 안 읽거나, 오염이 작거나, 표본이 작음) |
+
+---
+
+## 11. 표본 크기와 검정력 (정직한 한계)
+
+**대응 비교 기준, 양측 α=.05, 검정력 .80:** `dz = (t(α/2,df) + t(β,df)) / √n`
+
+| 환자 n | 검출 가능 dz | SD(Δ)=1점 | 2점 | 3점 |
+|---:|---:|---:|---:|---:|
+| **12** | **0.89** | 0.9점 | 1.8점 | 2.7점 |
+| 15 | 0.78 | 0.8 | 1.6 | 2.3 |
+| 20 | 0.66 | 0.7 | 1.3 | 2.0 |
+| 24 | 0.60 | 0.6 | 1.2 | 1.8 |
+
+**우리 항목은 0–3점 척도다. 12명에서 0.9점 차이는 척도의 30%다.**
+→ **이 연구는 "큰 효과의 방향 탐색"만 가능하고, 소효과 검출은 불가능하다.** 논문에 명시한다.
+→ 검정력 계산을 **"12명이면 충분하다"는 근거로 쓰지 않는다.** `[권고]` 20명이 가능하면 민감도가 약 26% 개선된다.
+
+---
+
+## 12. 금지사항 통합
+
+| # | 금지 |
+|---|---|
+| 1 | 두 항목 0–6점 합계를 임상 점수로 쓰기 |
+| 2 | **K1을 PAp·실제 최대 벌림·관절 중심 거리·접촉 여부로 확정** |
+| 3 | K2를 손가락 민첩성·신경 회복량으로 해석 |
+| 4 | **Q를 환자의 중증도로 해석** |
+| 5 | T를 "60초 관찰 = 60초 성공"으로 해석 |
+| 6 | 치구만 통과하고 **"가린 손끝 3D 정확도가 검증됐다"** 고 쓰기 |
+| 7 | 독립 3D 기준 없이 Q를 **"교정된 mm 오차 확률"** 이라 부르기 |
+| 8 | 가려진 좌표를 정상모형·보간으로 채우기 |
+| 9 | 출력 실패를 0점으로 바꾸기 |
+| 10 | 임계값을 **ARAT 점수·VLM 정답률로** 고르기 |
+| 11 | **"모든 VLM은 실패한다"** 로 일반화 (Li 2026은 특정 모델·프로토콜) |
+| 12 | **"ARAT 손 과제 운동학을 처음 측정"** (Padilla-Magaña 2022) |
+| 13 | **"JSON·특징 주입이 최초"** (Tang 2025, Xing 2025) |
+| 14 | **"불확실성 처리·보류가 최초"** (xAARA, Ahmed 2024) |
+| 15 | **"영상+수치 결합이 최초"** (UbiPhysio, BiomechGPT) |
+| 16 | 정상 GMM·군집화·정상 참조모형을 **이번 범위에서** 주장 |
+| 17 | 12명으로 **소효과**를 주장 |
+| 18 | `flatlining`을 표준 용어로, `kinematic blindness`를 확립된 명칭으로 쓰기 (전자는 현상명, 후자는 우리 해석적 명칭) |
+| 19 | **"품질 게이팅을 처음 제안"** (Edges Before Embeddings arXiv:2606.25838, NeuroSift JMIR 2026) |
+| 20 | **"RGB-D/depth로 FMA·ARAT 자동채점이 새롭다"** (Brain Sci 2022 PMID 36291314, Clin Rehabil 2024 PMID 38693881) |
+| 21 | **"게이트→VLM 라우팅이 최초"** (arXiv:2606.25838이 selective prediction 형식화까지 완료) |
+
+---
+
+## 13. 미해결·외부 의존
+
+| # | 항목 | 누가 | 없으면 |
+|---|---|---|---|
+| 1b | 세션 20–25분 수용성 | 병원 | 시행을 5회로 축소 |
+| 5 | OptiTrack/Vicon 대여 | 기관 | **L2 → B안 주입**으로 진행 |
+| 9 | 건강인 16명 모집 | 본인·기관 | 12명으로 축소, ICC 구간 넓어짐 명시 |
+| 11 | 치구 제작 | 물리 | 치구 없으면 B안 주입 |
+| 23 | **컴퓨트** (기본 1,008 출력 × 약 25k 토큰, **+ Pareto sweep 시 추가**) | 예산 | 실험 불가. **Pareto sweep은 컴퓨트 의존이므로 우선순위 최하위·축소안(3개 임계값)으로 시작** |
+| 24 | IRB·동의 | 기관 | 촬영 불가 |
+| 25 | 데이터 거버넌스 | 기관 | 개인정보 문제 |
+
+**미구현 코드 1개:** ~~VLM 실행 하네스~~ → ✅ **완료 (2026-09-24).** **랜드마크 추출기**는 `mediapipe` 설치 필요.
+**✅ 완료된 코드:**
+- **VLM 실행 하네스** (`experiments/vlm/run_vlm.py`) — 조건 → 프레임(프로토콜 §7, **실제 fps 사용**) → 프롬프트 → 모델 → 점수 파싱 → `predictions.csv`. **오라클 V1~V9 ALL PASS.** 백엔드 3종: `dry`(모델 없음) / `mock`(배선 점검, 결과 아님) / `qwen`(실제). 채점시트→`reference.csv` 변환 포함. **실데이터 12조건 실행 성공**(PNG 708장, 59프레임/영상).
+**✅ 완료된 코드:**
+- **주입 생성기** (`experiments/vlm_conditions/make_conditions.py`) — A0~R 조건 생성 + 오류 주입. 오라클 C1~C5 ALL PASS, 실제 데이터 208건·영상 208/208 생성 확인.
+- **분석 하네스** (`experiments/analysis/analysis_harness.py`) — bootstrap CI·Holm·가중 κ·혼동행렬·실패 손실·라벨 불확실. 오라클 A1~A6 ALL PASS.
+  - ⚠️ **단, 현재 배선은 구 “오염 전파” PR-1이다 (결함 D-12).** 현재 코드: `PR-1 = A3(bias_3u) − A3(원래)`, `PR-2 = R − A3`, 그리고 `A3−A2`는 **탐색적 경로**(line 342). **재설계 후에는 `A2−A3`를 PR-1로, `R−A3`를 PR-2로 올리고 오염전파를 탐색적(H5)로 내려야 한다.** 오라클·부트스트랩·Holm 함수는 조건 이름과 무관하므로 **재사용 가능**.
+  - 합성 데모(+0.289, CI [+0.178,+0.414], p_Holm=0.0002)는 **구 배선 기준**의 검출 능력 확인이다.
+
+---
+
+## 14. 실행 명령
+
+```bash
+# 1. 세션 폴더 + 채점 시트 + 메타 템플릿
+python experiments/session_tools/make_session.py H01 --group healthy_dev
+python experiments/session_tools/make_session.py S07 --group stroke_main --trials 15
+# 2. 치구 시트 생성 → 135기록 → 분석 → u
+python experiments/gauge_validation/make_gauge_sheet.py
+python experiments/gauge_validation/analyze_gauge_validation.py <sheet>.csv
+# 3. L1 파이프라인 (합성 오라클 / 파일 I/O 오라클 / 실제 세션)
+python experiments/l1_pipeline/k1k2_reference.py --selftest
+python experiments/l1_pipeline/k1k2_from_files.py --selftest
+python experiments/l1_pipeline/k1k2_from_files.py --session data/H01 --q1-min 0.7
+# 4. 오류 주입 민감도 · u 판정 기준 확인
+python experiments/u_sensitivity_simulation.py
+# 5. 분석 하네스 (PR-1·PR-2·bootstrap·Holm) — 오라클 / 합성 데모
+python experiments/analysis/analysis_harness.py --selftest
+python experiments/analysis/analysis_harness.py --demo
+python experiments/analysis/analysis_harness.py --predictions P.csv --reference R.csv
+# 6. 동결 해시
+sha256sum outputs/research-plan-v6.md
+```
+
+---
+
+## 15. 검증 상태와 결함 이력
+
+### 15.1 근거 등급 분포
+- **A(1차 원문):** ARAT 물성·배치·지시문·채점(Yozbatiran PDF 직접 추출) · 참조 3층 구조 · 시행 수(Frykberg 원문 HTML) · Wagner 2008(PubMed 초록)
+- **B:** 30 fps · VLM 모델 · MediaPipe 이슈 · Jeannerod 닫힘 구간 · 평가자 2인 근거
+- **C(자체 계산·합성):** u 민감도 · Q 임계값 · 검정력 · 치구 분석기 오라클 · L1 파이프라인 오라클 · 주입 감도
+- **D(미검증 가정):** K1과 물체 폭의 정량 관계
+
+### 15.2 감사에서 발견·수정한 결함
+| # | 결함 | 조치 |
+|---|---|---|
+| D-1~D-6 | 계획서 내부 불일치 6건(시행 수·출력 수·일정 제목·프레임 문구·검정력 자기모순) | 전부 수정, 재스캔 0건 |
+| **D-7** | **OpenCV가 비ASCII 경로에 조용히 실패** → 깊이 프레임 미저장 | `imencode+tofile` 교체 + 저장 검증 + 예외. 재실행 ALL PASS(280장 저장 확인) |
+| D-8 | 합성 생성기 기대값 오류(화면 밖 이동) + CSV 타임스탬프 4자리 편향 | 생성기가 기대값을 직접 계산·반환, 타임스탬프 6자리 |
+| D-9 | "3프레임 burst" 설계가 성립하지 않음 | burst를 **시행 단위 급등**으로 재정의 |
+| D-10 | 손-일관성 검사를 depth 비교로 정의 → 정상 자세 오탐 | **3D 거리 [60,230] mm**로 교체(오라클 T6) |
+| D-11 | "치구"의 정의 부재 | D10: 두 표면점 간격을 인코딩하는 무광 지그 |
+| **D-12** | 🔴 **재설계 후 코드와 계획이 불일치** — `analysis_harness.py`가 구 “오염 전파” PR-1을 구현 | ✅ **해소 (2026-09-24).** 하네스 재작성: PR-1 = `MAE(A2)−MAE(A3)`, PR-2 = `MAE(R)−MAE(A3)`. 오염전파는 H5(탐색적). **오라클 A1~A10 ALL PASS**, A7이 구 배선 회귀를 감지 |
+| **D-13** | 🔴 **원본 영상이 30 fps가 아니다** — 계획§3·프로토콜§7이 30 fps를 전제 | **부분 조치.** 실측 16.934/24.580 fps, **dt 불규칙**. `run_vlm.py`는 **실제 fps를 읽어** 샘플링(20260915 세션에서 59프레임 생성 확인). **미해결: K1/K2/PV/SPARC 계산이 어떤 시계를 썼는지 확인 필요** — 아래 V-1 참조 |
+| **V-1** | 🔴 **`PV_m_s` 이상치(최대 7.947 m/s)의 원인 추정** | **미확정(파이프라인 코드 미열람).** 내 독립 계산: 동일 랜드마크에서 **P95 = 0.45–1.41 m/s**(정상 범위 근접), 보고된 **peak = 0.30–7.95 m/s**. dt가 0.0278 s까지 작아지면 **미세 흔들림이 거대 속도로 증폭**된다 → peak는 지터 지배 가능성. **팀 파이프라인의 PV 정의·시계 확인 필요** |
+
+### 15.3 실증 검증 상태
+**0건.** 환자 0명, 건강인 0명, 실제 프레임 0장. 모든 "검증"은 **문헌(PDF/HTML 원문) + 자체 합성 오라클**이다.
+→ 실제 성능(u, MediaPipe 손 정확도, Q 검출률)은 **촬영 후에만** 얻어진다.
+
+---
+
+## 16. 사전등록 체크리스트 (데이터 보기 전)
+
+- [ ] 이 문서의 **sha256 해시 + 날짜** 기록(머리)
+- [ ] 주 결과 2개·보정 방법(§9), 판정표(§10) 동결
+- [ ] Q 임계값(Q2·Q3·Q4·Q5) 동결, **Q1은 개발 자료에서 확정 후 즉시 기록**
+- [ ] 주입 방식(A안/B안)·u 출처 동결
+- [ ] ~~**PR-1 = bias_3u로 구현**(burst_3u는 탐색적)~~ → **H5(기전, 탐색적) = bias_3u**(burst_3u는 탐색적) 명시
+- [ ] **재설계 명시**: PR-1 = `MAE(A2)−MAE(A3)`(게이팅 효과), PR-2 = `MAE(R)−MAE(A3)`(고유 가치). 오염전파는 H5(탐색적)
+- [ ] **보류율 + (보류율,MAE) Pareto를 1급 결과로** 사전 명시
+- [ ] **코드 배선 교체 완료 확인**(D-12 해소)
+- [ ] 프레임 규칙(10 Hz 50, 상한 64, 640×480) 동결
+- [ ] VLM 모델·revision·디코딩 설정 동결
+- [ ] 제외 기준 명시: 통증·의학적 불안정·별도 손 질환(임상 담당자 판단). **실어증 진단이나 과제 실패만으로 제외하지 않음**
+- [ ] **점수·모델 출력을 보고 제외·추가하지 않음**
+- [ ] (선택) OSF/임상시험 등록 또는 기관 내 동결 기록
+
+---
+
+## Sources
+
+**ARAT·임상척도**
+1. Yozbatiran N, Der-Yeghiaian L, Cramer SC (2008). *A Standardized Approach to Performing the Action Research Arm Test.* Neurorehabil Neural Repair. https://doi.org/10.1177/1545968307305353
+2. Kristersson T, Persson HC, Alt Murphy M (2019). J Rehabil Med 51(4):257–263. https://doi.org/10.2340/16501977-2534
+3. Hernández ED et al. (2019). J Rehabil Med. PMID 31448807. https://doi.org/10.2340/16501977-2590
+4. Valladares B et al. (2024). Front Neurol. PMID 39224885. https://doi.org/10.3389/fneur.2024.1429929
+5. Pohl J et al. (2024/2025). Arch Phys Med Rehabil. https://doi.org/10.1016/j.apmr.2024.10.004
+6. Kwakkel G et al. (2019). SRRR2 consensus. Neurorehabil Neural Repair 33(11):951–958.
+
+**시행 수·재현성**
+7. Frykberg GE, Grip H, Alt Murphy M (2021). J NeuroEng Rehabil 18:94. **PMID 34130716**. https://doi.org/10.1186/s12984-021-00895-3
+8. Wagner JM, Rhodes JA, Patten C (2008). Phys Ther 88(5):652–663. **PMID 18326055**. https://doi.org/10.2522/ptj.20070255
+9. Blinch J, Kim Y, Chua R (2018). Behav Res Methods 50(5):2162–2172.
+10. Hansen GM et al. (2019). J Electromyogr Kinesiol 47:35–42.
+11. Jeannerod M (1984). *The Timing of Natural Prehension Movements.* J Mot Behav. https://doi.org/10.1080/00222895.1984.10735319
+
+**자동채점·VLM**
+12. Kim WS et al. (2016). PLoS ONE 11(7):e0158640.
+13. **Li Y et al. (2022).** Brain Sci 12(10):1380. https://doi.org/10.3390/brainsci12101380
+14. Zamin SA et al. (2023). Neurorehabil Neural Repair 37(9):591–602. PMID 37592867.
+15. Wang Z et al. (2024). Clin Rehabil 38(8):1091–1100. PMID 38693881.
+16. Zhou YM et al. (2025). IEEE J Biomed Health Inform. PMID 40031831.
+17. Deb S et al. (2022). IEEE TNSRE 30:410–419.
+18. Ahmed T, Rikakis T (2025). arXiv:2505.01680.
+19. Ahmed T, Rikakis T, Kelliher A, Wolf SL (2024). IEEE TNSRE 32:3157–3166. PMID 39186425.
+20. **Li V et al. (2026).** PLOS Digit Health 5(7):e0001506. **PMID 42406872**. https://doi.org/10.1371/journal.pdig.0001506
+21. Tang J et al. (2025). arXiv:2505.18412.
+22. Xing Q et al. (2025). PLOS ONE 20(3):e0313707. PMID 40067873.
+23. Unger et al. (2026). arXiv:2607.23608.
+24. Ahmed T, Rikakis T et al. (2026). xAARA. arXiv:2606.24960.
+25. UbiPhysio (2024). arXiv:2308.10526.
+26. BiomechGPT (2025). arXiv:2505.18465.
+
+**파지·운동학**
+27. Padilla-Magaña JF et al. (2022). Sensors 22(10):3604. PMID 35632013.
+28. Padilla-Magaña JF et al. (2022). Sensors 22(9):3276. PMID 35590966.
+29. Padilla-Magaña JF, Peña-Pitarch E (2022). Sensors 22(23):9078. PMID 36501779.
+30. Alt Murphy M et al. (2012). Neurorehabil Neural Repair. PMID 22647879.
+31. Alt Murphy M et al. (2011). Neurorehabil Neural Repair. PMID 20829411.
+32. Qiu Q et al. (2022). IEEE EMBC:5107–5110. PMID 36086392.
+33. van Kordelaar J et al. (2012). Exp Brain Res 221:251–262.
+34. Schwarz A et al. (2025). Stroke. https://doi.org/10.1161/STROKEAHA.124.049336
+35. Collins KC et al. (2018a). Physiotherapy 104(2):153–166.
+36. Collins KC et al. (2018b). Front Neurol 9:472. PMID 29988530.
+37. Mohamed Refai MI et al. (2021). J NeuroEng Rehabil. PMID 34702281.
+38. Bayle N et al. (2024). J NeuroEng Rehabil. https://doi.org/10.1186/s12984-024-01382-1
+39. Saes M et al. (2021). J NeuroEng Rehabil. https://doi.org/10.1186/s12984-021-00937-w
+
+**무마커·시너지·도구**
+40. Faity G, Mottet D, Froger J (2022). Sensors 22(7):2735. PMID 35408349.
+41. Lafayette TBG et al. (2023). Sensors 23(1):3. PMID 36616603.
+42. Hamilton RI et al. (2024). J Bodyw Mov Ther. PMID 39593603.
+43. Scano A et al. (2020). MTI 4(2):14. https://doi.org/10.3390/mti4020014
+44. Lee U et al. (2025). Front Bioeng Biotechnol 13:1570637. PMID 40486204.
+45. Tannús J et al. (2026). npj Digit Med 9:196.
+46. Herbst Y et al. (2020). PLoS ONE 15(7):e0234969.
+47. Jarque-Bou NJ et al. (2019). J NeuroEng Rehabil 16:63.
+48. Jarque-Bou NJ et al. (2020). Sci Rep 10:6116.
+49. Romero J et al. (2010). IEEE/RSJ IROS 2010. https://www.csc.kth.se/~dani/RSS/feix.pdf
+50. Černek A et al. (2024). REHAB24-6. https://doi.org/10.1007/978-3-031-75823-2_2
+51. MediaPipe Hands 공식 소스(랜드마크 인덱스) · 이슈 #3008(가려진 관절 예측) · 이슈 #3871(미검출). https://github.com/google-ai-edge/mediapipe
+52. Qwen2.5-VL 비디오 프레임 파라미터(`nframes`, `fps`, `VIDEO_MAX_PIXELS`). https://github.com/QwenLM/Qwen2.5-VL
+53. Intel RealSense D400 Series Datasheet (2020).
+54. 실행계획 v5 (사용자 업로드, 2026-09-22) — 범위 정본.
+
+**품질 게이팅 · 보류 · VLM 신뢰성 (v6.1 신규 — 재주장 금지 근거)**
+55. Thanh DT (2026). *Edges Before Embeddings: A Confidence-Aware Blur Gate for Vision-Language Pipelines.* arXiv:2606.25838. https://arxiv.org/abs/2606.25838 · https://doi.org/10.5281/zenodo.19765336
+56. Islam MS, Park S, Ma EX, Adnan TA, Hoque E (2026). *NeuroSift for Task-Aware Quality Assurance of Multimedia Data in Remote Parkinson Disease Assessment.* J Med Internet Res 28:e91756. https://doi.org/10.2196/91756 · PMID 42612206 · OpenAlex W7167579981
+57. Li V, Kamalakannan N, Parnandi A, Schambra H, Fernandez-Granda C (2026). *Vision-language models for human motion understanding: Lessons from stroke rehabilitation.* PLOS Digit Health 5(7):e0001506. https://doi.org/10.1371/journal.pdig.0001506 · PMID 42406872
+58. Ye P, Li Y, Qu M, Zhang X, Liu J, Zhu T, Zhou J (2026). *Systematic benchmarking of evaluation paradigms, safety boundaries, and clinical reasoning gaps for multimodal large language models in rehabilitation.* Sci Rep. https://doi.org/10.1038/s41598-026-71999-w · OpenAlex W7213604003
+59. *Auditing Multimodal LLM Raters: Central Tendency Bias in Clinical Ordinal Scoring* (2026). arXiv:2605.16386. https://arxiv.org/abs/2605.16386
+60. Srinivasan T et al. (2024). *Selective "Selective Prediction": Reducing Unnecessary Abstention in Vision-Language Reasoning.* ACL 2024. arXiv:2402.15610
+61. *Learning Conformal Abstention Policies for Adaptive Risk Management in LLM and VLM* (2025). arXiv:2502.06884
+62. *MedVIGIL: Evaluating Trustworthy Medical VLMs Under Broken Visual Evidence* (2026). arXiv:2605.07919
+63. *Confident but Unreliable: A Behavioral Safety Audit of Vision-Language Models on Brain MRI* (2026). arXiv:2608.02790
+64. *Small VLMs Know When They Are Wrong But Cannot Say So* (2026). arXiv:2607.22034
+65. *Explicit Abstention Knobs for Predictable Reliability in Video Question Answering* (2025). arXiv:2601.00138
+66. *Calibrated Triage, Not Autonomy: Confidence Estimation for Medical Vision-Language Models* (2026). arXiv:2606.15910
+67. *Enhancing Clinician Decision-Making via Uncertainty-Aware Multi-Expert Fusion for Stroke Rehabilitation* (2026). arXiv:2606.24960 (사용자 v5의 "Ahmed & Rikakis 2026 xAARA")
+68. Zhan Z, Zhou S, Zhang R (2026). *PEER: Patience-Based Early Exiting with Rejection.* J Biomed Inform. https://doi.org/10.1016/j.jbi.2026.104988 · PMID 41571171
+
+**RGB-D/depth FMA·ARAT 자동채점 (v6.1 신규 — 배경 인용 전용, 재주장 금지)**
+69. *A Novel Automated RGB-D Sensor-Based Measurement of Voluntary Items of the FMA-UE: A Feasibility Study* (2022). Brain Sci 12(10):1380. https://doi.org/10.3390/brainsci12101380 · PMID 36291314
+70. *Clinical validation of automated depth camera-based measurement of the Fugl-Meyer assessment for upper extremity* (2024). Clin Rehabil. https://doi.org/10.1177/02692155241251434 · PMID 38693881
+71. *Estimating Upper Extremity Fugl-Meyer Assessment Scores From Reaching Motions Using Wearable Sensors* (2025). IEEE JBHI. https://doi.org/10.1109/JBHI.2025.3542037 · PMID 40031831
+72. *Automated Evaluation of Upper-Limb Motor Function Impairment Using Fugl-Meyer Assessment* (2018). IEEE TNSRE. https://doi.org/10.1109/TNSRE.2017.2755667 · PMID 28952944
+73. *Cellphone-Based Automated Fugl-Meyer Assessment* (2019). IEEE TNSRE. https://doi.org/10.1109/TNSRE.2019.2939587 · PMID 31502981
+74. Lee MH et al. (2019). *Learning to assess the quality of stroke rehabilitation exercises.* IUI 2019. https://doi.org/10.1145/3301275.3302273
+75. Weikert T et al. (2025). *Automated Prediction of Item-Level ARAT Scores From Wearable Sensors.* ICORR 2025. https://doi.org/10.1109/ICORR66766.2025.11063162 · PMID 40644012
+76. *C-MORE: Computer Vision for Movement Observation and Recovery Enhancement — Box and Blocks Test* (2026). Bioengineering 13(6):602. https://doi.org/10.3390/bioengineering13060602 · PMID 42351847
+77. *Extended reality to assess post-stroke manual dexterity* (2024). J NeuroEng Rehabil. https://doi.org/10.1186/s12984-024-01332-x · PMID 38491540
+78. *A contactless method to measure real-time finger motion using depth-based pose estimation* (2021). Comput Biol Med. https://doi.org/10.1016/j.compbiomed.2021.104282 · PMID 33631496
+
+**가림 · 손 자세 견고성 (v6.1 신규)**
+79. *Impact of Hand Impairment and Occlusions on Hand Pose Estimation Accuracy in Augmented Reality Applications* (2026). arXiv:2606.17427
+80. Lee J et al. (2021). *Visual-inertial hand motion tracking with robustness against occlusion, interference, and contact.* Sci Robot. https://doi.org/10.1126/scirobotics.abe1315
+81. *Partially Occluded Hands: A Challenging New Dataset for Single-Image Hand Pose Estimation* (2018). ACCV. https://doi.org/10.1007/978-3-030-20873-8_6
+82. *Reliability and validity of current computer vision based motion capture systems in gait analysis: A systematic review* (2025). Gait & Posture. https://doi.org/10.1016/j.gaitpost.2025.04.016
+83. *Perception, assessment, and coaching: a systematic review and taxonomy of computer vision-based physical rehabilitation techniques* (2026). Front Rehabil Sci. https://doi.org/10.3389/fresc.2026.1906327 · PMID 42548713
+
+**확장 검색 방법 (v6.1)**
+84. Semantic Scholar Graph API bulk search — https://api.semanticscholar.org/graph/v1/paper/search/bulk (무키, rate limit 주의)
+85. OpenAlex works search — https://api.openalex.org/works

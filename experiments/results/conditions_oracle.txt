@@ -1,0 +1,19 @@
+A1 전부 n_numbers=0 PASS 
+A2 전부 n_numbers=4 PASS 
+Q 미통과 시행은 A3에서 n_numbers=0 PASS Q1(MP Samples=20.0<50)
+Q 통과 시행은 A3에서 n_numbers=4 PASS 
+bias_1u == base+1u PASS 67.2500 vs 67.2500
+bias_3u == base+3u PASS 
+B안 u = 중앙값의 10% PASS u=6.2500
+MGA == 260 mm PASS 
+SPARC == +2.0 (부호 불가능) PASS 
+burst는 bias와 값이 다름 PASS 
+R 시행 수 = 3 seed PASS 3
+R의 제공 개수 = A2 − A3보류개수 PASS [4, 4, 4]
+동일 seed → 동일 결과(재현성) PASS 
+A3가 전부 보류면 R도 전부 보류 PASS 
+A1 프롬프트에 [운동학 수치] 없음 PASS 
+A3 프롬프트에 수치 있음 PASS 
+null 지침 문구 포함 PASS 
+조건명이 프롬프트에 없음 PASS 
+A4는 '영상 제공되지 않음' PASS 

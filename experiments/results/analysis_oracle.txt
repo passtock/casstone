@@ -1,0 +1,27 @@
+MAE == 1.250 PASS got 1.25
+MAE(유효만) == 1.667 PASS got 1.6667
+실패포함 손실 == 2.000 PASS got 2.0000
+실패 1건 집계 PASS 
+Holm([.01,.03,.04]) == [.03,.06,.06] PASS [0.03, 0.06, 0.06]
+Holm 단조성 PASS 
+완전일치 → 1.0 PASS 
+역방향 배치 κ == 0.200 (선형가중은 관대) PASS got 0.200000
+극단 불일치 κ == -1.000 PASS got -1.000000
+한 칸 몰림 → None PASS 
+모두 1.0 → CI=[1,1] PASS [1.0,1.0]
+분산 0 → p는 NaN(퇴화 보호) PASS p=nan
+평균 1.0, CI가 0 미포함 PASS [0.50,1.50] p=0.0008
+a-b == [1.0, 2.0] PASS [1.0, 2.0]
+PR-1 = MAE(A2)-MAE(A3) == +2.0 PASS [2.0]
+구 배선(A3 none - A3 none) == 0.0 (구분됨) PASS [0.0]
+K1 제공률 == 0.50 PASS got 0.500
+K2 제공률 == 0.50 PASS got 0.500
+≥1개 보류율 == 0.75 PASS got 0.750
+available == True PASS 
+열 없으면 available == False PASS 
+큰오차 비율 == 0.667 PASS got 0.6667
+실패는 분모 제외 (n==3) PASS n=3
+실패 1건 별도 집계 PASS 
+임계값 3개, 오름차순 PASS [0.1, 0.2, 0.3]
+보류율 0.00 → 0.67 → 1.00 PASS [0.0, 1.0, 1.0]
+MAE 3 → 2 → 1 (보류↑ = MAE↓) PASS [3.0, 2.0, 1.0]

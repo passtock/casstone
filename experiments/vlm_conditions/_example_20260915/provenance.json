@@ -1,0 +1,48 @@
+{
+  "session_dir": "capstone/호진파일/outputs/데이터_저장/20260915_비장애인_test_26세_남",
+  "pid": "20260915",
+  "metrics": [
+    "MGA_mm_3D_cal",
+    "PV_mm_s",
+    "SPARC",
+    "TAM_total_deg"
+  ],
+  "u_mode": "ratio",
+  "u1": {
+    "MGA_mm_3D_cal": 8.62,
+    "PV_mm_s": 99.75,
+    "SPARC": 0.8727499999999999,
+    "TAM_total_deg": 98.168
+  },
+  "baseline": {
+    "MGA_mm_3D_cal": 86.19999999999999,
+    "PV_mm_s": 997.5,
+    "SPARC": -8.7275,
+    "TAM_total_deg": 981.68
+  },
+  "u_source": {
+    "MGA_mm_3D_cal": "B안(기저값 10%)",
+    "PV_mm_s": "B안(기저값 10%)",
+    "SPARC": "B안(기저값 10%)",
+    "TAM_total_deg": "B안(기저값 10%)"
+  },
+  "q_gate": {
+    "mode": "mp",
+    "q1_min": 0.7,
+    "min_paired": 50,
+    "diff_max_mm": null,
+    "min_samples": 50
+  },
+  "r_seeds": [
+    20260922,
+    20260923,
+    20260924
+  ],
+  "n_rows": 208,
+  "design_notes": [
+    "burst는 물리적으로 불가능한 값으로 정의(시행 1개만 보는 설계에서 bias와 중복되므로)",
+    "R은 A3가 보류한 개수와 같은 개수를 비보류 지표 중에서 무작위 제거",
+    "A4는 A3와 같은 수치, 영상만 제외",
+    "조건명은 프롬프트에 쓰지 않는다"
+  ]
+}
