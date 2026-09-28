@@ -1,0 +1,83 @@
+==============================================================================
+추가 지표 편입 조건 검정 — 파일럿 실데이터 (비장애인 2명)
+==============================================================================
+그룹(세션×과제×손) 수: 4
+  · 20260915_비장애인_test_26세_남 | Task 1 | Left : n_trials=8
+  · 20260915_비장애인_test_26세_남 | Task 1 | Right : n_trials=8
+  · 20260916_비장애인_test0916_62세_남 | Task 3 | Left : n_trials=1
+  · 20260916_비장애인_test0916_62세_남 | Task 3 | Right : n_trials=1
+
+판정 기준: C1 결측률≤20% · C2 시행간CV≤25% · C3 물리위반≤5% · C4 동적범위≥10%
+
+지표                           n     결측%     CV%     물리위반%     동적범위%  판정
+----------------------------------------------------------------------
+Index_ROM_deg               18       0     5.8         0        10  조건미달 (True, True, True, False)
+Index_ROM_3D_deg            18       0     3.9         0        11  편입가능 (True, True, True, True)
+RS_Index_ROM_deg            12      33    10.1         0        17  조건미달 (False, True, True, True)
+TAM_Thumb_deg               18       0     7.2         0        12  편입가능 (True, True, True, True)
+TAM_Index_deg               18       0     6.9         0        10  조건미달 (True, True, True, False)
+TAM_Middle_deg              18       0     3.9         0         6  조건미달 (True, True, True, False)
+TAM_Ring_deg                18       0     7.5         0         7  조건미달 (True, True, True, False)
+TAM_Pinky_deg               18       0     7.5         0        13  편입가능 (True, True, True, True)
+Thumb_CMC_ROM_deg           18       0    18.1         0        45  편입가능 (True, True, True, True)
+Thumb_PalmarAbd_max_deg     18       0    34.6         0        55  조건미달 (True, False, True, True)
+Thumb_PalmarAbd_ROM_deg     18       0    42.5         0        76  조건미달 (True, False, True, True)
+Thumb_RadialAbd_max_deg     18       0    29.6         0        94  조건미달 (True, False, True, True)
+Thumb_RadialAbd_ROM_deg     18       0    38.1         0        95  조건미달 (True, False, True, True)
+ROM_Thumb_CMC_deg           18       0    18.1         0        45  편입가능 (True, True, True, True)
+ROM_Thumb_MCP_deg           18       0    20.6         0        45  편입가능 (True, True, True, True)
+ROM_Thumb_IP_deg            18       0     9.8         0         9  조건미달 (True, True, True, False)
+ROM_Index_MCP_deg           18       0    13.4         0        12  편입가능 (True, True, True, True)
+ROM_Index_PIP_deg           18       0     5.8         0        10  조건미달 (True, True, True, False)
+ROM_Index_DIP_deg           18       0    16.0         0        17  편입가능 (True, True, True, True)
+ROM_Middle_MCP_deg          18       0     7.9         0        16  편입가능 (True, True, True, True)
+ROM_Middle_PIP_deg          18       0     9.2         0        18  편입가능 (True, True, True, True)
+ROM_Middle_DIP_deg          18       0     3.0         0        13  편입가능 (True, True, True, True)
+ROM_Ring_MCP_deg            18       0    15.0         0        14  편입가능 (True, True, True, True)
+ROM_Ring_PIP_deg            18       0     6.4         0         9  조건미달 (True, True, True, False)
+ROM_Ring_DIP_deg            18       0     7.0         0        12  편입가능 (True, True, True, True)
+ROM_Pinky_MCP_deg           18       0    16.4         0        27  편입가능 (True, True, True, True)
+ROM_Pinky_PIP_deg           18       0    11.9         0        19  편입가능 (True, True, True, True)
+ROM_Pinky_DIP_deg           18       0    10.9         0        15  편입가능 (True, True, True, True)
+TAM_total_deg               18       0     3.6         0         5  조건미달 (True, True, True, False)
+Flex_Speed_deg_s            18       0   134.9        89       292  조건미달 (True, False, False, True)
+Ext_Speed_deg_s             18       0    85.3        89       127  조건미달 (True, False, False, True)
+SPARC                       18       0    34.4         0        48  조건미달 (True, False, True, True)
+MGA_cm                      18       0     6.0         0         8  조건미달 (True, True, True, False)
+MGA_mm_3D                   18       0     9.2         0         9  조건미달 (True, True, True, False)
+MGA_mm_3D_cal                0     100       -         -         -  조건미달 (False, False, False, False)
+MP_MGA_raw_mm               18       0     7.4         0        11  편입가능 (True, True, True, True)
+RS_MGA_raw_mm               13      28    33.9         0         9  조건미달 (False, False, True, False)
+RS_MGA_p95_mm               12      33    18.6         0         9  조건미달 (False, True, True, False)
+Duration_s                  18       0     9.4         0         6  조건미달 (True, True, True, False)
+Cycle_Period_s               8      56    30.5         0        23  조건미달 (False, False, True, True)
+Valid_Duration_s            18       0     9.4         0        20  편입가능 (True, True, True, True)
+
+### 결측 C1 / CV C2 / 물리 C3 / 동적범위 C4 실패 지표 ###
+  ✗ Index_ROM_deg  (실패: C4)
+  ✗ RS_Index_ROM_deg  (실패: C1)
+  ✗ TAM_Index_deg  (실패: C4)
+  ✗ TAM_Middle_deg  (실패: C4)
+  ✗ TAM_Ring_deg  (실패: C4)
+  ✗ Thumb_PalmarAbd_max_deg  (실패: C2)
+  ✗ Thumb_PalmarAbd_ROM_deg  (실패: C2)
+  ✗ Thumb_RadialAbd_max_deg  (실패: C2)
+  ✗ Thumb_RadialAbd_ROM_deg  (실패: C2)
+  ✗ ROM_Thumb_IP_deg  (실패: C4)
+  ✗ ROM_Index_PIP_deg  (실패: C4)
+  ✗ ROM_Ring_PIP_deg  (실패: C4)
+  ✗ TAM_total_deg  (실패: C4)
+  ✗ Flex_Speed_deg_s  (실패: C2, C3)
+  ✗ Ext_Speed_deg_s  (실패: C2, C3)
+  ✗ SPARC  (실패: C2)
+  ✗ MGA_cm  (실패: C4)
+  ✗ MGA_mm_3D  (실패: C4)
+  ✗ MGA_mm_3D_cal  (실패: C1, C2, C3, C4)
+  ✗ RS_MGA_raw_mm  (실패: C1, C2, C4)
+  ✗ RS_MGA_p95_mm  (실패: C1, C4)
+  ✗ Duration_s  (실패: C4)
+  ✗ Cycle_Period_s  (실패: C1, C2)
+
+### K1·K2 대리 지표 상태 ###
+  · MGA_mm_3D_cal: n=0 결측=100% CV=- 물리위반=- → 조건미달
+  · MGA_mm_3D: n=18 결측=0% CV=9.2% 물리위반=0% → 조건미달

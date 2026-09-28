@@ -1,0 +1,61 @@
+============================================================================================
+지표 편입 조건 — 정정판:  C2 = MDC95/|mean| ≤ 50%   (구판 C2 = CV ≤ 25% 폐기)
+============================================================================================
+정정 사유: CV는 피험자 간 변동을 섞어 반복성 지표로 부적합 → MDC(test-retest)로 교체.
+           근거: Wagner 2008 (계획서 §3-7) — 취약 지표는 50% 이상 변해야 '진짜 변화', MDC 7.4–98.9%.
+
+지표                           n    결측%  MDC95/mean%     물리위반%  판정(C1·C2·C3)
+--------------------------------------------------------------------------
+Index_ROM_deg               18      0         17.2         0  편입가능 (True, True, True)
+Index_ROM_3D_deg            18      0         11.4         0  편입가능 (True, True, True)
+RS_Index_ROM_deg            12     33         30.8         0  조건미달 (False, True, True)
+Thumb_CMC_ROM_deg           18      0         53.6         0  조건미달 (True, False, True)
+Thumb_PalmarAbd_max_deg     18      0        102.7         0  조건미달 (True, False, True)
+Thumb_PalmarAbd_ROM_deg     18      0        125.8         0  조건미달 (True, False, True)
+Thumb_RadialAbd_max_deg     18      0         87.7         0  조건미달 (True, False, True)
+Thumb_RadialAbd_ROM_deg     18      0        112.8         0  조건미달 (True, False, True)
+ROM_Thumb_CMC_deg           18      0         53.6         0  조건미달 (True, False, True)
+ROM_Thumb_MCP_deg           18      0         61.1         0  조건미달 (True, False, True)
+ROM_Thumb_IP_deg            18      0         29.1         0  편입가능 (True, True, True)
+ROM_Index_MCP_deg           18      0         39.6         0  편입가능 (True, True, True)
+ROM_Index_PIP_deg           18      0         17.2         0  편입가능 (True, True, True)
+ROM_Index_DIP_deg           18      0         47.4         0  편입가능 (True, True, True)
+ROM_Middle_MCP_deg          18      0         23.5         0  편입가능 (True, True, True)
+ROM_Middle_PIP_deg          18      0         27.2         0  편입가능 (True, True, True)
+ROM_Middle_DIP_deg          18      0          8.8         0  편입가능 (True, True, True)
+ROM_Ring_MCP_deg            18      0         44.4         0  편입가능 (True, True, True)
+ROM_Ring_PIP_deg            18      0         19.0         0  편입가능 (True, True, True)
+ROM_Ring_DIP_deg            18      0         20.8         0  편입가능 (True, True, True)
+ROM_Pinky_MCP_deg           18      0         48.7         0  편입가능 (True, True, True)
+ROM_Pinky_PIP_deg           18      0         35.2         0  편입가능 (True, True, True)
+ROM_Pinky_DIP_deg           18      0         32.4         0  편입가능 (True, True, True)
+TAM_Thumb_deg               18      0         21.5         0  편입가능 (True, True, True)
+TAM_Index_deg               18      0         20.4         0  편입가능 (True, True, True)
+TAM_Middle_deg              18      0         11.6         0  편입가능 (True, True, True)
+TAM_Ring_deg                18      0         22.2         0  편입가능 (True, True, True)
+TAM_Pinky_deg               18      0         22.1         0  편입가능 (True, True, True)
+TAM_total_deg               18      0         10.8         0  편입가능 (True, True, True)
+Flex_Speed_deg_s            18      0        399.8        89  조건미달 (True, False, False)
+Ext_Speed_deg_s             18      0        252.7        89  조건미달 (True, False, False)
+SPARC                       18      0        102.0         0  조건미달 (True, False, True)
+MGA_cm                      18      0         17.6         0  편입가능 (True, True, True)
+MGA_mm_3D                   18      0         27.1         0  편입가능 (True, True, True)
+MGA_mm_3D_cal                0    100            -         -  조건미달 (False, False, False)
+MP_MGA_raw_mm               18      0         22.0         0  편입가능 (True, True, True)
+RS_MGA_raw_mm               13     28        102.1         0  조건미달 (False, False, True)
+RS_MGA_p95_mm               12     33         56.5         0  조건미달 (False, False, True)
+Duration_s                  18      0         27.7         0  편입가능 (True, True, True)
+Cycle_Period_s               8     56         92.5         0  조건미달 (False, False, True)
+Valid_Duration_s            18      0         28.0         0  편입가능 (True, True, True)
+
+### 구판(CV) 대비 판정이 뒤바뀐 지표 ###
+  ⚠ Thumb_CMC_ROM_deg: 구판 CV 18.1% (통과) → 정정 MDC 53.6% (미달)
+
+### C4 (개입 민감도) — 보류 ###
+  주입(bias 1u = 기저의 10%)이 P95를 ≥10% 움직여야 함. 계획서 §3-16: burst는 ≤+2.6%로 '실험 무효'.
+  → u(실제 오차) 미측정 상태이므로 C4는 '보류(pending)'. 치구 135기록 후 확정.
+
+### ICC(피험자 간 일반화)는 왜 개발군이 필요한가 ###
+  · 반복성(MDC)은 1명 × 반복시행만으로 계산된다 — 위 표가 그 결과다.
+  · ICC는 between-subject 분산이 필요하다. 파일럿은 피험자 2명 → df=1 → 추정 불안정.
+  · 정본의 비장애인 개발군 = 6명(§4.1). '6'은 통계 도출값이 아니라 정본의 설계 선택이다.
