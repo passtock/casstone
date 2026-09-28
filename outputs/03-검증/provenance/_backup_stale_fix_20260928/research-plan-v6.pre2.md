@@ -534,9 +534,9 @@ seed 3개: 20260922 / 20260923 / 20260924 → 장애인별 평균
 ① 초기 프로토콜 §9는 PR-1을 “주입 3u”라고만 적었는데, **+3u가 두 종류(bias/burst)** 다.
 → **기전 분석(H5)은 bias_3u로 구현**하고 **burst_3u는 탐색적**으로 보고한다.
 → 근거: 시뮬레이션에서 bias는 P95를 **선형으로** 밀지만 burst는 **≤+2.6%**밖에 못 움직였다(`experiments/results/u_sensitivity.txt`).
-② ✅ **해소된 결함 D-12 (기존 코드–재설계 불일치).** `experiments/analysis/analysis_harness.py`는 재작성되어 **PR-1·PR-2·PR-3** 대응비교를 구현하고, 구 “오염 전파”(`MAE(A3,주입3u) − MAE(A3,원래)`)는 H5(탐색적)로 내려갔다 (§13·§15.2 D-12). *(이전 판본은 “현재 구현하고 있다”고 적혀 있었다.)*
+② ⚠️ **기존 코드와 재설계가 불일치한다 (결함 D-12).** `experiments/analysis/analysis_harness.py`는 **현재 “오염 전파” PR-1**(`MAE(A3,주입3u) − MAE(A3,원래)`)을 구현하고 있다.
 → **재설계 후에는 `MAE(A2) − MAE(A3)`와 `MAE(R) − MAE(A3)` 두 대응비교를 PR-2·PR-3으로 올리고, 기존 오염전파 경로는 탐색적(H5)로 내려야 한다.**
-→ **오라클 A1~A10은 재사용 가능**(부트스트랩·Holm·가중κ는 조건 이름과 무관). **배선만 교체**하면 된다.
+→ **오라클 A1~A6은 재사용 가능**(부트스트랩·Holm·가중κ는 조건 이름과 무관). **배선만 교체**하면 된다.
 
 **🔧 지표 정의 명확화:** 조건별 MAE 표는 **장애인별 MAE의 평균(장애인 동등 가중)** 이다. 전체 시행을 풀링한 평균이 아니다(분석 단위=장애인). 실패 출력은 유효 MAE에서 제외하고 **실패포함 손실(손실=3)** 을 별도 열로 둔다.
 **"유의성 한 개"로 결론을 만들지 않는다.** PR이 CI를 0 포함하면 **"이 표본에서 방향 확인 안 됨"** 으로 쓴다.
@@ -640,8 +640,8 @@ seed 3개: 20260922 / 20260923 / 20260924 → 장애인별 평균
 - **VLM 실행 하네스** (`experiments/vlm/run_vlm.py`) — 조건 → 프레임(프로토콜 §7, **실제 fps 사용**) → 프롬프트 → 모델 → 점수 파싱 → `predictions.csv`. **오라클 V1~V9 ALL PASS.** 백엔드 3종: `dry`(모델 없음) / `mock`(배선 점검, 결과 아님) / `qwen`(실제). 채점시트→`reference.csv` 변환 포함. **실데이터 12조건 실행 성공**(PNG 708장, 59프레임/영상).
   **✅ 완료된 코드:**
 - **주입 생성기** (`experiments/vlm_conditions/make_conditions.py`) — A0~R 조건 생성 + 오류 주입. 오라클 C1~C5 ALL PASS, 실제 데이터 208건·영상 208/208 생성 확인.
-- **분석 하네스** (`experiments/analysis/analysis_harness.py`) — bootstrap CI·Holm·가중 κ·혼동행렬·실패 손실·라벨 불확실. 오라클 A1~A10 ALL PASS.
-  - ✅ **배선 교체 완료 확인 (2026-09-25, 코드 직접 읽음).** `analysis_harness.py:531-533` 이 `pr1 = paired_diff(a2, a1)` = `MAE(A2) − MAE(A1)`, `pr2 = paired_diff(a2, a3)` = `MAE(A2) − MAE(A3)`, `pr3 = paired_diff(r_cond, a3)` = `MAE(R) − MAE(A3)` 를 구현한다. 오염전파(bias_3u)는 **H5 기전·탐색적**으로 내려가 있다. **오라클 로그 `experiments/results/analysis_oracle.txt` 에 `PR-1 = MAE(A2)-MAE(A1) == +2.0 PASS [2.0]`, `PR-2 = MAE(A2)-MAE(A3) == +2.0 PASS [2.0]`, `A3(1) - A1(1) == 0.0 (조건 미분리 감지) PASS [0.0]` 가 있어, 회귀도 잠겨 있다.** → **D-12 해소 확인.** *(2026-09-28 정정: 이전 판본은 라인 528-529·`pr1 = paired_diff(a2, a3)`·로그 `PR-1 = MAE(A2)-MAE(A3)` 로 잘못 적혀 있었다 — 실제 코드/로그와 불일치.)*
+- **분석 하네스** (`experiments/analysis/analysis_harness.py`) — bootstrap CI·Holm·가중 κ·혼동행렬·실패 손실·라벨 불확실. 오라클 A1~A6 ALL PASS.
+  - ✅ **배선 교체 완료 확인 (2026-09-25, 코드 직접 읽음).** `analysis_harness.py:528-529` 가 `pr1 = paired_diff(a2, a3)` = `MAE(A2) − MAE(A3)`, `pr2 = paired_diff(r_cond, a3)` = `MAE(R) − MAE(A3)` 를 구현한다. 오염전파(bias_3u)는 **H5 기전·탐색적**으로 내려가 있다. **오라클 로그 `experiments/results/analysis_oracle.txt` 에 `PR-1 = MAE(A2)-MAE(A3) == +2.0 PASS` 와 `구 배선(A3 none - A3 none) == 0.0 (구분됨) PASS` 가 있어, 회귀도 잠겨 있다.** → **D-12 해소 확인.**
   - ⚠️ 합성 데모(+0.289, CI [+0.178,+0.414], p_Holm=0.0002)는 **배선 교체 전 실행된 것**이다. 현재 코드로 재실행하면 값이 달라질 수 있다(재현 필요).
 
 ---
