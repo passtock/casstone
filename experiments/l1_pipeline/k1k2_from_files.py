@@ -5,7 +5,7 @@ L1 파이프라인 — 실제 파일 입력판 (v6 프로토콜 §6·§8 실행�
 
 `k1k2_reference.py`(합성 오라클)의 **실데이터 입력 버전**이다.
 세션 폴더를 읽어 시행별 K1·K2·Q·T를 계산하고 L2 JSON을 쓴다.
-**치구 135기록과 건강인/환자 촬영에 바로 쓸 수 있다.**
+**치구 135기록과 비장애인/장애인 촬영에 바로 쓸 수 있다.**
 
 입력 구조 (프로토콜 §6)
 -----------------------
@@ -61,6 +61,13 @@ WRIST, THUMB_TIP, INDEX_FINGER_TIP = 0, 4, 8
 WINDOW_K = 5
 MIN_VALID_FRAC = 0.5
 MAX_GAP_S = 0.1            # K2 계산 시 프레임 간격 상한
+# 🔴 V-1 (2026-09-25) — **dt 하한이 없으면 속도가 수십 배 증폭된다.**
+#    실측(20260915 Trial #1 Right): 인접행 dt가 실제 프레임 간격(59.1 ms)의
+#    **1/34인 1.747 ms**까지 작아져 **PV = 7.947 m/s** 라는 불가능한 값이 나왔다.
+#    상한(MAX_GAP_S)만으로는 못 막는다 — 하한이 필요하다.
+#    → dt_min 미만 쌍은 **계산에서 제외**하고 그 수를 L2 JSON에 기록한다.
+#    dt_min 기본값 = 해당 시행 중앙 dt의 절반(DT_MIN_AUTO_DIVISOR). CLI --dt-min 으로 고정.
+DT_MIN_AUTO_DIVISOR = 2.0
 HAND_DIST_LO_MM = 60.0
 HAND_DIST_HI_MM = 230.0
 
@@ -225,7 +232,7 @@ def hand_consistency(wrist_pt, tip_pt):
 # ===========================================================================
 # 3. 시행 처리
 # ===========================================================================
-def process_trial(session_dir, meta, trial_id, depth_scale=1.0):
+def process_trial(session_dir, meta, trial_id, depth_scale=1.0, dt_min=None):
     lm_path = os.path.join(session_dir, "L1_track", trial_id + "_landmarks.csv")
     depth_folder = os.path.join(session_dir, "L0_raw", trial_id + "_depth")
     recs = read_landmarks(lm_path)
@@ -265,15 +272,35 @@ def process_trial(session_dir, meta, trial_id, depth_scale=1.0):
             k1_vals.append(dist3(p["thumb"], p["index"]))
     k1 = p95(k1_vals)
 
-    # --- K2 (손목 속도) ---
+    # --- K2 (손목 속도) — dt 하한 필수 (V-1) ---
+    _dts = []
+    for _i in range(1, len(pts)):
+        _a, _b = pts[_i - 1], pts[_i]
+        if (_a["wrist"] is not None and _b["wrist"] is not None
+                and _a["t"] is not None and _b["t"] is not None):
+            _d = _b["t"] - _a["t"]
+            if _d > 0:
+                _dts.append(_d)
+    if dt_min is None:
+        dt_min_used = (float(np.median(_dts)) / DT_MIN_AUTO_DIVISOR) if _dts else 0.0
+    else:
+        dt_min_used = float(dt_min)
+
     k2_vals, k2_pairs, prev = [], 0, None
+    n_excl_small, n_excl_large = 0, 0
     for p in pts:
         if p["wrist"] is None:
             prev = None
             continue
         if prev is not None and p["t"] is not None and prev[1] is not None:
             dt = p["t"] - prev[1]
-            if 0 < dt <= MAX_GAP_S:
+            if dt > MAX_GAP_S:
+                n_excl_large += 1
+            elif dt <= 0:
+                pass
+            elif dt < dt_min_used:
+                n_excl_small += 1          # 🔴 V-1: 하한 미만 → 제외
+            else:
                 k2_vals.append(dist3(p["wrist"], prev[0]) / dt)
                 k2_pairs += 1
         prev = (p["wrist"], p["t"])
@@ -301,6 +328,9 @@ def process_trial(session_dir, meta, trial_id, depth_scale=1.0):
         "q3_valid_samples_k2": k2_pairs,
         "q4_edge_mixing_frac": round(n_edge / float(n), 4) if n else 0.0,
         "q5_not_assessable_frac": round(n_na / float(n), 4) if n else 0.0,
+        "dt_min_used_s": round(dt_min_used, 6),
+        "n_pairs_excluded_dt_small": n_excl_small,
+        "n_pairs_excluded_dt_large": n_excl_large,
     }
     return {"trial_id": trial_id, "task": trial_id.split("_")[1] if "_" in trial_id else "",
             "observation_window_s": round(T, 4),
@@ -347,6 +377,15 @@ def apply_q_rules(rec, q1_min=0.0):
         r_k2.append("Q3(%d<%d)" % (q["q3_valid_samples_k2"], Q3_MIN_SAMPLES))
     rec["usable"] = {"k1": bool(k1_ok), "k2": bool(k2_ok),
                      "reasons_k1": r_k1, "reasons_k2": r_k2}
+    # 🔴 A2 조건은 **Q 판정과 무관하게 계산된 값**을 보여준다(계획 §6).
+    #    따라서 Q 이전 원값을 별도 키로 보존한다 — A3는 Q-gated 값을 쓴다.
+    #    `q_held_*` = "값이 있었지만 Q가 보류시켰다" → 이 값이 A2와 A3의 **차이 그 자체**다.
+    raw_k1 = rec.get("k1_thumb_index_surface_p95_mm")
+    raw_k2 = rec.get("k2_wrist_surface_speed_p95_mm_s")
+    rec["k1_raw_mm"] = raw_k1
+    rec["k2_raw_mm"] = raw_k2
+    rec["q_held_k1"] = bool(raw_k1 is not None and not k1_ok)
+    rec["q_held_k2"] = bool(raw_k2 is not None and not k2_ok)
     # 보류된 값은 null로 표시 (프로토콜 §9)
     if not k1_ok:
         rec["k1_thumb_index_surface_p95_mm"] = None
@@ -355,20 +394,22 @@ def apply_q_rules(rec, q1_min=0.0):
     return rec
 
 
-def process_session(session_dir, q1_min=0.0, write=True):
+def process_session(session_dir, q1_min=0.0, write=True, dt_min=None):
     meta = load_meta(session_dir)
     lm_files = sorted(glob.glob(os.path.join(session_dir, "L1_track", "*_landmarks.csv")))
     out = []
     for p in lm_files:
         trial_id = os.path.basename(p).replace("_landmarks.csv", "")
         rec = process_trial(session_dir, meta, trial_id,
-                            depth_scale=meta.get("depth_scale", 1.0))
+                            depth_scale=meta.get("depth_scale", 1.0), dt_min=dt_min)
         rec["provenance"] = {
             "session": os.path.basename(session_dir.rstrip("/\\")),
             "camera_model": meta.get("camera_model", ""),
             "fx": meta.get("fx"), "fy": meta.get("fy"),
             "cx": meta.get("cx"), "cy": meta.get("cy"),
             "fps": meta.get("fps"), "q1_min": q1_min,
+            "dt_min_cli": dt_min,  # None 이면 시행별 auto (중앙 dt / 2)
+            "dt_rule": "V-1: dt < dt_min 쌍 제외 · dt > %.2fs 제외 · dt <= 0 제외" % MAX_GAP_S,
             "units": {"k1": "mm", "k2": "mm/s", "t": "s"},
             "pipeline": "l1_pipeline/k1k2_from_files.py",
         }
@@ -388,12 +429,14 @@ def process_session(session_dir, q1_min=0.0, write=True):
 def _write_synthetic_session(root, w=640, h=480, fx=500.0, fy=500.0, n=60,
                              z=750.0, thumb_index_mm=15.0, step_px=3.0,
                              gap_frames=(0, 0), bg_thumb_frames=(0, 0),
-                             edge_frac=0.0, na_frac=0.0, fps=30.0):
+                             edge_frac=0.0, na_frac=0.0, fps=30.0,
+                             dt_spike_frac=0.0, dt_spike_dt=0.0017):
     """합성 세션을 디스크에 쓴다.
 
-    ⚠️ 기대값을 **생성기가 직접 계산해서 반환**한다. 손으로 계산하지 않는다
-       (이전 판에서 손계산 기대값이 틀려 오라클이 오탐한 적이 있다).
-    반환: (meta, expected)  expected = {"k1_mm":..., "k2_mm_s":..., "n_bg":...}
+    dt_spike_frac>0: 홀수 프레임의 t를 **직전 프레임 + dt_spike_dt** 로 덮어쓴다.
+      → 실측 V-1 재현용. 일부 페어(약 frac/2 비율)의 dt가 **프레임 간격보다 훨씬 작아진다**.
+      ⚠️ 단일 스파이크로는 못 잡는다 — **P95 집계가 1개 이상치를 걸러내기** 때문이다.
+         실측 20260915에서는 dt<20 ms가 **22.4%** 였으므로 다수 붕괴를 재현해야 한다.
     """
     os.makedirs(os.path.join(root, "L1_track"), exist_ok=True)
     os.makedirs(os.path.join(root, "L0_raw", "SYN_T1_t01_depth"), exist_ok=True)
@@ -421,6 +464,8 @@ def _write_synthetic_session(root, w=640, h=480, fx=500.0, fy=500.0, n=60,
     rows = []
     for i in range(n):
         t = i / fps
+        if dt_spike_frac > 0 and (i % 2 == 1) and i <= int(round(dt_spike_frac * n)):
+            t = (i - 1) / fps + dt_spike_dt   # 🔴 V-1: dt 붕괴
         arr = np.full((h, w), 2400, dtype=np.uint16)          # 배경
         u = int(round(u0 + step_px * i))
         v = v0
@@ -535,6 +580,42 @@ def selftest():
         and any("Q4" in x for x in r5["usable"]["reasons_k1"]),
         str(r5["usable"]["reasons_k1"]))
 
+    print("[S5b] Q 보류 시 원값 보존 (A2가 필요로 하는 계약)")
+    chk("Q4 보류된 K1도 k1_raw_mm 에는 값이 남아 있음",
+        r5["k1_thumb_index_surface_p95_mm"] is None and r5.get("k1_raw_mm") is not None,
+        "gated=%s raw=%s" % (r5["k1_thumb_index_surface_p95_mm"], r5.get("k1_raw_mm")))
+    chk("q_held_k1 플래그가 True", r5.get("q_held_k1") is True, str(r5.get("q_held_k1")))
+    chk("Q2 보류 건에서도 raw 보존",
+        r2["k1_thumb_index_surface_p95_mm"] is None and r2.get("k1_raw_mm") is not None,
+        "raw=%s" % r2.get("k1_raw_mm"))
+
+    print("[S6] 🔴 V-1 회귀: dt 붕괴 프레임 페어 → dt 하한이 막는가")
+    phys = 3.0 * (750.0 / 500.0) * 30.0      # step_px * mm_per_px * fps = 135 mm/s
+    rootA = os.path.join(base, "dt_off"); os.makedirs(rootA)
+    _write_synthetic_session(rootA, n=60, step_px=3.0, fps=30.0, dt_spike_frac=0.5)
+    recsA, _ = process_session(rootA, q1_min=0.0, write=True, dt_min=0.0)
+    k2off = recsA[0]["k2_wrist_surface_speed_p95_mm_s"]
+    rootB = os.path.join(base, "dt_on"); os.makedirs(rootB)
+    _write_synthetic_session(rootB, n=60, step_px=3.0, fps=30.0, dt_spike_frac=0.5)
+    recsB, _ = process_session(rootB, q1_min=0.0, write=True, dt_min=None)
+    r6 = recsB[0]; k2on = r6["k2_wrist_surface_speed_p95_mm_s"]
+    chk("하한 해제(dt_min=0) → K2 폭발 (>1000 mm/s, 물리 %.0f)" % phys,
+        k2off is not None and k2off > 1000.0, "off=%s" % k2off)
+    chk("auto 하한 → K2 폭발하지 않음 (보류(None) 또는 <300 mm/s)",
+        (k2on is None) or (k2on < 300.0), "on=%s" % k2on)
+    rootC = os.path.join(base, "dt_on_long"); os.makedirs(rootC)
+    _write_synthetic_session(rootC, n=120, step_px=3.0, fps=30.0, dt_spike_frac=0.5)
+    recsC, _ = process_session(rootC, q1_min=0.0, write=True, dt_min=None)
+    r6c = recsC[0]; k2c = r6c["k2_wrist_surface_speed_p95_mm_s"]
+    chk("긴 시행(n=120)에서는 K2가 보고되고 폭발 안 함 (<300)",
+        k2c is not None and k2c < 300.0, "long=%s" % k2c)
+    chk("제외된 dt<min 쌍 수 기록 (>5)",
+        (r6["q"].get("n_pairs_excluded_dt_small") or 0) > 5,
+        "got %s" % r6["q"].get("n_pairs_excluded_dt_small"))
+    chk("dt_min_used 기록",
+        bool(r6["q"].get("dt_min_used_s")) and r6["q"]["dt_min_used_s"] > 0,
+        str(r6["q"].get("dt_min_used_s")))
+
     print("")
     print("오라클 종합: %s" % ("ALL PASS" if ok_all else "FAIL 있음"))
     print("※ 합성 데이터다. 실제 카메라·손 성능이 아니다.")
@@ -552,17 +633,21 @@ def main():
     ap.add_argument("--selftest", action="store_true")
     ap.add_argument("--session")
     ap.add_argument("--q1-min", type=float, default=0.0)
+    ap.add_argument("--dt-min", type=float, default=None,
+                    help="K2 dt 하한(s). 미지정 시 시행별 중앙 dt/2 자동 (V-1)")
     a = ap.parse_args()
     if a.selftest:
         sys.exit(0 if selftest() else 1)
     if not a.session:
         print(__doc__); return
-    recs, meta = process_session(a.session, q1_min=a.q1_min, write=True)
+    recs, meta = process_session(a.session, q1_min=a.q1_min, write=True, dt_min=a.dt_min)
     for r in recs:
-        print("%-16s K1=%s  K2=%s  usable=%s/%s" % (
+        q = r.get("q", {})
+        print("%-16s K1=%s  K2=%s  usable=%s/%s  dt_min=%ss  제외(dt<min)=%s" % (
             r["trial_id"],
             r["k1_thumb_index_surface_p95_mm"], r["k2_wrist_surface_speed_p95_mm_s"],
-            r["usable"]["k1"], r["usable"]["k2"]))
+            r["usable"]["k1"], r["usable"]["k2"],
+            q.get("dt_min_used_s"), q.get("n_pairs_excluded_dt_small")))
     print("\n[%d trials] L2_metric/ 에 JSON 기록" % len(recs))
 
 

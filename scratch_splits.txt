@@ -32,10 +32,10 @@
 
 [Slide 9] Potential split or header without punct:
    Line 0: "기본 입력: 영상, 운동학 수치, 측정 품질"
-   Line 1: "추가 정보: 건강인 표본의 중앙값, Q1, Q3, 유효 인원, 상대 위치"
+   Line 1: "추가 정보: 비장애인 표본의 중앙값, Q1, Q3, 유효 인원, 상대 위치"
 
 [Slide 9] Potential split or header without punct:
-   Line 1: "추가 정보: 건강인 표본의 중앙값, Q1, Q3, 유효 인원, 상대 위치"
+   Line 1: "추가 정보: 비장애인 표본의 중앙값, Q1, Q3, 유효 인원, 상대 위치"
    Line 2: "의미: 같은 과제의 수치를 해석할 비교 정보 제공"
 
 [Slide 10] Potential split or header without punct:
@@ -56,7 +56,7 @@
 
 [Slide 12] Potential split or header without punct:
    Line 1: "비장애인 참조 15명: 비교 분포 구성"
-   Line 2: "뇌졸중 환자 15명: 입력 효과 평가"
+   Line 2: "뇌졸중 장애인 15명: 입력 효과 평가"
 
 [Slide 12] Potential split or header without punct:
    Line 0: "40–80세,일측 편마비, 브론스트롬 손 회복 III–V"
@@ -139,7 +139,7 @@
    Line 2: "측정실패와 판독 실패 양상"
 
 [Slide 19] Potential split or header without punct:
-   Line 0: "환자 15명의 탐색적 파일럿"
+   Line 0: "장애인 15명의 탐색적 파일럿"
    Line 1: "한정된 촬영 조건과 적은 비장애인 참조"
 
 [Slide 19] Potential split or header without punct:

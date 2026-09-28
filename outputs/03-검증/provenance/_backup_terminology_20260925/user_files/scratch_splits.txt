@@ -1,0 +1,152 @@
+[Slide 1] Potential split or header without punct:
+   Line 0: "RGB-D 운동학 정보를 활용한"
+   Line 1: "손 과제 VLM 평가"
+
+[Slide 2] Potential split or header without punct:
+   Line 1: "추가 운동학 정보로"
+   Line 2: "부족한 근거를 보완할 수 있는지 확인한다."
+
+[Slide 6] Potential split or header without punct:
+   Line 0: "입력: 손 움직임을 측정한 수치"
+   Line 1: "처리: 다항 로지스틱 회귀로 수치와 전문가 점수의 관계를 학습"
+
+[Slide 6] Potential split or header without punct:
+   Line 1: "처리: 다항 로지스틱 회귀로 수치와 전문가 점수의 관계를 학습"
+   Line 2: "출력: 연구용 0·1·2점 분류"
+
+[Slide 7] Potential split or header without punct:
+   Line 0: "입력: 손 과제의 14프레임과 공통 과제 지침"
+   Line 1: "처리: VLM이 단계별 수행 여부와 근거를 출력"
+
+[Slide 7] Potential split or header without punct:
+   Line 1: "처리: VLM이 단계별 수행 여부와 근거를 출력"
+   Line 2: "점수화: 외부 규칙으로 0·1·2점 변환"
+
+[Slide 8] Potential split or header without punct:
+   Line 0: "기본 입력: A1과 동일한 프레임 및 과제 지침"
+   Line 1: "추가 정보: 움직임 크기, 도달 시간, 유지 중 변동, 해제 개방량"
+
+[Slide 8] Potential split or header without punct:
+   Line 1: "추가 정보: 움직임 크기, 도달 시간, 유지 중 변동, 해제 개방량"
+   Line 2: "품질 정보: 유효율과 결측 이유"
+
+[Slide 9] Potential split or header without punct:
+   Line 0: "기본 입력: 영상, 운동학 수치, 측정 품질"
+   Line 1: "추가 정보: 건강인 표본의 중앙값, Q1, Q3, 유효 인원, 상대 위치"
+
+[Slide 9] Potential split or header without punct:
+   Line 1: "추가 정보: 건강인 표본의 중앙값, Q1, Q3, 유효 인원, 상대 위치"
+   Line 2: "의미: 같은 과제의 수치를 해석할 비교 정보 제공"
+
+[Slide 10] Potential split or header without punct:
+   Line 0: "입력: 운동학 수치, 측정 품질, 비장애인 참조, 과제 지침"
+   Line 1: "처리: 앞 조건과 동일한 VLM 사용"
+
+[Slide 10] Potential split or header without punct:
+   Line 1: "처리: 앞 조건과 동일한 VLM 사용"
+   Line 2: "제외: 영상 프레임과 프레임 시각 정보"
+
+[Slide 11] Potential split or header without punct:
+   Line 0: "A3 − A1"
+   Line 1: "최종 제안 방식 vs 영상만"
+
+[Slide 12] Potential split or header without punct:
+   Line 0: "개발 비장애인 4명: 측정·지침 점검"
+   Line 1: "비장애인 참조 15명: 비교 분포 구성"
+
+[Slide 12] Potential split or header without punct:
+   Line 1: "비장애인 참조 15명: 비교 분포 구성"
+   Line 2: "뇌졸중 환자 15명: 입력 효과 평가"
+
+[Slide 12] Potential split or header without punct:
+   Line 0: "40–80세,일측 편마비, 브론스트롬 손 회복 III–V"
+   Line 1: "지시 이해와 착석 수행 가능"
+
+[Slide 13] Potential split or header without punct:
+   Line 0: "목표 형성: 손 모양과 필요한 접촉 확인"
+   Line 1: "형태 유지: 해제 전 관찰 가능한 휴지 단계에서 형태 유지"
+
+[Slide 13] Potential split or header without punct:
+   Line 1: "형태 유지: 해제 전 관찰 가능한 휴지 단계에서 형태 유지"
+   Line 2: "능동 해제: 손가락 개방으로 접촉 종료"
+
+[Slide 13] Potential split or header without punct:
+   Line 0: "0점: 형성 미완료"
+   Line 1: "1점: 형성 완료 후 유지 또는 해제 미완료"
+
+[Slide 13] Potential split or header without punct:
+   Line 1: "1점: 형성 완료 후 유지 또는 해제 미완료"
+   Line 2: "2점: 세 단계 모두 완료"
+
+[Slide 14] Potential split or header without punct:
+   Line 0: "물체: 획득 중 최대 간격"
+   Line 1: "맨손: 기준 거리 − 최소 거리"
+
+[Slide 14] Potential split or header without punct:
+   Line 1: "맨손: 기준 거리 − 최소 거리"
+   Line 2: "→ 손 모양을 만들기 위한 움직임 크기"
+
+[Slide 14] Potential split or header without punct:
+   Line 0: "획득 시작부터 F1 극값에 처음 도달할 때까지의 시간"
+   Line 1: "→ 움직임의 시간적 협응 정보"
+
+[Slide 14] Potential split or header without punct:
+   Line 0: "유지 후보 구간에서 거리의 표본 표준편차"
+   Line 1: "→ 형태 유지 중 거리 변동을 요약"
+
+[Slide 14] Potential split or header without punct:
+   Line 0: "해제 마지막 20% 중앙값 − 첫 20% 중앙값"
+   Line 1: "→ 손가락을 다시 펴는 변화량"
+
+[Slide 15] Potential split or header without punct:
+   Line 0: "최대 간격 52 mm / 유효율 94%"
+   Line 1: "→ 움직임과 관측 품질 제공"
+
+[Slide 15] Potential split or header without punct:
+   Line 0: "중앙값 50 / Q1 45 / Q3 58 mm"
+   Line 1: "→ 표본 분포 내 상대 위치 제공"
+
+[Slide 15] Potential split or header without punct:
+   Line 0: "null + 결측 이유"
+   Line 1: "→ 유효한 다른 정보는 유지"
+
+[Slide 17] Potential split or header without punct:
+   Line 0: "Qwen2.5-VL-32B-Instruct"
+   Line 1: "선행 VLM 재활 연구와의 연결성이 있어 기준 모델로 사용한다."
+
+[Slide 17] Potential split or header without punct:
+   Line 0: "Qwen3-VL-8B-Instruct"
+   Line 1: "Qwen3-VL-30B-A3B-Instruct"
+
+[Slide 17] Potential split or header without punct:
+   Line 1: "Qwen3-VL-30B-A3B-Instruct"
+   Line 2: "더 최신 모델에서도 같은 경향이 유지되는지 확인한다."
+
+[Slide 17] Potential split or header without punct:
+   Line 0: "LLaVA-NeXT-Video-7B"
+   Line 1: "Qwen 이외의 모델 계열에서도 추가정보 효과가 특정 모델 의존인지 살핀다."
+
+[Slide 17] Potential split or header without punct:
+   Line 0: "LLaVA-OneVision-7B"
+   Line 1: "Qwen 이외의 모델 계열에서도 추가정보 효과가 특정 모델 의존인지 살핀다."
+
+[Slide 19] Potential split or header without punct:
+   Line 0: "최종 제안(A3)과 영상만(A1)의 오차 차이"
+   Line 1: "수치·비장애인 참조의 단계적 기여"
+
+[Slide 19] Potential split or header without punct:
+   Line 1: "수치·비장애인 참조의 단계적 기여"
+   Line 2: "측정실패와 판독 실패 양상"
+
+[Slide 19] Potential split or header without punct:
+   Line 0: "환자 15명의 탐색적 파일럿"
+   Line 1: "한정된 촬영 조건과 적은 비장애인 참조"
+
+[Slide 19] Potential split or header without punct:
+   Line 1: "한정된 촬영 조건과 적은 비장애인 참조"
+   Line 2: "14프레임의 시간적 관찰 한계"
+
+[Slide 20] Potential split or header without punct:
+   Line 0: "사람 판독 부담과 과제별 재학습 부담 사이에서,"
+   Line 1: "기존 VLM에 어떤 정보를 추가해야 실제로 도움이 되는지 검증한다."
+

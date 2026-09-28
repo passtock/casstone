@@ -1,7 +1,7 @@
 # 임상 손가락 3D 추적 알고리즘 비교 및 품질관리 가이드
 
 **조사 기준일:** 2026-09-18  
-**적용 맥락:** 단일 RGB-D 카메라로 뇌졸중 환자의 손가락 랜드마크를 추적하여 파지 간격, 관절각, 속도·시간 지표를 산출하는 연구
+**적용 맥락:** 단일 RGB-D 카메라로 뇌졸중 장애인의 손가락 랜드마크를 추적하여 파지 간격, 관절각, 속도·시간 지표를 산출하는 연구
 
 ## 결론부터
 
@@ -28,11 +28,11 @@
 
 | 모델 | 핵심 방식·출력 | 대표 정확도 | 공개 속도와 범위 | 임상 계측 판단 |
 |---|---|---|---|---|
-| **MediaPipe Hand Landmarker** | 손바닥 검출 후 21개 랜드마크 회귀. 정규화된 2.5D 좌표와 손 중심 `world_landmarks` 제공 | 원 논문은 Full 모델 MSE 10.05를 보고하지만 모델 내부 지표라 다른 모델의 mm 오차와 비교 불가. 2026년 cSCI/건강인 실물 파지 연구에서는 WiLoR·HaMeR보다 정확도가 낮고, 채택된 정답 프레임의 약 22%에서 예측을 내지 못함 | 공식 Pixel 6 전체 파이프라인: CPU 17.12 ms, GPU 12.27 ms, 약 58/81 fps | **실시간 2D 검출기로 최적**. 깊이와 결합할 때 유용하지만, 자체 3D를 절대 mm로 사용하면 안 됨 |
+| **MediaPipe Hand Landmarker** | 손바닥 검출 후 21개 랜드마크 회귀. 정규화된 2.5D 좌표와 손 중심 `world_landmarks` 제공 | 원 논문은 Full 모델 MSE 10.05를 보고하지만 모델 내부 지표라 다른 모델의 mm 오차와 비교 불가. 2026년 cSCI/비장애인 실물 파지 연구에서는 WiLoR·HaMeR보다 정확도가 낮고, 채택된 정답 프레임의 약 22%에서 예측을 내지 못함 | 공식 Pixel 6 전체 파이프라인: CPU 17.12 ms, GPU 12.27 ms, 약 58/81 fps | **실시간 2D 검출기로 최적**. 깊이와 결합할 때 유용하지만, 자체 3D를 절대 mm로 사용하면 안 됨 |
 | **HaMeR (CVPR 2024)** | 대규모 ViT-H로 MANO 손 메시·21 관절을 프레임별 복원. 대규모 혼합 데이터 학습 | FreiHAND 6.0 mm, HO3Dv2 7.7 mm **PA-MPJPE**. HInt NewDays PCK@0.05가 보이는 관절 60.8%에서 가려진 관절 27.2%로 하락 | 논문에 재현 가능한 표준 전체 FPS 없음. 0.5B+ 파라미터급 백본이라 실시간 임상 수집보다 오프라인 분석에 적합 | 어려운 포즈에 강한 2차 모델. 하지만 무가림 벤치마크 수치와 절대 mm를 혼동하면 안 됨 |
 | **WiLoR (CVPR 2025)** | 빠른 다중 손 검출기 + ViT MANO 복원 + 영상 정렬 refinement. 14개 데이터셋, 총 4.2M 영상 학습 | FreiHAND 5.5 mm, HO3Dv2 7.5 mm **PA-MPJPE**. 논문 내부 동적 지표에서 jitter 5.92 대 HaMeR 20.43이지만 이 수치는 임상 mm가 아님 | RTX 4090에서 검출기만 Small 175 fps, Medium 138 fps. 전체 복원 FPS는 동일 조건으로 별도 제시되지 않음 | 질문에 든 모델 중 **오프라인 2차 추정/QC 1순위**. 절대 좌표는 깊이 또는 별도 정합 필요 |
 | **FrankMocap** | ResNet-50 기반 손 모듈을 신체·얼굴과 SMPL-X로 결합한 2020–2021 세대 모듈형 시스템 | 당시 STB/RHD 등에서 강했으나 최신 HInt의 가림·실사용 조건에서는 HaMeR보다 크게 낮음 | RTX 2080에서 copy-and-paste 전체 9.5 fps, 모델부 13 fps | 재현·역사적 기준선에는 유용하나 **새 임상 파이프라인의 선택 근거는 약함** |
-| **MMPose Hand / RTMPose·RTMW** | 단일 모델이 아니라 2D·3D 모델과 데이터셋을 묶는 툴박스. heatmap/SimCC 계열이라 관절별 score를 활용하기 쉬움 | RTMW-x 384×288의 COCO-WholeBody **hand AP 66.4**. RTMW3D-x hand AP 62.7. 3D z는 root-relative | RTMW-l 384×288 CPU pose stage 47.62 ms, 약 21 fps. 사람/손 검출 단계는 제외 | **환자 데이터로 2D 모델을 미세조정할 때 가장 유연**. “MMPose 정확도”라는 단일 숫자는 존재하지 않음 |
+| **MMPose Hand / RTMPose·RTMW** | 단일 모델이 아니라 2D·3D 모델과 데이터셋을 묶는 툴박스. heatmap/SimCC 계열이라 관절별 score를 활용하기 쉬움 | RTMW-x 384×288의 COCO-WholeBody **hand AP 66.4**. RTMW3D-x hand AP 62.7. 3D z는 root-relative | RTMW-l 384×288 CPU pose stage 47.62 ms, 약 21 fps. 사람/손 검출 단계는 제외 | **장애인 데이터로 2D 모델을 미세조정할 때 가장 유연**. “MMPose 정확도”라는 단일 숫자는 존재하지 않음 |
 | **HandOS (CVPR 2025, 참고)** | 손 검출·좌우 판정·2D/3D·메시를 한 단계로 통합 | FreiHAND 5.0 mm PA-MPJPE, HInt-Ego4D PCK@0.05 64.6% | 임상용 동일 조건 전체 속도 비교는 부족 | 최신 연구 기준선으로는 중요하지만, 뇌졸중·RGB-D 임상 검증 없이 주 모델로 교체하기는 이르다 |
 
 근거: [MediaPipe 공식 문서](https://developers.google.com/edge/mediapipe/solutions/vision/hand_landmarker), [MediaPipe Hands 논문](https://arxiv.org/abs/2006.10214), [HaMeR](https://arxiv.org/abs/2312.05251), [WiLoR](https://arxiv.org/abs/2409.12259), [FrankMocap](https://arxiv.org/abs/2008.08324), [RTMW](https://arxiv.org/abs/2407.08634), [MMPose 공식 저장소](https://github.com/open-mmlab/mmpose), [HandOS](https://arxiv.org/abs/2412.01537).
@@ -92,17 +92,17 @@ deprojection이 주는 것은 해당 픽셀의 **보이는 피부 표면점**이
 
 ### 3.4 임상 근거는 어디까지인가
 
-Amprimo 등의 GMH-D 검증은 Azure Kinect의 손목 깊이와 MediaPipe 상대 z를 결합했다. OptiTrack과 동시 측정한 건강인 10명, 200개 영상, 60–100 cm의 열기/닫기·한 손가락/여러 손가락 tapping 과제에서, 가까운 거리의 multi-finger tapping은 손가락별 평균 RMSE가 1 cm 이하였고 single-finger tapping ROM의 평균 bias는 1 mm, 약 94%의 차이는 -13.2~15.1 mm 범위였다. 이는 깊이 결합의 이점을 보여주지만 **건강인, 비접촉 반복과제, 제한된 관절만의 결과**다. 실물 원통·구를 쥔 뇌졸중 손의 가려진 PIP/DIP를 1 cm 이내로 측정했다는 근거는 아니다. [GMH-D 임상 검증](https://arxiv.org/abs/2308.01088)
+Amprimo 등의 GMH-D 검증은 Azure Kinect의 손목 깊이와 MediaPipe 상대 z를 결합했다. OptiTrack과 동시 측정한 비장애인 10명, 200개 영상, 60–100 cm의 열기/닫기·한 손가락/여러 손가락 tapping 과제에서, 가까운 거리의 multi-finger tapping은 손가락별 평균 RMSE가 1 cm 이하였고 single-finger tapping ROM의 평균 bias는 1 mm, 약 94%의 차이는 -13.2~15.1 mm 범위였다. 이는 깊이 결합의 이점을 보여주지만 **비장애인, 비접촉 반복과제, 제한된 관절만의 결과**다. 실물 원통·구를 쥔 뇌졸중 손의 가려진 PIP/DIP를 1 cm 이내로 측정했다는 근거는 아니다. [GMH-D 임상 검증](https://arxiv.org/abs/2308.01088)
 
-2026년 cSCI 13명과 건강인 15명의 실물 파지 연구에서는 WiLoR·HaMeR·MediaPipe 등을 비교했으며 전체 평균 PA-MPJPE가 약 13 mm였다. 군 차이는 유의하지 않았지만, MediaPipe는 채택된 정답 프레임의 약 22%에서 예측이 없었다. 또한 전체 후보 프레임 중 엄격한 정답 품질기준을 통과한 것은 약 38%뿐이고, 중증 참가자 2명은 시야 유지 문제로 제외되었으며 정답도 marker system이 아닌 다중 시점 2D 모델의 삼각측량이었다. 따라서 “손상 환자에도 일반화한다”는 긍정적 신호이지, 중증 뇌졸중 손의 절대 계측 타당성 증명은 아니다. [2026 손상·가림 비교 연구](https://arxiv.org/abs/2606.17427)
+2026년 cSCI 13명과 비장애인 15명의 실물 파지 연구에서는 WiLoR·HaMeR·MediaPipe 등을 비교했으며 전체 평균 PA-MPJPE가 약 13 mm였다. 군 차이는 유의하지 않았지만, MediaPipe는 채택된 정답 프레임의 약 22%에서 예측이 없었다. 또한 전체 후보 프레임 중 엄격한 정답 품질기준을 통과한 것은 약 38%뿐이고, 중증 참가자 2명은 시야 유지 문제로 제외되었으며 정답도 marker system이 아닌 다중 시점 2D 모델의 삼각측량이었다. 따라서 “손상 장애인에도 일반화한다”는 긍정적 신호이지, 중증 뇌졸중 손의 절대 계측 타당성 증명은 아니다. [2026 손상·가림 비교 연구](https://arxiv.org/abs/2606.17427)
 
 ### 판정
 
-**깊이 결합은 임상적으로 방어 가능한 방법이지만, 자체적으로 신뢰성을 획득하는 방법은 아니다.** 대상 환자, 과제, 카메라 거리, 임상 지표별로 gold standard와 검증해야 한다.
+**깊이 결합은 임상적으로 방어 가능한 방법이지만, 자체적으로 신뢰성을 획득하는 방법은 아니다.** 대상 장애인, 과제, 카메라 거리, 임상 지표별로 gold standard와 검증해야 한다.
 
 ---
 
-## 4. 뇌졸중 환자에서 예상되는 실패 모드
+## 4. 뇌졸중 장애인에서 예상되는 실패 모드
 
 직접적인 중증 뇌졸중 손 데이터의 대규모 공개 벤치마크는 아직 부족하다. 아래는 모델 구조, 가림 연구, cSCI·뇌졸중 임상 연구를 종합한 예상 실패다.
 
@@ -119,7 +119,7 @@ Amprimo 등의 GMH-D 검증은 Azure Kinect의 손목 깊이와 MediaPipe 상대
 
 MediaPipe 자체 연구에서도 상대 z는 합성 데이터로만 학습되었고, 별도 강건성 시험에서는 대각선 motion blur가 들어가면 MediaPipe의 손 검출 실패가 50% 이상 발생했으며 네 관절만 가려도 성능이 크게 저하되었다. [강건성 metamorphic test](https://arxiv.org/abs/2303.04566)
 
-중요한 역설은 **MANO·생체역학 제약이 출력을 보기 좋게 만들수록 병적 손을 정상화할 수도 있다는 점**이다. MS-MANO 같은 생체역학 모델은 비현실적 관절을 줄이는 데 유용하지만, 뇌졸중 구축·경직에 건강인 제약을 강하게 적용하면 진짜 병리를 이상치로 제거한다. 제약은 피험자별 bone length와 넓은 soft range로 사용하고, 임상 이상 자체를 배제하는 hard range로 쓰지 않는 편이 안전하다. [MS-MANO](https://arxiv.org/abs/2404.10227)
+중요한 역설은 **MANO·생체역학 제약이 출력을 보기 좋게 만들수록 병적 손을 정상화할 수도 있다는 점**이다. MS-MANO 같은 생체역학 모델은 비현실적 관절을 줄이는 데 유용하지만, 뇌졸중 구축·경직에 비장애인 제약을 강하게 적용하면 진짜 병리를 이상치로 제거한다. 제약은 피험자별 bone length와 넓은 soft range로 사용하고, 임상 이상 자체를 배제하는 hard range로 쓰지 않는 편이 안전하다. [MS-MANO](https://arxiv.org/abs/2404.10227)
 
 ---
 
@@ -197,18 +197,18 @@ MediaPipe의 `min_hand_detection_confidence`, `min_hand_presence_confidence`, `m
 1. **실시간:** MediaPipe의 2D \((u,v)\)만 의미론적 랜드마크로 사용한다.
 2. **척도:** D455의 정렬 깊이와 calibration으로 보이는 점을 camera-space 3D로 변환한다.
 3. **오프라인 감사:** 동일 프레임에 WiLoR를 실행하고, MediaPipe-depth와의 관절별 불일치를 QC feature로 저장한다.
-4. **환자 특이 개선:** pilot에서 심한 굴곡·겹침 실패율이 높으면 HaMeR로 단순 교체하기보다, MMPose의 전용 2D hand model을 환자 영상과 occlusion label로 미세조정하는 편이 관절 가시성과 confidence를 통제하기 쉽다.
+4. **장애인 특이 개선:** pilot에서 심한 굴곡·겹침 실패율이 높으면 HaMeR로 단순 교체하기보다, MMPose의 전용 2D hand model을 장애인 영상과 occlusion label로 미세조정하는 편이 관절 가시성과 confidence를 통제하기 쉽다.
 5. **원자료 보존:** RGB, raw depth, 정렬 depth, 원시 랜드마크, 필터 랜드마크, 품질 플래그와 제외 사유를 모두 저장한다.
 
 ### 최소 검증 항목
 
-현재 설계의 “validated 3D kinematics”라는 표현을 유지하려면 다음을 같은 환자군·같은 물체·같은 phase에서 확인해야 한다.
+현재 설계의 “validated 3D kinematics”라는 표현을 유지하려면 다음을 같은 장애인군·같은 물체·같은 phase에서 확인해야 한다.
 
 - marker-based system과 동시 측정한 **camera-space MPJPE/RMSE** 및 x·y·z 축별 오차
 - landmark별, 과제별, phase별, visible/self-occluded/object-occluded별 오차
 - MGA, tMGA, 각도, peak velocity의 Bland–Altman bias와 95% limits of agreement
 - ICC와 반복시험 신뢰도, 단 ICC만으로 agreement를 대신하지 않음
-- 프레임 검출률, 유효 관절 비율, 최장 연속 gap, trial 제외율을 건강인/뇌졸중 및 중증도별로 보고
+- 프레임 검출률, 유효 관절 비율, 최장 연속 gap, trial 제외율을 비장애인/뇌졸중 및 중증도별로 보고
 - 성공 프레임만의 정확도와 전체 실패율을 반드시 함께 보고
 
 2023년 뇌졸중 생존자 연구에서는 Quest 2의 markerless tracking이 손 위치·속도 같은 일부 지표에서 marker system과 유사한 결과를 냈지만, 실물 파지에 의한 손가락 가림은 포함하지 않았다. 따라서 gross hand motion의 가능성을 뒷받침할 뿐, 현재 과제의 finger-joint validity를 대신하지 않는다. [뇌졸중 HMD–marker 비교](https://doi.org/10.3390/s23187906)
@@ -222,7 +222,7 @@ MediaPipe의 `min_hand_detection_confidence`, `min_hand_presence_confidence`, `m
 - **주 추정:** MediaPipe 2D + D455 robust depth deprojection
 - **주 지표:** 손목/손바닥 운동, 접촉 전 MGA, tMGA
 - **2차 추정·QC:** WiLoR
-- **환자 데이터 미세조정 플랫폼:** MMPose 2D Hand
+- **장애인 데이터 미세조정 플랫폼:** MMPose 2D Hand
 - **비추천:** FrankMocap을 새 주 모델로 채택, HaMeR/WiLoR의 PA-MPJPE를 절대 mm 정확도로 인용, 가려진 관절의 매끄러운 MANO 좌표를 실제 측정으로 취급
 - **필수 원칙:** 가시성·깊이 지지·모델 불일치를 통과한 좌표만 임상 계측에 사용하고, 나머지는 대치 또는 결측으로 명시
 

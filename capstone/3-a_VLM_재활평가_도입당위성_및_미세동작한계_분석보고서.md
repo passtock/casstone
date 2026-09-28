@@ -2,7 +2,7 @@
 
 **작성일시**: 2026년 9월  
 **전문 분야**: 의료 인공지능(Medical AI), 비전-언어 파운데이션 모델(Vision-Language Models; VLM), 임상 설명가능성(Clinical Explainability)  
-**분석 목적**: 뇌졸중 환자의 상지 재활 평가에서 전통적 딥러닝(3D-CNN, Video Action Recognition, 경량 ML) 대비 VLM 도입의 학술적 당위성 정립, 소표본 환경에서의 일반화 우위성 규명, 미세 동작 접촉 인식 불능(Contact Blindness) 메커니즘 및 RGB-D 운동학 융합 극복 방안 분석  
+**분석 목적**: 뇌졸중 장애인의 상지 재활 평가에서 전통적 딥러닝(3D-CNN, Video Action Recognition, 경량 ML) 대비 VLM 도입의 학술적 당위성 정립, 소표본 환경에서의 일반화 우위성 규명, 미세 동작 접촉 인식 불능(Contact Blindness) 메커니즘 및 RGB-D 운동학 융합 극복 방안 분석  
 
 ---
 
@@ -13,7 +13,7 @@
 ```
 [재활 평가 모델 패러다임 비교]
  1. 전통적 지도학습 (Supervised Video/Sensor ML)
-    수백/수천 개 라벨링 환자 영상 ──► 3D-CNN / MLP ──► 블랙박스 점수 (0 / 1 / 2)
+    수백/수천 개 라벨링 장애인 영상 ──► 3D-CNN / MLP ──► 블랙박스 점수 (0 / 1 / 2)
     * 문제점: 소표본(N=10~30) 시 치명적 과적합, 설명 불가, 새 과제 시 재학습 필수
 
  2. 제안 방식: 비전-언어 파운데이션 모델 (VLM + Kinematic In-Context Prompting)
@@ -31,10 +31,10 @@
 #### (1) 전통적 딥러닝의 '소표본 붕괴(Small-Data Breakdown)' 메커니즘
 * **과적합(Overfitting)과 지름길 학습(Shortcut Learning)**:
   * 3D-CNN(I3D, SlowFast)이나 VideoMAE 등은 통상 수천만~수억 개의 가중치를 갖는다.
-  * 환자 수가 10~30명(수백 개 시행)에 불과한 재활 임상 데이터로 이들을 엔드투엔드(End-to-end) 학습시킬 경우, 모델은 환자의 실제 손가락 관절 움직임이 아니라 **작업대 조명, 환자의 소매 색상, 환자의 체형이나 체간 기울임 등 비본질적 배경 특징(Confounding background features)**을 점수와 결합하는 지름길 학습을 일으킨다.
+  * 장애인 수가 10~30명(수백 개 시행)에 불과한 재활 임상 데이터로 이들을 엔드투엔드(End-to-end) 학습시킬 경우, 모델은 장애인의 실제 손가락 관절 움직임이 아니라 **작업대 조명, 장애인의 소매 색상, 장애인의 체형이나 체간 기울임 등 비본질적 배경 특징(Confounding background features)**을 점수와 결합하는 지름길 학습을 일으킨다.
 * **표본 외(Out-of-Distribution; OOD) 일반화 실패**:
-  * 뇌졸중 환자는 Brunnstrom 회복 단계, 경직 부위, 체격에 따라 동작의 이질성(Heterogeneity)이 극심하다.
-  * 소규모 데이터셋으로 학습된 모델은 훈련에 포함되지 않은 새로운 형태의 보상 운동을 보이는 환자가 입력되면 성능이 무작위 추측 수준으로 붕괴된다.
+  * 뇌졸중 장애인은 Brunnstrom 회복 단계, 경직 부위, 체격에 따라 동작의 이질성(Heterogeneity)이 극심하다.
+  * 소규모 데이터셋으로 학습된 모델은 훈련에 포함되지 않은 새로운 형태의 보상 운동을 보이는 장애인이 입력되면 성능이 무작위 추측 수준으로 붕괴된다.
 
 #### (2) 웹스케일 멀티모달 사전학습의 전이(Transfer of Web-scale World Knowledge)
 * **시각적 상식(Visual Commonsense)의 내재화**:
@@ -52,10 +52,12 @@
 | **GPT-4o (OpenAI)** | 비공개 | 동적 타일 | 비공개 | GPT-4 | 128K 토큰 |
 | **Gemini 2.0 Flash** | 비공개 | 적응형 | ~258토큰/이미지 | Gemini | 1M 토큰 |
 
-* **뇌졸중 재활 평가 제로샷 성능 예상치 (Li et al., 2026 예비 결과 참조)**:
-  * 영상만 제공(A1 조건): 정확 일치률(Exact match) **45~55%**, ±1 오차 범위 일치률 **75~85%**
-  * 영상 + 운동학 수치 + 건강인 통계(A3 조건): 정확 일치률 **65~75%**, ±1 오차 범위 일치률 **90~95%**
-  * **반면** 3D-CNN(I3D) 소표본(N=20) 학습: 정확 일치률 **25~35%** (무작위 추측 수준)
+* **뇌졸중 재활 평가 제로샷 성능 예상치** ⚠️ **[PROV-AUDIT 2026-09-25]** *(이전 판본은 여기에 "Li et al., 2026 예비 결과 참조"라고 적었으나, **Li, Z. 등(2026)은 실존을 확인하지 못했다.** 아래 수치는 **1차 출처가 없는 추정치**다. 실제 대조값은 **Li, V. 등 (2026) PLOS Digit Health 5(7):e0001506, PMID 42406872** 원문을 직접 읽고 대체해야 한다.)*:
+  * 영상만 제공(A1): 정확 일치률 **`[미확정]`**, ±1 일치률 **`[미확정]`** ← **우리 실험이 측정할 값**
+  * 영상 + 운동학 수치 + 비장애인 통계(A2/A3): 정확 일치률 **`[미확정]`**, ±1 일치률 **`[미확정]`** ← **우리 실험이 측정할 값**
+  * 3D-CNN(I3D) 소표본(N=20) 학습: 정확 일치률 **`[미확정]`** ← 대조군
+
+> 🔴 **[PROV-AUDIT 2026-09-25] 이전 판본의 구체 수치(45~55%, 75~85%, 65~75%, 90~95%, 25~35%)를 철회했다.** 이는 **측정 결과가 아니라 추정치**이며, 그 근거로 적힌 `Li, Z. 등(2026)`은 **실존을 확인하지 못했다**. 게다가 **이 값들은 우리 실험이 측정하려는 대상 그 자체**다 — 미리 정해 둔 숫자를 써 넣으면 **순환논증**이 된다. → **`[미확정]` 으로 비워 두고, 실측 후 채운다.**
 
 ---
 
@@ -66,17 +68,17 @@
 ```
 [VLM 자연어 설명(Clinical Rationale)의 3대 임상 가치]
  1. 설명 가능성 (Explainability) ──► 점수 감점의 해부학적 원인(MCP 신전 부족 vs 능동 해제 지연) 적시
- 2. 시스템 감사 가능성 (Auditability) ──► 모델의 판단 근거가 실제 환자 움직임인지, 센서 노이즈인지 검증
+ 2. 시스템 감사 가능성 (Auditability) ──► 모델의 판단 근거가 실제 장애인 움직임인지, 센서 노이즈인지 검증
  3. 맞춤형 재활 계획 연계 (Actionability) ──► 임상의에게 구체적 결함 부위 피드백 제공 (중재 설계)
 ```
 
 1. **규제 기관(FDA/EMA/식약처) 가이드라인 및 설명 가능성 (Explainability, Rajpurkar et al., Nature Medicine 2022)**:
-   * 의료기기 소프트웨어(SaMD) 인허가에서 인공지능의 블랙박스(Black-box) 판정은 환자 안전에 직결되므로 엄격히 제한된다.
-   * VLM은 단순히 "환자 A는 1점"이라고 출력하는 대신, *"환자는 물체에 도달하여 엄지를 접촉하였으나, 제2~5 수지의 원위지절(DIP) 및 근위지절(PIP) 관절의 신전이 불완전하여 원통 둘레를 완전히 감싸지 못하고 2초 이상 안정적으로 유지하지 못하였으므로 부분 수행(1점)으로 판정함"*과 같은 **인과적 해부학적 근거(Chain-of-Thought Rationale)**를 제공한다.
+   * 의료기기 소프트웨어(SaMD) 인허가에서 인공지능의 블랙박스(Black-box) 판정은 장애인 안전에 직결되므로 엄격히 제한된다.
+   * VLM은 단순히 "장애인 A는 1점"이라고 출력하는 대신, *"장애인은 물체에 도달하여 엄지를 접촉하였으나, 제2~5 수지의 원위지절(DIP) 및 근위지절(PIP) 관절의 신전이 불완전하여 원통 둘레를 완전히 감싸지 못하고 2초 이상 안정적으로 유지하지 못하였으므로 부분 수행(1점)으로 판정함"*과 같은 **인과적 해부학적 근거(Chain-of-Thought Rationale)**를 제공한다.
 2. **환각(Hallucination) 및 센서 결측의 감사 가능성 (Auditability)**:
    * 센서 결측이나 가림이 발생했을 때, 모델이 억지로 추측하여 점수를 매겼는지, 아니면 근거 부족(Unreadable)으로 판정했는지를 모델의 자연어 설명 추론 과정을 통해 즉각 역추적(Audit)할 수 있다.
 3. **치료적 개입과의 연계 (Actionable Clinical Insights)**:
-   * 임상 치료사는 단순 FMA 총점보다 **"어떤 관절의 협응이 결손되었는가"**를 필요로 한다. VLM의 자연어 피드백은 물리치료사 및 작업치료사가 환자의 다음 주 재활 훈련 목표(예: "수지 신전근 전기자극 치료 집중", "엄지 대립 훈련 추가")를 설계하는 데 직접적인 임상 의사결정 지원 도구(CDSS)로 기능한다.
+   * 임상 치료사는 단순 FMA 총점보다 **"어떤 관절의 협응이 결손되었는가"**를 필요로 한다. VLM의 자연어 피드백은 물리치료사 및 작업치료사가 장애인의 다음 주 재활 훈련 목표(예: "수지 신전근 전기자극 치료 집중", "엄지 대립 훈련 추가")를 설계하는 데 직접적인 임상 의사결정 지원 도구(CDSS)로 기능한다.
 
 > **FDA SaMD 규제 프레임워크 상세**: 미국 FDA는 AI 기반 의료기기 소프트웨어(SaMD)에 대해 IEC 62304(소프트웨어 수명주기), 21 CFR Part 820(품질 시스템), 그리고 **Good Machine Learning Practice (GMLP) 10대 원칙**(FDA/Health Canada/MHRA, 2021)을 권고한다. 특히 *"임상적 설명가능성(Clinical Transparency)"* 원칙은 VLM의 자연어 근거 제시 능력이 직접적으로 인허가 요건 충족에 기여할 수 있음을 의미한다. 다만, VLM 자체가 인허가 대상이 되려면 **사전 결정된 변경 제어 프로토콜(Predetermined Change Control Plan)**을 수립해야 하며, 이는 본 연구의 범위를 초과한다. 연구계획서의 "보조 선별 도구" 규정은 이러한 규제 프레임워크와 정확히 정렬된다.
 
@@ -112,7 +114,7 @@
 #### (2) 시간적 프레임 다운샘플링 및 토큰 예산 제약 (Temporal Sparsity)
 * **메커니즘**: LLM의 컨텍스트 윈도우(Context window) 및 연산 복잡도($O(N^2)$) 제약으로 인해, 30fps 비디오의 수백 개 프레임을 전부 입력할 수 없으며 통상 8~16장의 희소 프레임(Sparse frames)만 균등 추출하여 전달한다.
 * **손 계측에서의 치명적 문제**:
-  * 뇌졸중 환자의 3~8Hz 활동 진전(Tremor), 간헐적 멈칫거림(Hesitation), 손끝이 물체에 닿는 100ms 미만의 순간적 임팩트(Contact instant)는 희소 샘플링 간격 사이에 누락되어 관측되지 않는다 (Temporal Nyquist-Shannon 한계).
+  * 뇌졸중 장애인의 3~8Hz 활동 진전(Tremor), 간헐적 멈칫거림(Hesitation), 손끝이 물체에 닿는 100ms 미만의 순간적 임팩트(Contact instant)는 희소 샘플링 간격 사이에 누락되어 관측되지 않는다 (Temporal Nyquist-Shannon 한계).
 * **정량적 시간 해상도 분석**:
   * 30fps 영상에서 8프레임 균등 샘플링: 프레임 간격 $\approx 330\text{ms}$ (3Hz)
   * 3~8Hz 진전을 캐처하려면 Nyquist 정리에 의해 최소 **16Hz** 샘플링이 필요 → 16프레임/시행 최소 필요
@@ -140,10 +142,13 @@
  1. 외부 물리 운동학 피처 주입 (Kinematic Feature Prompting) ──► 본 연구의 A2/A3 핵심 전략!
  2. 동적 고해상도 크롭 (Dynamic High-Resolution Cropping)    ──► 손 영역 국소 ViT 토큰화
  3. 3D 포인트 클라우드/깊이 인코더 융합 (Depth-VLM Fusion)    ──► 2.5D 깊이 맵 직접 토큰화
- 4. 통계적 정규화 앵커링 (Population Reference Anchoring)   ──► 건강인 참조 대비 편차 제시
+ 4. 통계적 정규화 앵커링 (Population Reference Anchoring)   ──► 비장애인 참조 대비 편차 제시
 ```
 
 #### (1) 외부 물리 운동학 피처 주입 (Kinematic Feature Prompting, Tang et al., 2025; Wang et al., 2024)
+
+> ⚠️ **[PROV-AUDIT 2026-09-25] 이 절 제목이 인용한 두 편(Tang X 2025 TPAMI, Wang L 2024 MedIA)은 철회됐다.**
+> 실존이 확인된 대응 문헌은 **Tang, J. 등 (2025) arXiv:2505.18412**(프롬프트 엔지니어링 기반 재활 운동 품질 평가)이다. **이 절의 서술을 그 문헌 기준으로 재확인하고, 보고되지 않은 수치는 쓰지 말 것.**
 * **접근법 (연구계획서의 A2, A3 설계의 이론적 토대)**:
   * VLM이 스스로 계산할 수 없는 물리적 3차원 물리량—**엄지-검지 3D 유클리드 거리 $a(t)$, 속도 벡터 적분값 $v(t)$, 유지 중 변동 표준편차 $F3$, 개방 변화량 $F4$**—을 전용 RGB-D 신호처리 파이프라인에서 정밀 계산한다.
   * 이를 자연어 프롬프트 내에 정량적 텍스트(예: `[측정된 엄지-검지 최대 간격: 78.4 mm, 해제 시 개방 변화량: +24.1 mm]`)로 직접 주입한다.
@@ -157,8 +162,8 @@
 * **접근법**: 깊이 맵(Depth map)을 단순 흑백 영상으로 변환하여 RGB와 함께 채널 결합하거나, 3D 포인트 클라우드를 처리하는 별도의 기하학적 인코더(PointNet++, Depth-SAM)를 통과시켜 LLM의 임베딩 공간에 다중 모달 토큰으로 직접 주입한다.
 
 #### (4) 통계적 정규화 앵커링 (Population Reference Anchoring, 연구계획서 A3 조건)
-* **접근법**: 센서 수치 자체도 노이즈가 존재하므로, 절대 수치만 주기보다 **건강인 대조군의 참조 분포(중앙값, Q1, Q3)**를 함께 프롬프트에 제공(In-Context Reference)한다.
-* **효과**: VLM이 복잡한 물리 단위를 절대적으로 해석하는 부담을 줄이고, *"건강인 중앙값 대비 환자의 파지 간격이 하위 25% 이하로 축소되었음"*과 같은 **상대적 표준 편차(Deviation) 추론을 안정적으로 수행**할 수 있게 한다.
+* **접근법**: 센서 수치 자체도 노이즈가 존재하므로, 절대 수치만 주기보다 **비장애인 대조군의 참조 분포(중앙값, Q1, Q3)**를 함께 프롬프트에 제공(In-Context Reference)한다.
+* **효과**: VLM이 복잡한 물리 단위를 절대적으로 해석하는 부담을 줄이고, *"비장애인 중앙값 대비 장애인의 파지 간격이 하위 25% 이하로 축소되었음"*과 같은 **상대적 표준 편차(Deviation) 추론을 안정적으로 수행**할 수 있게 한다.
 
 ---
 
@@ -166,7 +171,7 @@
 
 사용자의 연구계획서 설계는 의료 AI 관점에서 완벽한 타당성을 확보하고 있다:
 
-1. **A1 (영상만 제공) vs A3 (영상 + RGB-D 운동학 수치 + 건강인 통계)의 비교 설계**:
+1. **A1 (영상만 제공) vs A3 (영상 + RGB-D 운동학 수치 + 비장애인 통계)의 비교 설계**:
    * 이는 VLM의 고유한 결함인 **"Contact Blindness"와 "Spatial Resolution Deficit"을 외부 센서 공학(RGB-D 운동학)이 통계적으로 유의하게 보완할 수 있는가**를 검증하는 가장 핵심적이고 우아한 가설 검정 구조이다.
 2. **A0 (경량 로지스틱 회귀) 비교 모델의 역할**:
    * 수치 데이터만으로도 경량 머신러닝이 점수를 맞출 수 있는지(단순 예측 성능)와, VLM이 영상과 수치를 융합하여 도출하는 **해석적 일치도(Clinical reasoning agreement)**가 경량 모델을 상회하는지를 실증적으로 증명하는 필수 대조군이다.
@@ -175,12 +180,28 @@
 
 ## 4. 핵심 참고문헌 (References)
 
-1. **Tang, X., Zhang, Y., & Li, J. (2025)**. Can vision-language models accurately perceive fine-grained physical quantities? An empirical investigation. *IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI)*, Advance Online Publication.  
+> ⚠️ **[PROV-AUDIT 2026-09-25] 경고 — 아래 1·2·3번은 실존을 확인하지 못했다.**
+> 1번(Tang 2025 TPAMI)·3번(Li 2026)은 **식별자(DOI/PMID)가 아예 없고** 레코드를 찾지 못했으며,
+> 2번(Wang 2024 MedIA)의 DOI는 **전혀 다른 논문(두경부암 방사선량 예측)**을 가리킨다.
+> **이 섹션의 인용에 기반한 주장은 1차 출처 확보 전까지 근거로 사용하지 말 것.**
+> 4번 이후(Rajpurkar 2022 Nature Medicine 등)는 정상 확인됨.
+> 🔵 **[2026-09-25 추가] 대체 문헌 초록 검증 완료** (보고서 §3.3): **Li V 2026 PLOS Digit Health(PMID 42406872)가 철회된 "Li Z 2026"의 실제 논문으로 확정**, **Tang J 2025(arXiv:2505.18412)는 지지**. 단 **xVal(arXiv:2310.02989)은 원 주장("VLM의 물리량 인식 실패")을 지지하지 않는다** — 별도 출처 필요.
+> 상세: `outputs/03-검증/provenance/citation-verification-report.md`
+
+1. ~~**Tang, X., Zhang, Y., & Li, J. (2025)**. Can vision-language models accurately perceive fine-grained physical quantities? An empirical investigation. *IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI)*, Advance Online Publication.~~ ⬛ **철회 (PROV-AUDIT 2026-09-25) — 식별자 없음·레코드 없음**  
+   **→ 대체 후보(레코드 검증 완료, 적합성 미확인):** **Golkar, S. 등 (2023)**. xVal: A continuous numerical tokenization for scientific language models. *arXiv:2310.02989*  
+   ⚠️ **xVal은 수치 토큰화 연구이며, "VLM의 물리량 인식 실패"의 실증이 아니다.**  
+   *(⚠️ [PROV-AUDIT 2026-09-25] **미검증 — 식별자 없음**. DOI·PMID·arXiv ID가 없고, 제목·저자 조합 레코드를 찾지 못했다. 본문 §2의 "VLM 수치 인식 실패" 주장은 다른 1차 출처로 대체해야 한다.)*  
    *(VLM이 영상만으로 밀리미터 단위 물리량 및 접촉을 인식하는 데 실패하는 한계 및 수치 프롬프트 주입의 유효성 규명)*
-2. **Wang, L., Chen, H., & Liu, X. (2024)**. Multimodal prompt learning for kinematic analysis in neurorehabilitation. *Medical Image Analysis (MedIA)*, 92, 103045. DOI: 10.1016/j.media.2023.103045  
+2. ~~**Wang, L., Chen, H., & Liu, X. (2024)**. Multimodal prompt learning for kinematic analysis in neurorehabilitation. *Medical Image Analysis (MedIA)*, 92, 103045. DOI: 10.1016/j.media.2023.103045~~ ⬛ **철회 (PROV-AUDIT 2026-09-25) — 오귀속**  
+   **→ 대체 문헌(레코드 검증 완료):** **Tang, J., Abedi, A., Colella, T. J. F., & Khan, S. S. (2025)**. Rehabilitation exercise quality assessment and feedback generation using large language models with prompt engineering. *arXiv:2505.18412*  
+   *(⚠️ [PROV-AUDIT 2026-09-25] **미검증 — 오귀속**. 이 DOI는 **「Beam-wise dose composition learning for head and neck cancer dose prediction in radiotherapy」**를 가리킨다. 해당 제목의 언어모델 프롬프트 논문 레코드는 없다. **인용 철회 권고**.)*  
    *(재활 평가에서 운동학적 센서 수치와 비디오 표현을 언어 모델에 프롬프트로 결합하는 하이브리드 파이프라인)*
-3. **Li, Z., Wang, K., & Zhou, Y. (2026)**. Evaluating fine-grained motor impairment after stroke using vision-language models: A multi-center pilot study. *Nature Communications / Journal of NeuroEngineering and Rehabilitation*, In Press.  
-   *(Qwen2.5-VL 등 VLM을 뇌졸중 환자 동작 평가에 적용한 선행 연구 및 미세 접촉 판단 오류 분석)*
+3. ~~**Li, Z., Wang, K., & Zhou, Y. (2026)**. Evaluating fine-grained motor impairment after stroke using vision-language models: A multi-center pilot study. *Nature Communications / Journal of NeuroEngineering and Rehabilitation*, In Press.~~ ⬛ **철회 (PROV-AUDIT 2026-09-25) — 레코드 없음**  
+   **→ 대체 문헌(레코드 검증 완료):** **Li, V., Kamalakannan, N., Parnandi, A., Schambra, H., & Fernandez-Granda, C. (2026)**. Vision-language models for human motion understanding: Lessons from stroke rehabilitation. *PLOS Digital Health*, 5(7), e0001506. DOI: 10.1371/journal.pdig.0001506 (PMID 42406872)  
+   ✅ **원래 인용하려던 연구일 가능성이 가장 크다.** 본문 §2·§3의 대조값은 이 논문 원문 기준으로 대체할 것.  
+   *(⚠️ [PROV-AUDIT 2026-09-25] **미검증 — 식별자 없음**. 학술지를 "A / B"로 병기해 확정되지 않았고 DOI도 없다. 레코드를 찾지 못했다. 해당 주장의 실제 출처는 **Li V 등 2026 (PLOS Digit Health 5(7):e0001506, PMID 42406872)** 일 가능성이 크므로 이를 인용하도록 교체 권장.)*  
+   *(Qwen2.5-VL 등 VLM을 뇌졸중 장애인 동작 평가에 적용한 선행 연구 및 미세 접촉 판단 오류 분석)*
 4. **Rajpurkar, P., Chen, E., Banerjee, O., & Topol, E. J. (2022)**. AI in health and medicine. *Nature Medicine*, 28(1), 31-38. DOI: 10.1038/s41591-021-01614-0  
    *(의료 인공지능에서 설명 가능성(Explainability), 감사 가능성(Auditability) 및 파운데이션 모델의 역할)*
 5. **Dehghani, M., Mustafa, B., Josipovic, J., et al. (2023)**. Patch n' Pack: NaViT, a vision transformer for any aspect ratio and resolution. *Advances in Neural Information Processing Systems (NeurIPS)*, 36, 23412-23425.  

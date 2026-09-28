@@ -13,7 +13,7 @@
   python experiments/session_tools/make_session.py S07 --group stroke_main --trials 15
   python experiments/session_tools/make_session.py --list-groups
 
-⚠️ 환자 식별정보(이름·생년월일·병록번호)를 파일명·경로에 넣지 않는다.
+⚠️ 장애인 식별정보(이름·생년월일·병록번호)를 파일명·경로에 넣지 않는다.
    ID는 S01.. / H01.. 형태만 쓴다 (데이터 거버넌스).
 """
 
@@ -31,13 +31,13 @@ except Exception:
 
 GROUPS = {
     "healthy_dev":  {"prefix": "H", "practice": 2, "default_trials": 5,
-                     "note": "건강인 개발 — 파이프라인·가림 주석·Q 후보 개발"},
+                     "note": "비장애인 개발 — 파이프라인·가림 주석·Q 후보 개발"},
     "healthy_val":  {"prefix": "H", "practice": 2, "default_trials": 5,
-                     "note": "건강인 독립 기술검증 — 규칙 동결 후"},
+                     "note": "비장애인 독립 기술검증 — 규칙 동결 후"},
     "stroke_dev":   {"prefix": "S", "practice": 2, "default_trials": 5,
-                     "note": "환자 개발 — 가림·채점 가능성, 프롬프트 동결"},
+                     "note": "장애인 개발 — 가림·채점 가능성, 프롬프트 동결"},
     "stroke_main":  {"prefix": "S", "practice": 2, "default_trials": 5,
-                     "note": "환자 본평가 — 과제당 본 1–3회를 모델 평가에 사용"},
+                     "note": "장애인 본평가 — 과제당 본 1–3회를 모델 평가에 사용"},
 }
 
 # 채점 시트 필드 (프로토콜 §4)

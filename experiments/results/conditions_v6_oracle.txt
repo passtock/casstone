@@ -1,0 +1,39 @@
+조건 == A1,A2,A3,A4,R (A0/A0-time 없음 — 로지스틱은 별도) PASS ['A1', 'A2', 'A3', 'A4', 'R']
+주입 4수준 == none,bias_1u,bias_3u,burst_3u PASS ['none', 'bias_1u', 'bias_3u', 'burst_3u']
+K1 프롬프트 키 == thumb_index_surface_p95_mm (§5) PASS thumb_index_surface_p95_mm
+K2 프롬프트 키 == wrist_surface_speed_p95_mm_s (§5) PASS wrist_surface_speed_p95_mm_s
+과제 == T1(ARAT 3, 5cm 블록)·T2(ARAT 12, 구슬) PASS 
+R seed 3개 (§6) PASS [20260922, 20260923, 20260924]
+지표는 2개(K1·K2) — MGA/PV/SPARC/TAM 아님 PASS {'k1': 'thumb_index_surface_p95_mm', 'k2': 'wrist_surface_speed_p95_mm_s'}
+역할 문장 포함(뇌졸중 장애인) PASS 
+K1 키 문자열 포함 PASS 
+K2 키 문자열 포함 PASS 
+null 지침('기능 저하') 포함 PASS 
+'장애나 0값' 옛 문구 없음 PASS 
+[영상] 제공됨/제공되지 않음 라벨 PASS 
+A1엔 수치 블록 없음 PASS 
+출력 지시 포함 PASS 
+A2는 Q-보류 시행에도 원값 제공 PASS [('k1', 41.0), ('k2', 312.0)]
+A3는 Q-보류 시행을 null 처리 PASS [('k1', None), ('k2', None)]
+일부만 보류되면 그 지표만 null (k2는 값 유지) PASS [('k1', None), ('k2', 260.0)]
+A1은 수치 없음 PASS 
+A4는 A3와 같은 수치 PASS 
+bias_1u = +u PASS 
+bias_3u = +3u PASS 
+burst_3u 대상 아님 → 원래값 PASS 
+burst_3u 대상 → +3u PASS 
+null 은 주입해도 null PASS 
+A3 보류 시행 2건 식별 PASS [('S_T2_t1', 'T2'), ('S_T2_t2', 'T2')]
+각 seed가 정확히 2건 제거 PASS {20260922: 2, 20260923: 2, 20260924: 2}
+seed 3개 PASS 
+A1·A4는 주입 없음(none)만 PASS 
+R 행 = 시행수 × seed3 PASS R=15
+bias 행 = A2·A3 × 2수준 × 시행수 PASS bias=20
+burst 행 = A2·A3 × 시행수 PASS burst=10
+모든 행에 prompt 존재 PASS 
+CSV 필드 고정 PASS ['condition', 'injection', 'k1', 'k2', 'n_numbers', 'participant', 'prompt', 'r_seed', 'task', 'trial_id', 'trial_index', 'u_mode', 'u_used', 'video', 'video_provided']
+v6.2: 비주입 504 · 주입 432 · 합 936 · 반복포함 984 PASS (504, 432, 936, 984)
+구 회계 1,008 은 '원래' 144를 중복 계상한 값 PASS 1,008-936=72
+v6.3: 영상 120 (=20명×2과제×3시행) PASS 20*2*3=120
+v6.3: 비주입 840 · 주입 720 · 합 1,560 · 반복포함 1,608 PASS (840, 720, 1560, 1608)
+v6.3: 2모델 3,216 (=1,608×2) PASS 2모델=3216

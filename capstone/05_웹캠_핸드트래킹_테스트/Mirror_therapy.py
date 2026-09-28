@@ -1062,7 +1062,7 @@ class ClinicalApp(QMainWindow):
 
         g1 = QGroupBox("1. 피험자 구분")
         r1 = QHBoxLayout(g1)
-        self.rb_patient, self.rb_healthy = QRadioButton("편마비 환자군"), QRadioButton("비장애인 대조군")
+        self.rb_patient, self.rb_healthy = QRadioButton("편마비 장애인군"), QRadioButton("비장애인 대조군")
         self.rb_patient.setChecked(True)
         grp = QButtonGroup(self)
         grp.addButton(self.rb_patient)
@@ -1136,9 +1136,9 @@ class ClinicalApp(QMainWindow):
         self.spin_auto.setRange(1, 60)
         self.spin_auto.setValue(int(AUTO_TRIAL_SEC))
         self.spin_auto.setSuffix(" 초")
-        self.spin_auto.setEnabled(False)          # 환자군이 기본값
+        self.spin_auto.setEnabled(False)          # 장애인군이 기본값
         self.spin_auto.setToolTip("비장애인 대조군에서 버튼을 한 번 누를 때 자동으로 측정되는 길이.\n"
-                                  "환자군은 시작/종료를 직접 눌러 구간을 잡습니다.")
+                                  "장애인군은 시작/종료를 직접 눌러 구간을 잡습니다.")
         self.spin_auto.valueChanged.connect(lambda v: self._trial_btn(not self.trial_on))
         auto_row.addWidget(QLabel("자동 측정 (대조군):"))
         auto_row.addWidget(self.spin_auto)
@@ -1444,7 +1444,7 @@ class ClinicalApp(QMainWindow):
         self.spin_auto.setEnabled(healthy)
         self._trial_btn(not self.trial_on)
         self.toast("피험자 군: " + (f"비장애인 대조군 ({self.spin_auto.value()}초 자동 측정)"
-                                     if healthy else "편마비 환자군 (수동 구간 측정)"))
+                                     if healthy else "편마비 장애인군 (수동 구간 측정)"))
 
     def _on_palm(self, mm):
         self.worker.set_palm_calib(mm)
@@ -1483,7 +1483,7 @@ class ClinicalApp(QMainWindow):
         self.toggle_trial() if self.session_on else self.start_session()
 
     def _auto_mode(self):
-        """비장애인 대조군 = 고정 시간 자동 측정, 편마비 환자군 = 수동 시작/종료."""
+        """비장애인 대조군 = 고정 시간 자동 측정, 편마비 장애인군 = 수동 시작/종료."""
         return self.rb_healthy.isChecked()
 
     def _trial_btn(self, starting):

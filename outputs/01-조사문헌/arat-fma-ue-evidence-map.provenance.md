@@ -14,7 +14,7 @@
   - Li et al. VLM 연구의 arXiv판(대조군 29명, ±25%)과 동료심사 PLOS판(대조군 20명, ±30%) 수치 차이를 표로 병기하고, 인용 시 버전 명시를 요구
   - `kinematic blindness` treated as an interpretive label, not an established term
   - Six-dimensional GMM subtype/manifold percentile treated as a proposed method, not a reproduced clinical result
-  - Ahmed & Rikakis 2025의 89%는 0/1점 환자를 배제한 이진분류 결과로 등급 하향 유지
+  - Ahmed & Rikakis 2025의 89%는 0/1점 장애인을 배제한 이진분류 결과로 등급 하향 유지
 - **Verification:** PASS WITH NOTES
 - **Notes:** Delegation was disabled in the active Workbench session. Planned researcher/verifier/reviewer subagents could not be used; the lead completed direct evidence gathering, citation, and FATAL/MAJOR/MINOR review. PDF parsing was intentionally not attempted under the user’s workflow constraints. Several PMC pages could not be directly fetched because of JavaScript rendering, but their PubMed/PMC metadata and searchable indexed content were checked.
 - **Plan:** `outputs/.plans/arat-fma-ue-evidence-map.md`
@@ -40,7 +40,7 @@
 **확인 결과: 지적이 맞다. 두 문서의 서술이 틀렸다.**
 
 - v5 계획서 원문 확인:
-  - §1: “건강인 군집화와 정상모형 개발은 이번 연구 범위에서 제외”
+  - §1: “비장애인 군집화와 정상모형 개발은 이번 연구 범위에서 제외”
   - §5: “SPARC, 관절각 전종류, 정상 GMM, 완전 자동 접촉 분할은 이번 필수 목표에서 제외한다”
   - 후속 정상모형 연구에는 검증된 손 관절 계측, 연령·손 크기·과제 조건, 사람 단위 외부검증이 필요하다고 명시
 - 즉 **“6차원 GMM”은 v5의 설계가 아니라 프로젝트 배경 설명문의 표현**이다. 문서가 이를 확정 사양처럼 서술한 것은 **범위 초과(over-scoping) 오류**다.

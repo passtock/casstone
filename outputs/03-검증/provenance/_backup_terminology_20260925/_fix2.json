@@ -1,0 +1,50 @@
+{
+ "outputs/protocol-v6-frozen.md": {
+  "particle_fix": 1,
+  "health_fix": 0
+ },
+ "outputs/research-plan-v6-easy.md": {
+  "particle_fix": 7,
+  "health_fix": 1
+ },
+ "outputs/research-plan-v6.md": {
+  "particle_fix": 0,
+  "health_fix": 4
+ },
+ "outputs/.drafts/arat-fma-ue-evidence-map-draft.md": {
+  "particle_fix": 1,
+  "health_fix": 0
+ },
+ "outputs/.drafts/arat-fma-ue-evidence-map-revised.md": {
+  "particle_fix": 27,
+  "health_fix": 12
+ },
+ "outputs/.plans/arat-fma-ue-evidence-map.md": {
+  "particle_fix": 0,
+  "health_fix": 1
+ },
+ "outputs/01-조사문헌/arat-fma-ue-evidence-map-ko.md": {
+  "particle_fix": 3,
+  "health_fix": 1
+ },
+ "outputs/01-조사문헌/arat-fma-ue-evidence-map.md": {
+  "particle_fix": 39,
+  "health_fix": 19
+ },
+ "outputs/01-조사문헌/arat-fma-ue-evidence-map.provenance.md": {
+  "particle_fix": 1,
+  "health_fix": 0
+ },
+ "outputs/01-조사문헌/rgbd-grasp-vlm-protocol-analysis.md": {
+  "particle_fix": 32,
+  "health_fix": 20
+ },
+ "outputs/02-설계이력/experiment-plan-v6-naive.md": {
+  "particle_fix": 1,
+  "health_fix": 1
+ },
+ "CHANGELOG.md": {
+  "particle_fix": 0,
+  "health_fix": 1
+ }
+}

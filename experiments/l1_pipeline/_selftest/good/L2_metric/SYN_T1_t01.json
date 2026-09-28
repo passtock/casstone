@@ -1,0 +1,53 @@
+{
+  "trial_id": "SYN_T1_t01",
+  "task": "T1",
+  "observation_window_s": 1.9667,
+  "k1_thumb_index_surface_p95_mm": 15.0,
+  "k2_wrist_surface_speed_p95_mm_s": 135.0014,
+  "t": {
+    "n_frames": 60,
+    "counts": {
+      "ok": 180
+    }
+  },
+  "q": {
+    "q1_pair_valid_ratio": 1.0,
+    "q1_point_valid_ratio": 1.0,
+    "q2_max_gap_s": 0.0,
+    "q3_valid_samples_k1": 60,
+    "q3_valid_samples_k2": 59,
+    "q4_edge_mixing_frac": 0.0,
+    "q5_not_assessable_frac": 0.0,
+    "dt_min_used_s": 0.016667,
+    "n_pairs_excluded_dt_small": 0,
+    "n_pairs_excluded_dt_large": 0
+  },
+  "provenance": {
+    "session": "good",
+    "camera_model": "SYNTHETIC",
+    "fx": 500.0,
+    "fy": 500.0,
+    "cx": 320.0,
+    "cy": 240.0,
+    "fps": 30.0,
+    "q1_min": 0.7,
+    "dt_min_cli": null,
+    "dt_rule": "V-1: dt < dt_min 쌍 제외 · dt > 0.10s 제외 · dt <= 0 제외",
+    "units": {
+      "k1": "mm",
+      "k2": "mm/s",
+      "t": "s"
+    },
+    "pipeline": "l1_pipeline/k1k2_from_files.py"
+  },
+  "usable": {
+    "k1": true,
+    "k2": true,
+    "reasons_k1": [],
+    "reasons_k2": []
+  },
+  "k1_raw_mm": 15.0,
+  "k2_raw_mm": 135.0014,
+  "q_held_k1": false,
+  "q_held_k2": false
+}

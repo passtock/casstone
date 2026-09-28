@@ -2,13 +2,13 @@
 
 **기준일:** 2026-09-22  
 **범위:** 임상계량학, 운동학, 자동채점, VLM/LLM, 정상-뇌졸중 비교, 정상 파지 다양성, 무마커 측정, 지식증강  
-**판독 원칙:** `직접 근거`는 뇌졸중·ARAT/FMA 또는 동일 운동학 과제를 직접 검증한 연구, `전이 근거`는 일반 재활·건강인·다른 임상동작 연구다.
+**판독 원칙:** `직접 근거`는 뇌졸중·ARAT/FMA 또는 동일 운동학 과제를 직접 검증한 연구, `전이 근거`는 일반 재활·비장애인·다른 임상동작 연구다.
 
 ## Executive summary
 
 1. **자동화의 타당성은 “기존 척도가 나쁘다”가 아니라 “좋은 임상척도가 움직임 정보를 압축한다”는 데 있다.** FMA-UE와 ARAT는 대체로 높은 신뢰도·타당도를 보이지만 ordinal score, 평가단계별 바닥/천장 효과, 프로토콜·평가자 의존성, 보상전략과 진정한 회복의 혼합이라는 한계가 있다.[Hsueh 2009](https://doi.org/10.2522/ptj.20080285) [Valladares et al. 2024](https://doi.org/10.3389/fneur.2024.1429929)
 2. **임상척도와 가장 일관되게 연결되는 운동학은** 운동시간·속도, smoothness(SPARC/NMU), 체간 변위, 어깨·팔꿈치 운동 및 peak aperture 관련 지표다. 다만 한 지표가 전체 FMA/ARAT 구성개념을 대체하지는 못한다.[Schwarz et al. 2019](https://doi.org/10.1161/STROKEAHA.118.023531) [Alt Murphy et al. 2012](https://doi.org/10.1177/1545968312448234)
-3. **자동채점 연구의 수치는 유망하지만 임상적 SOTA로 단정하기 어렵다.** 표본이 작거나, 일부 항목만 자동화하거나, 단일 평가자를 정답으로 쓰거나, 환자 단위 외부검증을 생략한 사례가 많다.[Kim et al. 2016](https://doi.org/10.1371/journal.pone.0158640) [Wang et al. 2024](https://doi.org/10.1177/02692155241251434)
+3. **자동채점 연구의 수치는 유망하지만 임상적 SOTA로 단정하기 어렵다.** 표본이 작거나, 일부 항목만 자동화하거나, 단일 평가자를 정답으로 쓰거나, 장애인 단위 외부검증을 생략한 사례가 많다.[Kim et al. 2016](https://doi.org/10.1371/journal.pone.0158640) [Wang et al. 2024](https://doi.org/10.1177/02692155241251434)
 4. **범용 VLM 단독 FMA 채점은 현재 불충분하다.** Qwen2.5-VL-72B의 예측 FMA가 중증도 전반에서 거의 일정해지고, 영상을 무시하고 1점을 내는 기준선과 유사한 직접 결과가 있다.[Li et al. 2025, arXiv:2511.17727](https://arxiv.org/abs/2511.17727) 본 보고서는 이를 **score flatlining**으로 부른다. `Kinematic blindness`는 미세 운동학을 포착하지 못하는 현상에 대한 **해석적 명칭**이지 확립된 학술용어는 아니다.
 5. **정상 파지는 단일 평균이 아니다.** 공통 저차원 시너지와 동시에 강한 개인·과제별 변이가 존재한다. 그러나 “6차원 GMM 정상 하위유형+매니폴드 이탈 백분위”는 아직 확립된 임상표준이 아니라 검증할 연구가설이다.[Jarque-Bou et al. 2019](https://doi.org/10.1186/s12984-019-0536-6) [Herbst et al. 2020](https://doi.org/10.1371/journal.pone.0234969)
 6. **권장 설계는 VLM 단독이 아니라** `영상 + 명시적 운동학 JSON + 정상 하위유형/거리 + 계층적 임상 규칙 + 불확실성/임상가 확인`이다. 이는 운동학→움직임 요소→구간→과제의 계층을 검증한 HBM 연구와, 특징을 LLM에 주입한 일반 재활 연구가 뒷받침한다.[Ahmed et al. 2024](https://doi.org/10.1109/TNSRE.2024.3450008) [Tang et al. 2025, arXiv:2505.18412](https://arxiv.org/abs/2505.18412)
@@ -45,7 +45,7 @@
 
 ### 시간 부담의 정확한 표현
 
-ARAT는 약 10분, FMA motor section은 약 20분으로 정리된 review가 있으나, ARAT 장비·세팅, 훈련된 평가자, 심한 환자의 반복 지시까지 포함하면 실제 workflow burden은 커진다.[Alt Murphy et al. 2015](https://pmc.ncbi.nlm.nih.gov/articles/PMC4359448/) 따라서 “둘 다 항상 지나치게 길다”보다 **빈번한 반복측정과 원격·대규모 적용에 부담이 있다**가 증거에 맞다.
+ARAT는 약 10분, FMA motor section은 약 20분으로 정리된 review가 있으나, ARAT 장비·세팅, 훈련된 평가자, 심한 장애인의 반복 지시까지 포함하면 실제 workflow burden은 커진다.[Alt Murphy et al. 2015](https://pmc.ncbi.nlm.nih.gov/articles/PMC4359448/) 따라서 “둘 다 항상 지나치게 길다”보다 **빈번한 반복측정과 원격·대규모 적용에 부담이 있다**가 증거에 맞다.
 
 ### 설계 함의
 
@@ -92,14 +92,14 @@ Sources: [Kim et al. 2016](https://doi.org/10.1371/journal.pone.0158640), [Li et
 
 ### ST-GCN의 위치
 
-ST-GCN은 variable-length skeleton의 공간·시간 토폴로지를 처리한다. Deb et al.은 KIMORE/UI-PRMD에서 기존 exercise-assessment 모델보다 개선됐다고 보고했다.[Deb et al. 2022](https://doi.org/10.1109/TNSRE.2022.3150392) 그러나 이는 대표성 있는 stroke FMA/ARAT item-level 임상검증과 동일하지 않다. 건강인·혼합질환 benchmark 성능을 ARAT 자동채점 성능으로 전치하면 안 된다.
+ST-GCN은 variable-length skeleton의 공간·시간 토폴로지를 처리한다. Deb et al.은 KIMORE/UI-PRMD에서 기존 exercise-assessment 모델보다 개선됐다고 보고했다.[Deb et al. 2022](https://doi.org/10.1109/TNSRE.2022.3150392) 그러나 이는 대표성 있는 stroke FMA/ARAT item-level 임상검증과 동일하지 않다. 비장애인·혼합질환 benchmark 성능을 ARAT 자동채점 성능으로 전치하면 안 된다.
 
 ### 공통 취약점
 
 - 총점 상관이 높아도 item-weighted κ·Bland–Altman·오차의 중증도 의존성이 나쁠 수 있다.
-- session/trial을 무작위 분할하면 같은 환자의 영상이 train/test에 섞일 수 있다.
+- session/trial을 무작위 분할하면 같은 장애인의 영상이 train/test에 섞일 수 있다.
 - 반사·reflex·촉각·저항은 비접촉 영상만으로 직접 측정하기 어렵다.
-- 정상인 위주 훈련은 환자의 비정형 운동과 가림을 대표하지 못한다.
+- 정상인 위주 훈련은 장애인의 비정형 운동과 가림을 대표하지 못한다.
 
 ---
 
@@ -161,7 +161,7 @@ Reach-to-target의 별도 메타분석(32 studies; 618 stroke, 429 controls)은 
 
 문헌에서 **ARAT 파지에 특화된 6차원 GMM**, 최적 cluster 수, subtype percentile 또는 healthy synergy manifold 이탈도가 stroke 임상점수를 개선한다는 직접 검증은 찾지 못했다. 따라서 이는 다음 가설로 제시해야 한다.
 
-> 손 크기·물체·속도·laterality를 통제한 뒤에도 정상인은 복수의 안정적 운동학 전략을 보이며, 환자 평가는 단일 평균거리보다 “가장 가까운 정상 subtype/매니폴드로부터의 거리”가 더 공정할 것이다.
+> 손 크기·물체·속도·laterality를 통제한 뒤에도 정상인은 복수의 안정적 운동학 전략을 보이며, 장애인 평가는 단일 평균거리보다 “가장 가까운 정상 subtype/매니폴드로부터의 거리”가 더 공정할 것이다.
 
 ### 필수 비교 baseline
 
@@ -264,20 +264,20 @@ Stage 2 — Constrained interpretation
 
 ## 우선 읽기·재현 순위
 
-1. **VLM flatlining 재현:** Li et al. 2025 — Qwen2.5-VL video-only와 `video+JSON`을 동일 환자분할에서 비교.[arXiv:2511.17727](https://arxiv.org/abs/2511.17727)
+1. **VLM flatlining 재현:** Li et al. 2025 — Qwen2.5-VL video-only와 `video+JSON`을 동일 장애인분할에서 비교.[arXiv:2511.17727](https://arxiv.org/abs/2511.17727)
 2. **운동학 임상앵커:** Alt Murphy et al. 2012 — ARAT와 smoothness/time/trunk의 연관.[DOI](https://doi.org/10.1177/1545968312448234)
 3. **SPARC 검증:** Bayle et al. 2024 및 Saes et al. 2021.[DOI 2024](https://doi.org/10.1186/s12984-024-01382-1) [DOI 2021](https://doi.org/10.1186/s12984-021-00937-w)
 4. **PAp/TPAp/TAPV:** Qiu et al. 2022 — 작은 N을 확장 재현.[DOI](https://doi.org/10.1109/EMBC48229.2022.9871891)
 5. **센서 동시검증:** Faity et al. 2022의 metric-dependent 오류를 제안 장비에서 재검증.[DOI](https://doi.org/10.3390/s22072735)
 6. **계층 지식증강:** Ahmed et al. 2024의 HBM을 ARAT item posterior와 결합.[DOI](https://doi.org/10.1109/TNSRE.2024.3450008)
 7. **정상 다양성:** Jarque-Bou 2019 + Herbst 2020을 토대로 subtype stability 분석.[DOI 1](https://doi.org/10.1186/s12984-019-0536-6) [DOI 2](https://doi.org/10.1371/journal.pone.0234969)
-8. **자동 FMA 대규모 임상검증:** Wang et al. 2024를 외부기관·환자분리 설계로 재현.[DOI](https://doi.org/10.1177/02692155241251434)
+8. **자동 FMA 대규모 임상검증:** Wang et al. 2024를 외부기관·장애인분리 설계로 재현.[DOI](https://doi.org/10.1177/02692155241251434)
 
 ---
 
 ## Open questions
 
-1. 구조화 운동학 JSON이 환자 단위 외부검증에서도 FMA flatlining을 제거하는가?
+1. 구조화 운동학 JSON이 장애인 단위 외부검증에서도 FMA flatlining을 제거하는가?
 2. 정상 subtype percentile이 hand/object size와 global z-score를 넘어 증분타당도를 갖는가?
 3. markerless SPARC·TPAp·TAPV의 LoA가 임상적으로 의미 있는 변화보다 작은가?
 4. 시스템이 과제 성공과 정상 협응 회복을 구분하는가?

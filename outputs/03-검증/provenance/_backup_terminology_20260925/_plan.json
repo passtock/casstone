@@ -1,0 +1,122 @@
+{
+ "outputs/research-plan-v6.md": {
+  "건강인": 8,
+  "환자": 30,
+  "bytes": 61783
+ },
+ "outputs/research-plan-v6-easy.md": {
+  "건강인": 4,
+  "환자": 20,
+  "bytes": 22990
+ },
+ "outputs/protocol-v6-frozen.md": {
+  "건강인": 8,
+  "환자": 19,
+  "bytes": 29649
+ },
+ "outputs/01-조사문헌/arat-fma-ue-evidence-map.md": {
+  "건강인": 32,
+  "환자": 140,
+  "bytes": 158096
+ },
+ "outputs/01-조사문헌/arat-fma-ue-evidence-map-ko.md": {
+  "건강인": 6,
+  "환자": 27,
+  "bytes": 20609
+ },
+ "outputs/01-조사문헌/arat-fma-ue-evidence-map.provenance.md": {
+  "건강인": 1,
+  "환자": 1,
+  "bytes": 8386
+ },
+ "outputs/01-조사문헌/rgbd-grasp-vlm-protocol-analysis.md": {
+  "건강인": 27,
+  "환자": 131,
+  "bytes": 183575
+ },
+ "outputs/02-설계이력/experiment-plan-v6-naive.md": {
+  "건강인": 32,
+  "환자": 49,
+  "bytes": 97400
+ },
+ "outputs/03-검증/systematic-search-novelty-audit.md": {
+  "건강인": 1,
+  "환자": 2,
+  "bytes": 51116
+ },
+ "outputs/03-검증/experiment-plan-v6-verification.md": {
+  "건강인": 5,
+  "환자": 4,
+  "bytes": 14040
+ },
+ "outputs/03-검증/provenance/citation-verification-report.md": {
+  "건강인": 0,
+  "환자": 0,
+  "bytes": 19240
+ },
+ "outputs/.drafts/arat-fma-ue-evidence-map-cited.md": {
+  "건강인": 2,
+  "환자": 8,
+  "bytes": 31603
+ },
+ "outputs/.drafts/arat-fma-ue-evidence-map-draft.md": {
+  "건강인": 1,
+  "환자": 3,
+  "bytes": 15441
+ },
+ "outputs/.drafts/arat-fma-ue-evidence-map-research-direct.md": {
+  "건강인": 0,
+  "환자": 0,
+  "bytes": 11467
+ },
+ "outputs/.drafts/arat-fma-ue-evidence-map-revised.md": {
+  "건강인": 16,
+  "환자": 81,
+  "bytes": 109982
+ },
+ "outputs/.drafts/arat-fma-ue-evidence-map-verification.md": {
+  "건강인": 0,
+  "환자": 0,
+  "bytes": 3534
+ },
+ "outputs/.plans/arat-fma-ue-evidence-map.md": {
+  "건강인": 1,
+  "환자": 2,
+  "bytes": 8695
+ },
+ "outputs/.plans/arat-fma-vlm-deep-research.md": {
+  "건강인": 2,
+  "환자": 2,
+  "bytes": 4902
+ },
+ "INDEX.md": {
+  "건강인": 1,
+  "환자": 1,
+  "bytes": 8913
+ },
+ "CHANGELOG.md": {
+  "건강인": 11,
+  "환자": 15,
+  "bytes": 69086
+ },
+ "experiments/analysis/analysis_harness.py": {
+  "건강인": 0,
+  "환자": 12,
+  "bytes": 46546
+ },
+ "experiments/l1_pipeline/k1k2_from_files.py": {
+  "건강인": 1,
+  "환자": 1,
+  "bytes": 23029
+ },
+ "experiments/session_tools/make_session.py": {
+  "건강인": 2,
+  "환자": 3,
+  "bytes": 7813
+ },
+ "experiments/vlm_conditions/make_conditions.py": {
+  "건강인": 0,
+  "환자": 1,
+  "bytes": 29381
+ }
+}

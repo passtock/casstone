@@ -12,8 +12,9 @@ Holm 단조성 PASS
 분산 0 → p는 NaN(퇴화 보호) PASS p=nan
 평균 1.0, CI가 0 미포함 PASS [0.50,1.50] p=0.0008
 a-b == [1.0, 2.0] PASS [1.0, 2.0]
-PR-1 = MAE(A2)-MAE(A3) == +2.0 PASS [2.0]
-구 배선(A3 none - A3 none) == 0.0 (구분됨) PASS [0.0]
+PR-1 = MAE(A2)-MAE(A1) == +2.0 PASS [2.0]
+PR-2 = MAE(A2)-MAE(A3) == +2.0 PASS [2.0]
+A3(1) - A1(1) == 0.0 (조건 미분리 감지) PASS [0.0]
 K1 제공률 == 0.50 PASS got 0.500
 K2 제공률 == 0.50 PASS got 0.500
 ≥1개 보류율 == 0.75 PASS got 0.750

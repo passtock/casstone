@@ -43,9 +43,9 @@
 |---|---|---|---|
 | **1** | **Amprimo et al. (2024). Hand tracking for clinical applications: Validation of the Google MediaPipe Hand (GMH) and the depth-enhanced GMH-D frameworks** | **MediaPipe(GMH)와 RGB-Depth 강화판(GMH-D)을 모션캡처와 비교 검증.** 손가락 수준. **거리(near 60–80cm / far 80–100cm)·속도·과제 종류**를 요인으로 분석. "both frameworks achieve good-to-high spatial accuracy". **인용 57회** | Biomed Signal Process Control, doi 10.1016/j.bspc.2024.106508 · arXiv:2308.01088 |
 | 2 | Optimisation and Comparison of Markerless and Marker-Based Motion Capture Methods for Hand and Finger Movement Analysis (2025) | **Leap Motion vs MediaPipe vs 마커 기반** 손가락 비교. **MediaPipe RMSE 10.9° vs Leap 14.7°** | Sensors 25(4):1079, doi 10.3390/s25041079 |
-| 3 | Verification of Criterion-Related Validity for Developing a Markerless Hand Tracking Device (2024) | MediaPipe 스마트폰 앱으로 **편마비 환자 손 마비 추정**. 적합타당도 검증 | Biomimetics 9(7):400, doi 10.3390/biomimetics9070400 |
+| 3 | Verification of Criterion-Related Validity for Developing a Markerless Hand Tracking Device (2024) | MediaPipe 스마트폰 앱으로 **편마비 장애인 손 마비 추정**. 적합타당도 검증 | Biomimetics 9(7):400, doi 10.3390/biomimetics9070400 |
 | 4 | Proof of Concept and Validation of Single-Camera AI-Assisted Live Thumb Motion Capture (2025) | **단일카메라 AI 엄지(CMC) 모션캡처** 검증 | Sensors 25(15):4633, doi 10.3390/s25154633 |
-| 5 | Measuring arm and hand joint kinematics to estimate impairment during a functional reach and grasp task in stroke participants | **센서 장갑으로 뇌졸중 환자의 reach-to-grasp 중 손가락/손/팔 관절** 정확도·정밀도 특성화 후 손상 추정 | PMC10330436 |
+| 5 | Measuring arm and hand joint kinematics to estimate impairment during a functional reach and grasp task in stroke participants | **센서 장갑으로 뇌졸중 장애인의 reach-to-grasp 중 손가락/손/팔 관절** 정확도·정밀도 특성화 후 손상 추정 | PMC10330436 |
 | 6 | Accuracy and Reliability of Markerless Pose Estimation for Upper Limb Kinematic Analysis (2026) | MediaPipe vs SMART-DX 8-camera 모캡, 60fps 1080p | Applied Sciences 16(3):1202, doi 10.3390/app16031202 |
 
 ### 영향
@@ -93,7 +93,7 @@
 | # | 논문 | 무엇을 했나 | 게재지·ID |
 |---|---|---|---|
 | **1** | **Hand Visibility Detector: Per-Keypoint Visibility Estimation for Hands** (2026) | **손 관절별 가시성(visibility)을 명시적으로 추정.** "대부분의 HPE는 가시성을 출력하지 않는다"를 문제로 제기하고 해결 | arXiv:2608.11574 |
-| **2** | **Robustness Evaluation in Hand Pose Estimation Models using Metamorphic Testing** (2023) | **가림·노출 저하·기타 불확실성이 HPE 성능을 저하시키는 것을 체계적으로 정량 평가** | IEEE, doi 10.1109/… · arXiv:2303.04566 |
+| **2** | **Robustness Evaluation in Hand Pose Estimation Models using Metamorphic Testing** (2023) | **가림·노출 저하·기타 불확실성이 HPE 성능을 저하시키는 것을 체계적으로 정량 평가** | IEEE, doi 10.1109/MET59151.2023.00012 · arXiv:2303.04566 |
 | 3 | Real-Time Hand Tracking Under Occlusion from an Egocentric RGB-D Sensor (2017) | RGB-D + CNN 2단계로 **가림 하 손 추적** | ICCVW 2017, doi 10.1109/iccvw.2017.82 |
 | 4 | Hidden Hands: Tracking Hands With an Occlusion Aware Tracker (2016) | 단안 RGB에서 **가림 인식 추적기** | CVPRW 2016 |
 | 5 | Capturing Hand Motion with an RGB-D Sensor, Fusing a Generative Model with Salient Points (2014) | RGB-D + 생성모델 융합, "**severe occlusions and self-similarity between fingers**"를 문제로 명시 | GCPR 2014 |
@@ -116,7 +116,7 @@
 
 | # | 논문 | 핵심 |
 |---|---|---|
-| **1** | **Characterizing sensor accuracy requirements in an AI-enabled medical device** (2022) | 🔴 초록: "**Inaccurate sensor inputs affect score outputs** in AI-enabled devices" / "**Simulation-based method can predict how sensor inaccuracy affects algorithmic output**" / "can be used to **determine design requirements**" — **개념적으로 우리 PR-1과 거의 동일** | doi 10.1016/j.… (ScienceDirect S2667258822000024) |
+| **1** | **Characterizing sensor accuracy requirements in an AI-enabled medical device** (2022) | 🔴 초록: "**Inaccurate sensor inputs affect score outputs** in AI-enabled devices" / "**Simulation-based method can predict how sensor inaccuracy affects algorithmic output**" / "can be used to **determine design requirements**" — **개념적으로 우리 PR-1과 거의 동일** | doi 10.1016/j.ipemt.2022.100004 (ScienceDirect S2667258822000024) — *IPEM-Translation* 2022; 정식 제목은 "...in an **artificial intelligence**-enabled medical device" ([PROV-AUDIT 2026-09-25] 누락 DOI 복원) |
 | 2 | Addressing Measurement Error in Random Forests Using Quantitative Bias Analysis | 측정 오류가 ML 예측 성능·변수중요도에 미치는 영향 | PMC8408353 |
 | 3 | The impact of covariate measurement error on risk prediction | 예측변수 측정오류의 영향 | Stat Med, doi 10.1002/sim.6498 |
 | 4 | Impact of predictor measurement heterogeneity across settings | 세팅 간 측정 이질성의 영향 | Stat Med, doi 10.1002/sim.8183 |
@@ -309,7 +309,7 @@
 |---|---|---|---|---|
 | **C1** | **NeuroSift: Task-Aware Quality Assurance of Multimedia Data in Remote Parkinson Disease Assessment** (2026) | **원격 파킨슨 평가용 멀티미디어 데이터의 "과제 인지형 품질 보증"** ML 모델 개발·검증. University of Rochester(Hoque lab) | **가장 가깝다.** "원격 재활 + 멀티미디어 + 품질 보증 + 과제 인지"가 정확히 겹침. **차이: (a) ML 분류기지 생성형 VLM 아님 (b) 파킨슨이지 뇌졸중/ARAT 아님 (c) 품질 보증 자체가 목적이지 "게이팅이 점수를 개선하는가"의 효과 측정이 아님** | JMIR 2026, doi 10.2196/91756, PMID 42612206, OpenAlex W7167579981 |
 | **C2** | **Edges Before Embeddings: A Confidence-Aware Blur Gate for Vision-Language Pipelines** (2026-06-24) | **이미지 품질 게이트**(sharp/blurred/**uncertain** 3분류)를 만들어 **VLM 파이프라인에 라우팅**. 고전적 **selective prediction**에 근거한 confidence-aware routing 형식화. F1 0.9803 / AUC 0.9989 / 17MB ONNX / CPU ~7ms. **"Magika 콘텐츠타입 검출 · risk-controlled OCR with VLMs · DocVLM에서 반복되는 설계 패턴"이라고 명시** | **방법론적 직계 선행.** "게이트 → VLM 라우팅"이 이미 제안됨. **차이: (a) blur 축(가림/추적실패 아님) (b) 문서/OCR 도메인(임상 운동 아님) (c) 순서형 임상 점수 없음 (d) 단일 시드·단일 blur 분포·calibration 미측정(저자 자인)** | arXiv:2606.25838, doi 10.5281/zenodo.19765336 |
-| **C3** | **Vision-language models for human motion understanding: Lessons from stroke rehabilitation** (2026-07-06) | **건강인 20명 + 뇌졸중 51명.** VLM으로 **재활 dose와 impairment를 영상에서 추정**. 결과: **"dose 추정치는 시각정보를 배제한 기준선과 비슷하고, impairment 점수는 신뢰성 있게 예측 불가"**. 모델: LLaVA-OneVision, NVILA, **Qwen2.5-VL**, InternVL3, Video-LLaVA, Gemini 2.5, GPT-4 | 🔴 **우리 PR-1/PR-2의 직접 경쟁.** "VLM은 재활 영상에서 세밀한 운동을 못 읽는다"를 **대규모로 이미 보임**. **우리는 이걸 반박하는 게 아니라 "게이팅이 이 실패를 완화하는가"로 가야 함** | PLOS Digit Health 5(7):e0001506, doi 10.1371/journal.pdig.0001506, PMID 42406872 |
+| **C3** | **Vision-language models for human motion understanding: Lessons from stroke rehabilitation** (2026-07-06) | **비장애인 20명 + 뇌졸중 51명.** VLM으로 **재활 dose와 impairment를 영상에서 추정**. 결과: **"dose 추정치는 시각정보를 배제한 기준선과 비슷하고, impairment 점수는 신뢰성 있게 예측 불가"**. 모델: LLaVA-OneVision, NVILA, **Qwen2.5-VL**, InternVL3, Video-LLaVA, Gemini 2.5, GPT-4 | 🔴 **우리 PR-1/PR-2의 직접 경쟁.** "VLM은 재활 영상에서 세밀한 운동을 못 읽는다"를 **대규모로 이미 보임**. **우리는 이걸 반박하는 게 아니라 "게이팅이 이 실패를 완화하는가"로 가야 함** | PLOS Digit Health 5(7):e0001506, doi 10.1371/journal.pdig.0001506, PMID 42406872 |
 | **C4** | **Systematic benchmarking of evaluation paradigms, safety boundaries, and clinical reasoning gaps for multimodal LLMs in rehabilitation** (2026-09-19) | MLLM의 **재활 평가 패러다임·안전 경계·임상 추론 격차**를 체계 벤치마크. 키워드에 **Kinematics·Situation awareness·Eye tracking** 포함 | **프레이밍 경쟁.** "재활 MLLM의 안전 경계"를 이미 제목에 걸었다. **우리는 "게이팅 개입의 효과"라는 인과 결과가 필요** | Sci Rep 2026, doi 10.1038/s41598-026-71999-w, OpenAlex W7213604003 |
 | **C5** | **Auditing Multimodal LLM Raters: Central Tendency Bias in Clinical Ordinal Scoring** (2026) | **MLLM 채점자가 임상 순서형 채점에서 중심경향 편향을 보임**을 감사 | 🔴 **우리 PR-2의 직접 위협.** "순서형 채점"에서 LLM 편향이 이미 감사됨. **우리 게이팅은 이 편향을 줄이는 개입으로 포지셔닝 가능** | arXiv:2605.16386 |
 

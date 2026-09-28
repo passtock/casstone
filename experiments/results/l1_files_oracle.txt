@@ -8,3 +8,11 @@ K1 보류(Q3) PASS ['Q3(40<50)']
 검출 카운트 == 10 PASS {'ok': 180, 'hand_consistency_fail': 10}
 edge_frac == 0.60 PASS got 0.60
 K1 보류(Q4) PASS ['Q4(edge 0.60)']
+Q4 보류된 K1도 k1_raw_mm 에는 값이 남아 있음 PASS gated=None raw=15.0
+q_held_k1 플래그가 True PASS True
+Q2 보류 건에서도 raw 보존 PASS raw=15.0
+하한 해제(dt_min=0) → K2 폭발 (>1000 mm/s, 물리 135) PASS off=2647.0588
+auto 하한 → K2 폭발하지 않음 (보류(None) 또는 <300 mm/s) PASS on=None
+긴 시행(n=120)에서는 K2가 보고되고 폭발 안 함 (<300) PASS long=135.0014
+제외된 dt<min 쌍 수 기록 (>5) PASS got 15
+dt_min_used 기록 PASS 0.016667

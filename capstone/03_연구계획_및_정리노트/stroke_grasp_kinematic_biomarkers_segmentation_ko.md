@@ -1,14 +1,14 @@
 # 뇌졸중 파지 과제의 핵심 운동학적 바이오마커와 자동 구간 분할
 
-> 조사 기준: 2026년 9월. 대상은 뇌졸중 편마비 환자의 `reach–grasp–hold–release/return` 과제이며, 단일 RGB-D 카메라(예: RealSense D455)와 손 랜드마크 추적을 이용하는 연구를 염두에 두었다.
+> 조사 기준: 2026년 9월. 대상은 뇌졸중 편마비 장애인의 `reach–grasp–hold–release/return` 과제이며, 단일 RGB-D 카메라(예: RealSense D455)와 손 랜드마크 추적을 이용하는 연구를 염두에 두었다.
 
 ## 결론부터
 
 1. **현재 가장 방어력 있는 1차 평활도 지표는 SPARC**다. Log dimensionless jerk(LDLJ)도 신뢰도는 좋지만 미분·노이즈와 움직임 시간에 더 민감하다. **SPARC와 LDLJ를 동등한 1차 평가변수로 여러 개 두기보다 SPARC 하나를 사전 지정**하고, 임상적으로 읽기 쉬운 `number of movement units(NMU)`를 보조 지표로 두는 편이 좋다.
 2. 파지 과제는 평활도 하나로 설명되지 않는다. 최소한 **(a) SPARC, (b) NMU, (c) 종말 감속/TAPV, (d) reach–grasp coupling, (e) 경로 효율, (f) 보상운동**을 분리해야 한다. 손 고유 기능에는 **물체 크기로 정규화한 aperture, 접촉 시 aperture, 손가락 신전 결손, release latency**를 추가한다.
 3. `TAPV`와 `reach–grasp coupling`은 유망하지만 아직 SPARC만큼 확립된 지표는 아니다. 특히 초기 아급성기 연구는 표본이 8명인 탐색 연구이므로 “임상 검증 완료”가 아니라 **과제 의존적 후보 지표**라고 기술해야 한다.
-4. 환자 시계열 분할에는 **속도 임계값 하나만 쓰면 안 된다.** 현재 규모의 파일럿에서는 `다중 신호 + hysteresis + 지속시간 조건 + 순서 제약`을 둔 유한상태기계(FSM)가 가장 실용적이다. 불확실 구간만 수동 검토하고, 자료가 축적되면 **명시적 지속시간을 갖는 HSMM**을 2단계 모델로 붙이는 것이 합리적이다.
-5. 15명 규모에서 TCN/Transformer를 처음부터 학습하는 것은 권하지 않는다. StrokeRehab의 딥러닝 연구는 51명 환자·20명 정상인, 약 12만 개의 원시동작 라벨과 약 2,700시간의 수동 주석을 사용했다. 정상인 데이터로 학습한 모델은 환자, 특히 중증 환자에 잘 일반화되지 않았다.
+4. 장애인 시계열 분할에는 **속도 임계값 하나만 쓰면 안 된다.** 현재 규모의 파일럿에서는 `다중 신호 + hysteresis + 지속시간 조건 + 순서 제약`을 둔 유한상태기계(FSM)가 가장 실용적이다. 불확실 구간만 수동 검토하고, 자료가 축적되면 **명시적 지속시간을 갖는 HSMM**을 2단계 모델로 붙이는 것이 합리적이다.
+5. 15명 규모에서 TCN/Transformer를 처음부터 학습하는 것은 권하지 않는다. StrokeRehab의 딥러닝 연구는 51명 장애인·20명 정상인, 약 12만 개의 원시동작 라벨과 약 2,700시간의 수동 주석을 사용했다. 정상인 데이터로 학습한 모델은 장애인, 특히 중증 장애인에 잘 일반화되지 않았다.
 6. **14개 대표 프레임은 VLM 관찰 입력일 뿐 운동학 계산 구간이 될 수 없다.** SPARC, TAPV, NMU는 전체 30 fps 원시 시계열에서 계산한 뒤 요약값과 신뢰도를 VLM에 제공해야 한다.
 
 ---
@@ -17,7 +17,7 @@
 
 문헌에서는 흔히 kinematic biomarker라고 부르지만, 규제적 의미의 독립 진단 바이오마커로 확립된 것은 아니다. 2019년 체계적 문헌고찰은 225개 연구, 6,197명에서 **151개의 서로 다른 지표**를 확인했지만, clinimetric property를 조사한 연구는 30개뿐이었고 충분한 근거가 있던 항목도 제한적이었다. 상대적으로 근거가 축적된 것은 movement time, movement onset/end 수, path-length ratio, peak velocity, velocity-peak 수, trunk displacement, shoulder flexion/extension 등이었다. 따라서 논문에서는 “질병을 진단하는 바이오마커”보다 **표준화된 과제에서 얻은 디지털 운동학적 결과변수**로 부르는 편이 안전하다. [Schwarz et al., 2019](https://pubmed.ncbi.nlm.nih.gov/30776997/)
 
-또한 성공 여부와 운동 회복은 다르다. 환자는 몸통 전진이나 어깨 외전으로 손의 과제를 성공할 수 있다. Stroke Recovery and Rehabilitation Roundtable(SRRR)은 임상척도만으로 restitution과 compensation을 구분하기 어렵기 때문에 3D 운동학을 병행하고, planar reaching·finger individuation·grip/precision grip과 표준화된 3D 기능과제를 함께 사용할 것을 권고했다. [Kwakkel et al., 2019](https://journals.sagepub.com/doi/10.1177/1545968319886477)
+또한 성공 여부와 운동 회복은 다르다. 장애인은 몸통 전진이나 어깨 외전으로 손의 과제를 성공할 수 있다. Stroke Recovery and Rehabilitation Roundtable(SRRR)은 임상척도만으로 restitution과 compensation을 구분하기 어렵기 때문에 3D 운동학을 병행하고, planar reaching·finger individuation·grip/precision grip과 표준화된 3D 기능과제를 함께 사용할 것을 권고했다. [Kwakkel et al., 2019](https://journals.sagepub.com/doi/10.1177/1545968319886477)
 
 ---
 
@@ -36,7 +36,7 @@
 | 손 특이 | 정규화 MGA·contact aperture | `MGA/object width`, 접촉 순간 엄지–검지 거리 | 과도한 안전 여유, preshaping 결함 | 최대값 하나보다 접촉 시점과 시간곡선이 중요 | 손가락 가림 시 결측·오검출 관리 필요 |
 | 손 특이 | 손가락 ROM·신전 결손·individuation | MCP/PIP 각도 범위, 비과제 손가락 동반 움직임 | 경직, 굴곡 시너지, fractionation 결함 | SRRR이 finger individuation을 핵심 assay로 권고 | 단일 RGB-D의 가장 어려운 항목; confidence와 가림률을 함께 보고 |
 | 결과/안정성 | Hold 안정성·slip·release latency | 물체/손 위치 분산, 미끄럼, grasp 완료→release 시간 | 유지 제어, 힘 조절, 선택적 이완 | 임상 기능과 직접 연결되나 파지력 자체는 영상만으로 알 수 없음 | 물체 pose 또는 접촉/압력 센서가 있으면 크게 향상 |
-| 재현성 | 시행 간 변동성 | SD, CV 또는 robust MAD | 운동계획 일관성·피로·주의 변동 | 평균만으로 가려지는 환자 불안정성을 포착 | 최소 반복 횟수 필요; 결측률도 함께 보고 |
+| 재현성 | 시행 간 변동성 | SD, CV 또는 robust MAD | 운동계획 일관성·피로·주의 변동 | 평균만으로 가려지는 장애인 불안정성을 포착 | 최소 반복 횟수 필요; 결측률도 함께 보고 |
 
 ### 2.2 평활도: SPARC, LDLJ, NMU를 어떻게 선택할 것인가
 
@@ -46,7 +46,7 @@ SPARC는 속도 신호의 정규화된 Fourier magnitude spectrum이 얼마나 �
 
 2021년 체계적·시뮬레이션 분석은 뇌졸중 연구에서 사용된 32개 평활도 지표를 검토했고, reach-to-point와 reach-to-grasp의 모든 시뮬레이션 조건을 통과한 지표는 SPARC뿐이었다. [Mohamed Refai et al., 2021](https://link.springer.com/article/10.1186/s12984-021-00949-6)
 
-임상 종단 근거도 있다. 첫 뇌졸중 환자 40명을 1–26주에 반복 측정한 연구에서 SPARC는 FM-UE와 유의한 종단 연관을 보였고, 환자 내 변화와 환자 간 차이가 모두 유의했다. 다만 과제를 수행할 수 있는 경도–중등도 환자와 5 cm 블록 과제에 국한되며, 정상/비정상을 가르는 과제 독립적 절단값은 없다. [Saes et al., 2021](https://link.springer.com/article/10.1186/s12984-021-00937-w)
+임상 종단 근거도 있다. 첫 뇌졸중 장애인 40명을 1–26주에 반복 측정한 연구에서 SPARC는 FM-UE와 유의한 종단 연관을 보였고, 장애인 내 변화와 장애인 간 차이가 모두 유의했다. 다만 과제를 수행할 수 있는 경도–중등도 장애인과 5 cm 블록 과제에 국한되며, 정상/비정상을 가르는 과제 독립적 절단값은 없다. [Saes et al., 2021](https://link.springer.com/article/10.1186/s12984-021-00937-w)
 
 2024년 중등도–중증 아급성기 연구에서는 SPARC와 LDLJ 모두 excellent reliability를 보였지만(SPARC ICC 0.912, LDLJ 0.911), SPARC의 변동계수가 가장 작았다. SPARC 변화는 움직임 시간보다 경로 직선성과 더 밀접했고, baseline에서 UE-FMA와 중등도, ARAT와 강한 상관을 보였다. [Bayle et al., 2024](https://link.springer.com/article/10.1186/s12984-024-01382-1)
 
@@ -55,7 +55,7 @@ SPARC는 속도 신호의 정규화된 Fourier magnitude spectrum이 얼마나 �
 - 1차 평활도 결과변수: 손목 또는 hand centroid의 3D 접선속도에서 계산한 SPARC.
 - 분석구간: `movement onset → contact/end of reach`. 2초 hold와 release를 포함한 전체 trial에는 계산하지 않는다.
 - 손가락 aperture 속도 SPARC는 탐색변수로만 둔다. 엄지·검지 랜드마크 오차가 미분과 스펙트럼에 직접 증폭된다.
-- 건강대조군은 동일 카메라, 거리, 과제, 필터, 분할 정의로 수집한다. 타 연구의 절단값을 가져오지 않는다.
+- 비장애인 대조군은 동일 카메라, 거리, 과제, 필터, 분할 정의로 수집한다. 타 연구의 절단값을 가져오지 않는다.
 
 #### Log dimensionless jerk(LDLJ)
 
@@ -69,9 +69,9 @@ $$
 
 #### NMU·submovement count
 
-NMU는 환자 움직임에서 보이는 반복 가속–감속을 임상가가 직관적으로 이해할 수 있다는 강점이 있다. SALGOT 연구의 표준화된 drinking task에서는 local minimum에서 다음 maximum까지 속도 증가가 20 mm/s를 넘고, 연속 peak 간격이 150 ms 이상일 때 하나의 movement unit로 정의했다. 하나의 운동단계에는 대체로 하나의 종 모양 속도 peak가 기대되며, 여러 peak는 반복 보정을 뜻한다. [Alt Murphy et al., 2020](https://link.springer.com/article/10.1186/s12984-020-00705-2)
+NMU는 장애인 움직임에서 보이는 반복 가속–감속을 임상가가 직관적으로 이해할 수 있다는 강점이 있다. SALGOT 연구의 표준화된 drinking task에서는 local minimum에서 다음 maximum까지 속도 증가가 20 mm/s를 넘고, 연속 peak 간격이 150 ms 이상일 때 하나의 movement unit로 정의했다. 하나의 운동단계에는 대체로 하나의 종 모양 속도 peak가 기대되며, 여러 peak는 반복 보정을 뜻한다. [Alt Murphy et al., 2020](https://link.springer.com/article/10.1186/s12984-020-00705-2)
 
-다만 이 `20 mm/s, 150 ms` 규칙은 240 Hz 광학 모션캡처와 특정 과제에서 나온 값이다. 30 fps RGB-D에서 그대로 복사하지 말고, 건강인/환자 개발 세트에서 **필터·prominence·최소 간격의 민감도 분석**을 한 뒤 사전 고정해야 한다. NMU는 SPARC의 대체물이 아니라 “왜 평활도가 나쁜지”를 설명하는 보조 지표다.
+다만 이 `20 mm/s, 150 ms` 규칙은 240 Hz 광학 모션캡처와 특정 과제에서 나온 값이다. 30 fps RGB-D에서 그대로 복사하지 말고, 비장애인/장애인 개발 세트에서 **필터·prominence·최소 간격의 민감도 분석**을 한 뒤 사전 고정해야 한다. NMU는 SPARC의 대체물이 아니라 “왜 평활도가 나쁜지”를 설명하는 보조 지표다.
 
 ### 2.3 속도 프로파일과 종말 보정
 
@@ -81,7 +81,7 @@ $$
 rTPV=\frac{t_{PV}-t_{on}}{t_{off}-t_{on}}
 $$
 
-피크 속도가 일찍 나오고 감속기가 길면 시각·체성감각 피드백에 의존한 종말 보정이 많다는 해석이 가능하다. 그러나 peak velocity 자체는 동기·근력·과제 속도 지시에도 영향을 받고, SALGOT에서는 relative time to peak velocity가 대부분의 추적 시점에 건강인과 비슷했다. 따라서 독립적인 회복 지표라기보다 SPARC, NMU, 경로효율과 함께 해석한다. [Alt Murphy et al., 2020](https://link.springer.com/article/10.1186/s12984-020-00705-2)
+피크 속도가 일찍 나오고 감속기가 길면 시각·체성감각 피드백에 의존한 종말 보정이 많다는 해석이 가능하다. 그러나 peak velocity 자체는 동기·근력·과제 속도 지시에도 영향을 받고, SALGOT에서는 relative time to peak velocity가 대부분의 추적 시점에 비장애인과 비슷했다. 따라서 독립적인 회복 지표라기보다 SPARC, NMU, 경로효율과 함께 해석한다. [Alt Murphy et al., 2020](https://link.springer.com/article/10.1186/s12984-020-00705-2)
 
 #### TAPV: time after peak velocity
 
@@ -89,7 +89,7 @@ $$
 TAPV=t_{reach\ end}-t_{PV},\qquad TAPV_n=\frac{TAPV}{T_{reach}}
 $$
 
-TAPV가 길면 피크 이후 감속·온라인 수정에 더 많은 시간을 썼다는 의미가 될 수 있다. 초기 아급성기 환자 8명의 3D reach-to-grasp 종단 연구에서는 reaching duration, trajectory smoothness, TAPV, peak grip aperture의 개선이 관찰되고 UE-FMA 변화와 연관되었다. 그러나 표본이 작고 광학식 모션캡처 기반이므로, TAPV는 **유망한 2차 지표**로 두는 것이 타당하다. [Qiu et al., 2022](https://researchwith.njit.edu/en/publications/evaluation-of-changes-in-kinematic-measures-of-three-dimensional-/)
+TAPV가 길면 피크 이후 감속·온라인 수정에 더 많은 시간을 썼다는 의미가 될 수 있다. 초기 아급성기 장애인 8명의 3D reach-to-grasp 종단 연구에서는 reaching duration, trajectory smoothness, TAPV, peak grip aperture의 개선이 관찰되고 UE-FMA 변화와 연관되었다. 그러나 표본이 작고 광학식 모션캡처 기반이므로, TAPV는 **유망한 2차 지표**로 두는 것이 타당하다. [Qiu et al., 2022](https://researchwith.njit.edu/en/publications/evaluation-of-changes-in-kinematic-measures-of-three-dimensional-/)
 
 TAPV의 가장 큰 약점은 `reach end` 정의다. 접촉 센서가 없고 물체를 움직이지 않는 과제에서는 손이 물체 앞에서 멈춘 시점과 실제 파지 완료를 영상만으로 분리하기 어렵다. 따라서 **접촉 사건 없이 TAPV를 주요 평가변수로 쓰면 분할 오차를 운동제어 차이로 오해할 수 있다.**
 
@@ -105,7 +105,7 @@ $$
 - 큰 양수: 손 열림이 늦거나 종말부에 몰림.
 - 음수: aperture peak가 운반 peak보다 앞섬.
 
-논문마다 부호, 분모, reach 종료 정의가 달라 “coordination ratio”라는 이름만으로는 재현되지 않는다. 반드시 식, landmark, 분석구간, peak 선택 규칙을 명시해야 한다. 또한 환자 aperture 곡선은 plateau나 복수 peak가 흔하므로, 전체 최대값 하나보다 다음을 같이 저장하는 편이 낫다.
+논문마다 부호, 분모, reach 종료 정의가 달라 “coordination ratio”라는 이름만으로는 재현되지 않는다. 반드시 식, landmark, 분석구간, peak 선택 규칙을 명시해야 한다. 또한 장애인 aperture 곡선은 plateau나 복수 peak가 흔하므로, 전체 최대값 하나보다 다음을 같이 저장하는 편이 낫다.
 
 - `tMGA/Treach`
 - `tPV/Treach`
@@ -134,7 +134,7 @@ $$
 - 팔꿈치: 최대 신전, peak angular velocity.
 - 손목: 과도한 굴곡·척측편위, 물체 접근 시 orientation.
 
-SALGOT에서는 movement time·NMU·peak hand velocity가 3개월경 건강 수준에 접근한 반면, peak elbow angular velocity, trunk displacement, arm abduction은 더 오래 비정상으로 남았다. 연구진은 몸통 이동과 어깨 외전을 기능과제의 core kinematics로 포함할 것을 권고했다. [Alt Murphy et al., 2020](https://link.springer.com/article/10.1186/s12984-020-00705-2)
+SALGOT에서는 movement time·NMU·peak hand velocity가 3개월경 비장애인 수준에 접근한 반면, peak elbow angular velocity, trunk displacement, arm abduction은 더 오래 비정상으로 남았다. 연구진은 몸통 이동과 어깨 외전을 기능과제의 core kinematics로 포함할 것을 권고했다. [Alt Murphy et al., 2020](https://link.springer.com/article/10.1186/s12984-020-00705-2)
 
 #### 손 고유 지표
 
@@ -174,7 +174,7 @@ SALGOT에서는 movement time·NMU·peak hand velocity가 3개월경 건강 수�
 
 - SPARC, LDLJ, jerk, NMU를 모두 독립 1차 변수로 두지 않는다.
 - 시행별 값과 함께 개인별 median 및 MAD를 보고한다. 심한 outlier가 예상되므로 mean/SD만 쓰지 않는다.
-- 임상 타당도는 baseline 상관만이 아니라 test–retest, known-groups validity, responsiveness, ceiling/floor effect, 건강인 reference distance를 평가한다.
+- 임상 타당도는 baseline 상관만이 아니라 test–retest, known-groups validity, responsiveness, ceiling/floor effect, 비장애인 reference distance를 평가한다.
 - 회복을 주장하려면 기능 성공과 보상 감소를 분리한다. 성공이 늘고 몸통 보상이 커졌다면 restitution으로 단정하지 않는다.
 
 ---
@@ -187,7 +187,7 @@ SALGOT에서는 movement time·NMU·peak hand velocity가 3개월경 건강 수�
 
 이 방식은 통제된 후향 분석에는 간단하지만 다음 문제가 있다.
 
-- 환자의 peak가 매우 낮으면 noise·tremor도 상대 임계값을 넘는다.
+- 장애인의 peak가 매우 낮으면 noise·tremor도 상대 임계값을 넘는다.
 - 여러 peak와 긴 pause가 한 phase를 여러 동작으로 쪼갠다.
 - trial의 global peak를 알아야 하므로 실시간성이 없고, outlier 하나가 임계값을 바꾼다.
 - contact, grasp complete, hold와 idle은 모두 저속이어서 속도만으로 구분되지 않는다.
@@ -199,12 +199,12 @@ SALGOT에서는 movement time·NMU·peak hand velocity가 3개월경 건강 수�
 
 | 방법 | 장점 | 뇌졸중에서의 약점 | 권장 역할 |
 |---|---|---|---|
-| 고정/상대 속도 임계값 | 단순·설명 가능·라벨 불필요 | 느림, pause, tremor, 다중 peak, 환자 간 속도차에 취약 | 기준선 또는 candidate event 생성 |
+| 고정/상대 속도 임계값 | 단순·설명 가능·라벨 불필요 | 느림, pause, tremor, 다중 peak, 장애인 간 속도차에 취약 | 기준선 또는 candidate event 생성 |
 | **Hysteretic FSM** | 과제 순서·물체 관계를 이용, 적은 자료, 임상 설명 가능 | 규칙 튜닝과 센서 품질 관리 필요 | **현재 파일럿의 주 방법** |
 | Change-point detection | 여러 신호의 분포 변화로 후보 경계를 찾음 | phase 의미를 직접 부여하지 못하고 tremor를 과분할 가능 | FSM의 후보 경계 보조 |
 | HMM | 불확실 관측을 시간적으로 평활화 | 암묵적 기하분포 지속시간 때문에 긴 hold와 짧은 pause를 잘못 쪼갤 수 있음 | 간단한 probabilistic smoother |
-| **HSMM** | 상태별 지속시간 분포를 명시해 hold·환자별 느린 phase에 적합 | 초기 라벨과 모델 선택 필요 | **자료 축적 후 2단계 권장** |
-| TCN/RNN/Transformer frame segmentation | 복잡한 다변량 패턴 학습 | 많은 framewise 라벨, over-segmentation, 환자 분포 이동, 해석 어려움 | 큰 다기관 데이터 또는 전이학습 시 |
+| **HSMM** | 상태별 지속시간 분포를 명시해 hold·장애인별 느린 phase에 적합 | 초기 라벨과 모델 선택 필요 | **자료 축적 후 2단계 권장** |
+| TCN/RNN/Transformer frame segmentation | 복잡한 다변량 패턴 학습 | 많은 framewise 라벨, over-segmentation, 장애인 분포 이동, 해석 어려움 | 큰 다기관 데이터 또는 전이학습 시 |
 | Seq2Seq primitive recognition | noisy frame label 대신 동작 순서·횟수에 강함 | 정확한 boundary보다 sequence/count가 목적 | 재활 dose counting용; biomarker 경계에는 부적합 |
 
 #### HMM/HSMM의 실제 의미
@@ -215,9 +215,9 @@ HSMM은 각 상태의 지속시간을 직접 모델링하므로 `reach 0.5–8 s
 
 #### 딥러닝 연구가 보여준 현실
 
-StrokeRehab은 환자 51명과 정상인 20명, 3,372 trial, 120,891개의 기능적 원시동작, 43.48시간의 기록으로 구성된다. 두 카메라와 9개 IMU를 사용했고, 전문가 주석 신뢰도는 Cohen's kappa 0.96 이상이었다. 그럼에도 기존 action-segmentation 모델은 sub-second 동작에서 noisy prediction을 냈다. 더 중요한 것은 **환자로 학습한 모델은 정상인에 비교적 일반화했지만 정상인으로 학습한 모델은 환자에 일반화하지 못했고, 중등도 환자 모델도 중증 환자에 약했다**는 점이다. [Kaku et al., 2022](https://pmc.ncbi.nlm.nih.gov/articles/PMC10530637/)
+StrokeRehab은 장애인 51명과 정상인 20명, 3,372 trial, 120,891개의 기능적 원시동작, 43.48시간의 기록으로 구성된다. 두 카메라와 9개 IMU를 사용했고, 전문가 주석 신뢰도는 Cohen's kappa 0.96 이상이었다. 그럼에도 기존 action-segmentation 모델은 sub-second 동작에서 noisy prediction을 냈다. 더 중요한 것은 **장애인으로 학습한 모델은 정상인에 비교적 일반화했지만 정상인으로 학습한 모델은 장애인에 일반화하지 못했고, 중등도 장애인 모델도 중증 장애인에 약했다**는 점이다. [Kaku et al., 2022](https://pmc.ncbi.nlm.nih.gov/articles/PMC10530637/)
 
-PrimSeq는 41명의 만성기 환자, 9개 IMU, 6초 window, 양방향 GRU encoder–decoder를 사용해 reach/reposition/transport/stabilization/idle의 순서와 횟수를 예측했다. 대부분의 primitive count는 실제 count의 86.1–99.6%였지만 stabilization은 가장 어려웠고, finger sensor가 없어 idle과 stabilization을 혼동했다. 즉 **손가락·물체 접촉 신호가 없으면 저속 상태를 분리하기 어렵다**는 직접적인 근거다. 또한 PrimSeq는 정확한 frame boundary보다 순서와 횟수 추정이 주목적이다. [Parnandi et al., 2022](https://journals.plos.org/digitalhealth/article?id=10.1371/journal.pdig.0000044)
+PrimSeq는 41명의 만성기 장애인, 9개 IMU, 6초 window, 양방향 GRU encoder–decoder를 사용해 reach/reposition/transport/stabilization/idle의 순서와 횟수를 예측했다. 대부분의 primitive count는 실제 count의 86.1–99.6%였지만 stabilization은 가장 어려웠고, finger sensor가 없어 idle과 stabilization을 혼동했다. 즉 **손가락·물체 접촉 신호가 없으면 저속 상태를 분리하기 어렵다**는 직접적인 근거다. 또한 PrimSeq는 정확한 frame boundary보다 순서와 횟수 추정이 주목적이다. [Parnandi et al., 2022](https://journals.plos.org/digitalhealth/article?id=10.1371/journal.pdig.0000044)
 
 2025년 HRTR은 StrokeRehab에서 fine-grained temporal segmentation을 위한 단일-stage Transformer를 제안하고 video edit score 70.1, IMU 69.4를 보고했다. 흥미로운 최신 방법이지만 현재 arXiv preprint이며, 임상적 phase 경계나 파생 biomarker의 동등성을 검증한 것은 아니다. [Helvaci et al., 2025](https://arxiv.org/abs/2506.02472)
 
@@ -280,7 +280,7 @@ stateDiagram-v2
 
 FSM이 만든 전이확률 또는 candidate boundary를 HSMM의 관측으로 넣으면 다음 이점이 있다.
 
-- 환자의 pause를 새로운 phase로 즉시 오인하지 않는다.
+- 장애인의 pause를 새로운 phase로 즉시 오인하지 않는다.
 - 2초 hold의 duration prior를 명시할 수 있다.
 - confidence가 낮은 frame을 missing observation으로 처리할 수 있다.
 - Viterbi/posterior로 phase와 경계 불확실성을 제시할 수 있다.
@@ -312,7 +312,7 @@ FSM이 만든 전이확률 또는 candidate boundary를 HSMM의 관측으로 넣
 - 손–물체 관계와 상태 순서가 모순됨.
 - posterior confidence 또는 FSM evidence score가 낮음.
 
-임상 시스템에서는 100% 자동화보다 **자동 80–90% + 불확실 trial의 표적 수동검토**가 더 타당하다. reject rate 자체도 환자 중증도·가림과 연관될 수 있으므로 반드시 보고한다.
+임상 시스템에서는 100% 자동화보다 **자동 80–90% + 불확실 trial의 표적 수동검토**가 더 타당하다. reject rate 자체도 장애인 중증도·가림과 연관될 수 있으므로 반드시 보고한다.
 
 ---
 
@@ -337,13 +337,13 @@ flowchart TD
     C --> D["선택: duration-constrained HSMM"]
     D --> E["phase별 지표 계산"]
     E --> F["SPARC·NMU·TAPV·RGC·보상"]
-    F --> G["건강 reference + 임상척도 검증"]
+    F --> G["비장애인 reference + 임상척도 검증"]
     C --> H["낮은 신뢰도 trial 수동검토"]
 ```
 
 ### 최소 실행안
 
-- 개발 단계: 환자와 건강인의 약 20–30% trial을 두 평가자가 framewise 주석.
+- 개발 단계: 장애인과 비장애인의 약 20–30% trial을 두 평가자가 framewise 주석.
 - 알고리즘: adaptive threshold 후보 + hysteretic FSM.
 - 검증: participant-level LOSO, impairment별 성능 보고.
 - 1차 지표: reach SPARC.

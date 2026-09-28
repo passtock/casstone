@@ -1,5 +1,22 @@
 # -*- coding: utf-8 -*-
 """
+⚠️🔴 **파일럿 전용 · v6 프로토콜과 불일치 (결함 D-15) — v6 실험에 쓰지 마십시오.**
+정본은 `experiments/vlm_conditions/make_conditions_v6.py` 다.
+
+불일치 내역 (2026-09-25 코드 대조 · 계획서 §15.2 D-15):
+  - 지표가 `MGA_mm_3D_cal`·`PV_mm_s`·`SPARC`·`TAM_total_deg` 4개다.
+    계획서는 **K1(엄지–검지 거리 P95) + K2(손목속도 P95) 2개**다.
+  - **`PV_mm_s` = peak velocity** — V-1이 "깨진 값"이라 규명한 바로 그 지표다(D-14).
+  - 과제가 `free`(맨손 쥐기펴기)·`cylinder`(원통형)다. 계획서는
+    **ARAT 3번(5 cm 블록 55 g)·12번(구슬 1.6 cm 5.4 g)** 이다.
+  - 조건에 **A0·A0-time 이 없다** (`CONDITIONS = ["A1","A2","A3","A4","R"]`).
+    A0·A0-time 은 `experiments/analysis/baseline_models.py` 로 분리되었다.
+  - 주입이 `burst_implausible`(물리적 불가능 값)이다.
+    계획서 §6.1은 `burst_3u`(시행 단위 +3u)다.
+
+**존치 이유:** `_example_20260915/` 조건 산출물을 재현하기 위해서만 남긴다.
+
+---
 VLM 조건·주입 생성기 — 선생님 파이프라인 데이터 직결판
 =========================================================
 
@@ -347,7 +364,7 @@ def r_hold_set(metrics, held_in_a3, seed):
 # ===========================================================================
 # 프롬프트
 # ===========================================================================
-PROMPT_HEAD = """당신은 뇌졸중 환자의 상지 기능을 영상으로 평가하는 임상 평가자입니다.
+PROMPT_HEAD = """당신은 뇌졸중 장애인의 상지 기능을 영상으로 평가하는 임상 평가자입니다.
 
 [과제]  {task_label}
 [지시문]  {instruction}
@@ -360,7 +377,7 @@ PROMPT_HEAD = """당신은 뇌졸중 환자의 상지 기능을 영상으로 평
 """
 
 PROMPT_NUMBERS_HEAD = "\n[운동학 수치]\n"
-PROMPT_NUMBERS_NOTE = "[지침]  null은 신뢰 가능한 추정이 없다는 뜻이며, 장애나 0값이 아닙니다.\n"
+PROMPT_NUMBERS_NOTE = "[지침]  null은 신뢰 가능한 추정이 없다는 뜻이며, 기능 저하나 0값을 뜻하지 않습니다.\n"
 PROMPT_TAIL = "\n[출력]  먼저 점수(0/1/2/3) 한 줄, 그 다음 최대 2문장의 근거.\n"""
 
 INSTRUCTIONS = {
@@ -612,7 +629,7 @@ def selftest():
             and "burst" not in k][0]
     chk("A1 프롬프트에 [운동학 수치] 없음", "[운동학 수치]" not in p_a1)
     chk("A3 프롬프트에 수치 있음", "[운동학 수치]" in p_a3)
-    chk("null 지침 문구 포함", "장애나 0값이 아닙니다" in p_a3)
+    chk("null 지침 문구 포함", "기능 저하나 0값을 뜻하지 않습니다" in p_a3)
     chk("조건명이 프롬프트에 없음", ("A3" not in p_a3 and "A1" not in p_a1))
     p_a4 = [p for k, p in prompts.items() if "_A4_" in k][0]
     chk("A4는 '영상 제공되지 않음'", "제공되지 않음" in p_a4)

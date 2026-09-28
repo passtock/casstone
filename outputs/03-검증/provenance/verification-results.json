@@ -1,0 +1,3002 @@
+{
+ "pmid": {
+  "1202204": {
+   "exists": true,
+   "title": "\"Mini-mental state\". A practical method for grading the cognitive state of patients for the clinician.",
+   "year": "1975",
+   "journal": "Journal of psychiatric research",
+   "first_author": "Folstein MF",
+   "doi": "10.1016/0022-3956(75)90026-6",
+   "source": "pubmed/esummary"
+  },
+  "12234086": {
+   "exists": true,
+   "title": "The fugl-meyer assessment of motor recovery after stroke: a critical review of its measurement properties.",
+   "year": "2002",
+   "journal": "Neurorehabilitation and neural repair",
+   "first_author": "Gladstone DJ",
+   "doi": "10.1177/154596802401105171",
+   "source": "pubmed/esummary"
+  },
+  "14523747": {
+   "exists": true,
+   "title": "Upper-limb discoordination in hemiparetic stroke: implications for neurorehabilitation.",
+   "year": "2001",
+   "journal": "Topics in stroke rehabilitation",
+   "first_author": "Dewald JP",
+   "doi": "10.1310/WA7K-NGDF-NHKK-JAGD",
+   "source": "pubmed/esummary"
+  },
+  "18326055": {
+   "exists": true,
+   "title": "Reproducibility and minimal detectable change of three-dimensional kinematic analysis of reaching tasks in people with hemiparesis after stroke.",
+   "year": "2008",
+   "journal": "Physical therapy",
+   "first_author": "Wagner JM",
+   "doi": "10.2522/ptj.20070255",
+   "source": "pubmed/esummary"
+  },
+  "18760153": {
+   "exists": true,
+   "title": "Estimating minimal clinically important differences of upper-extremity measures early after stroke.",
+   "year": "2008",
+   "journal": "Archives of physical medicine and rehabilitation",
+   "first_author": "Lang CE",
+   "doi": "10.1016/j.apmr.2008.02.022",
+   "source": "pubmed/esummary"
+  },
+  "19118132": {
+   "exists": true,
+   "title": "Multidrug resistance protein 2-mediated estradiol-17beta-D-glucuronide transport potentiation: in vitro-in vivo correlation and species specificity.",
+   "year": "2009",
+   "journal": "Drug metabolism and disposition: the biological fate of chemicals",
+   "first_author": "Herédi-Szabó K",
+   "doi": "10.1124/dmd.108.023895",
+   "source": "pubmed/esummary"
+  },
+  "20829411": {
+   "exists": true,
+   "title": "Kinematic variables quantifying upper-extremity performance after stroke during reaching and drinking from a glass.",
+   "year": "2011",
+   "journal": "Neurorehabilitation and neural repair",
+   "first_author": "Alt Murphy M",
+   "doi": "10.1177/1545968310370748",
+   "source": "pubmed/esummary"
+  },
+  "22180502": {
+   "exists": true,
+   "title": "A robust and sensitive metric for quantifying movement smoothness.",
+   "year": "2012",
+   "journal": "IEEE transactions on bio-medical engineering",
+   "first_author": "Balasubramanian S",
+   "doi": "10.1109/TBME.2011.2179545",
+   "source": "pubmed/esummary"
+  },
+  "22282773": {
+   "exists": true,
+   "title": "Clinically important differences for the upper-extremity Fugl-Meyer Scale in people with minimal to moderate impairment due to chronic stroke.",
+   "year": "2012",
+   "journal": "Physical therapy",
+   "first_author": "Page SJ",
+   "doi": "10.2522/ptj.20110009",
+   "source": "pubmed/esummary"
+  },
+  "22647879": {
+   "exists": true,
+   "title": "Movement kinematics during a drinking task are associated with the activity capacity level after stroke.",
+   "year": "2012",
+   "journal": "Neurorehabilitation and neural repair",
+   "first_author": "Alt Murphy M",
+   "doi": "10.1177/1545968312448234",
+   "source": "pubmed/esummary"
+  },
+  "26651329": {
+   "exists": true,
+   "title": "On the analysis of movement smoothness.",
+   "year": "2015",
+   "journal": "Journal of neuroengineering and rehabilitation",
+   "first_author": "Balasubramanian S",
+   "doi": "10.1186/s12984-015-0090-9",
+   "source": "pubmed/esummary"
+  },
+  "27633956": {
+   "exists": true,
+   "title": "Quiet Eye and Performance in Sport: A Meta-Analysis.",
+   "year": "2016",
+   "journal": "Journal of sport & exercise psychology",
+   "first_author": "Lebeau JC",
+   "doi": "10.1123/jsep.2015-0123",
+   "source": "pubmed/esummary"
+  },
+  "28952944": {
+   "exists": true,
+   "title": "Automated Evaluation of Upper-Limb Motor Function Impairment Using Fugl-Meyer Assessment.",
+   "year": "2018",
+   "journal": "IEEE transactions on neural systems and rehabilitation engineering : a publication of the IEEE Engineering in Medicine and Biology Society",
+   "first_author": "Lee S",
+   "doi": "10.1109/TNSRE.2017.2755667",
+   "source": "pubmed/esummary"
+  },
+  "29159193": {
+   "exists": true,
+   "title": "PREP2: A biomarker-based algorithm for predicting upper limb function after stroke.",
+   "year": "2017",
+   "journal": "Annals of clinical and translational neurology",
+   "first_author": "Stinear CM",
+   "doi": "10.1002/acn3.488",
+   "source": "pubmed/esummary"
+  },
+  "29988530": {
+   "exists": true,
+   "title": "Kinematic Components of the Reach-to-Target Movement After Stroke for Focused Rehabilitation Interventions: Systematic Review and Meta-Analysis.",
+   "year": "2018",
+   "journal": "Frontiers in neurology",
+   "first_author": "Collins KC",
+   "doi": "10.3389/fneur.2018.00472",
+   "source": "pubmed/esummary"
+  },
+  "30776997": {
+   "exists": true,
+   "title": "Systematic Review on Kinematic Assessments of Upper Limb Movements After Stroke.",
+   "year": "2019",
+   "journal": "Stroke",
+   "first_author": "Schwarz A",
+   "doi": "10.1161/STROKEAHA.118.023531",
+   "source": "pubmed/esummary"
+  },
+  "31448807": {
+   "exists": true,
+   "title": "Intra- and inter-rater reliability of Fugl-Meyer Assessment of Upper Extremity in stroke.",
+   "year": "2019",
+   "journal": "Journal of rehabilitation medicine",
+   "first_author": "Hernández ED",
+   "doi": "10.2340/16501977-2590",
+   "source": "pubmed/esummary"
+  },
+  "31502981": {
+   "exists": true,
+   "title": "Cellphone-Based Automated Fugl-Meyer Assessment to Evaluate Upper Extremity Motor Function After Stroke.",
+   "year": "2019",
+   "journal": "IEEE transactions on neural systems and rehabilitation engineering : a publication of the IEEE Engineering in Medicine and Biology Society",
+   "first_author": "Song X",
+   "doi": "10.1109/TNSRE.2019.2939587",
+   "source": "pubmed/esummary"
+  },
+  "32640003": {
+   "exists": true,
+   "title": "Analysis of subject specific grasping patterns.",
+   "year": "2020",
+   "journal": "PloS one",
+   "first_author": "Herbst Y",
+   "doi": "10.1371/journal.pone.0234969",
+   "source": "pubmed/esummary"
+  },
+  "33631496": {
+   "exists": true,
+   "title": "A contactless method to measure real-time finger motion using depth-based pose estimation.",
+   "year": "2021",
+   "journal": "Computers in biology and medicine",
+   "first_author": "Zhu Y",
+   "doi": "10.1016/j.compbiomed.2021.104282",
+   "source": "pubmed/esummary"
+  },
+  "34130716": {
+   "exists": true,
+   "title": "How many trials are needed in kinematic analysis of reach-to-grasp?-A study of the drinking task in persons with stroke and non-disabled controls.",
+   "year": "2021",
+   "journal": "Journal of neuroengineering and rehabilitation",
+   "first_author": "Frykberg GE",
+   "doi": "10.1186/s12984-021-00895-3",
+   "source": "pubmed/esummary"
+  },
+  "34601902": {
+   "exists": true,
+   "title": "Fast Outcome Categorization of the Upper Limb After Stroke.",
+   "year": "2022",
+   "journal": "Stroke",
+   "first_author": "Jordan HT",
+   "doi": "10.1161/STROKEAHA.121.035170",
+   "source": "pubmed/esummary"
+  },
+  "34626693": {
+   "exists": true,
+   "title": "Mirror therapy in upper limb motor recovery and activities of daily living, and its neural correlates in stroke individuals: A systematic review and meta-analysis.",
+   "year": "2021",
+   "journal": "Brain research bulletin",
+   "first_author": "Nogueira NGHM",
+   "doi": "10.1016/j.brainresbull.2021.10.003",
+   "source": "pubmed/esummary"
+  },
+  "34702281": {
+   "exists": true,
+   "title": "Smoothness metrics for reaching performance after stroke. Part 1: which one to choose?",
+   "year": "2021",
+   "journal": "Journal of neuroengineering and rehabilitation",
+   "first_author": "Mohamed Refai MI",
+   "doi": "10.1186/s12984-021-00949-6",
+   "source": "pubmed/esummary"
+  },
+  "35408349": {
+   "exists": true,
+   "title": "Validity and Reliability of Kinect v2 for Quantifying Upper Body Kinematics during Seated Reaching.",
+   "year": "2022",
+   "journal": "Sensors (Basel, Switzerland)",
+   "first_author": "Faity G",
+   "doi": "10.3390/s22072735",
+   "source": "pubmed/esummary"
+  },
+  "35590966": {
+   "exists": true,
+   "title": "Hand Motion Analysis during the Execution of the Action Research Arm Test Using Multiple Sensors.",
+   "year": "2022",
+   "journal": "Sensors (Basel, Switzerland)",
+   "first_author": "Padilla-Magaña JF",
+   "doi": "10.3390/s22093276",
+   "source": "pubmed/esummary"
+  },
+  "35632013": {
+   "exists": true,
+   "title": "Quantitative Assessment of Hand Function in Healthy Subjects and Post-Stroke Patients with the Action Research Arm Test.",
+   "year": "2022",
+   "journal": "Sensors (Basel, Switzerland)",
+   "first_author": "Padilla-Magaña JF",
+   "doi": "10.3390/s22103604",
+   "source": "pubmed/esummary"
+  },
+  "36086392": {
+   "exists": true,
+   "title": "Evaluation of Changes in Kinematic Measures of Three Dimensional Reach to Grasp Movements in the Early Subacute Period of Recovery from Stroke.",
+   "year": "2022",
+   "journal": "Annual International Conference of the IEEE Engineering in Medicine and Biology Society. IEEE Engineering in Medicine and Biology Society. Annual International Conference",
+   "first_author": "Qiu Q",
+   "doi": "10.1109/EMBC48229.2022.9871891",
+   "source": "pubmed/esummary"
+  },
+  "36291314": {
+   "exists": true,
+   "title": "A Novel Automated RGB-D Sensor-Based Measurement of Voluntary Items of the Fugl-Meyer Assessment for Upper Extremity: A Feasibility Study.",
+   "year": "2022",
+   "journal": "Brain sciences",
+   "first_author": "Li Y",
+   "doi": "10.3390/brainsci12101380",
+   "source": "pubmed/esummary"
+  },
+  "36420347": {
+   "exists": true,
+   "title": "PrimSeq: A deep learning-based pipeline to quantitate rehabilitation training.",
+   "year": "2022",
+   "journal": "PLOS digital health",
+   "first_author": "Parnandi A",
+   "doi": "10.1371/journal.pdig.0000044",
+   "source": "pubmed/esummary"
+  },
+  "36476063": {
+   "exists": true,
+   "title": "Psychometric properties of the Action Research Arm Test using decision rules for skipping items in hemiparetic patients after stroke: a retrospective study.",
+   "year": "2023",
+   "journal": "Disability and rehabilitation",
+   "first_author": "Amano S",
+   "doi": "10.1080/09638288.2022.2153177",
+   "source": "pubmed/esummary"
+  },
+  "36501779": {
+   "exists": true,
+   "title": "Classification Models of Action Research Arm Test Activities in Post-Stroke Patients Based on Human Hand Motion.",
+   "year": "2022",
+   "journal": "Sensors (Basel, Switzerland)",
+   "first_author": "Padilla-Magaña JF",
+   "doi": "10.3390/s22239078",
+   "source": "pubmed/esummary"
+  },
+  "36616603": {
+   "exists": true,
+   "title": "Validation of Angle Estimation Based on Body Tracking Data from RGB-D and RGB Cameras for Biomechanical Assessment.",
+   "year": "2022",
+   "journal": "Sensors (Basel, Switzerland)",
+   "first_author": "Lafayette TBG",
+   "doi": "10.3390/s23010003",
+   "source": "pubmed/esummary"
+  },
+  "37371378": {
+   "exists": true,
+   "title": "The Application of Soft Robotic Gloves in Stroke Patients: A Systematic Review and Meta-Analysis of Randomized Controlled Trials.",
+   "year": "2023",
+   "journal": "Brain sciences",
+   "first_author": "Ko MJ",
+   "doi": "10.3390/brainsci13060900",
+   "source": "pubmed/esummary"
+  },
+  "37404979": {
+   "exists": true,
+   "title": "Exercise repetition rate measured with simple sensors at home can be used to estimate Upper Extremity Fugl-Meyer score after stroke.",
+   "year": "2023",
+   "journal": "Frontiers in rehabilitation sciences",
+   "first_author": "Swanson VA",
+   "doi": "10.3389/fresc.2023.1181766",
+   "source": "pubmed/esummary"
+  },
+  "37592867": {
+   "exists": true,
+   "title": "aBnormal motION capture In aCute Stroke (BIONICS): A Low-Cost Tele-Evaluation Tool for Automated Assessment of Upper Extremity Function in Stroke Patients.",
+   "year": "2023",
+   "journal": "Neurorehabilitation and neural repair",
+   "first_author": "Zamin SA",
+   "doi": "10.1177/15459683231184186",
+   "source": "pubmed/esummary"
+  },
+  "38440394": {
+   "exists": true,
+   "title": "Automatic rehabilitation assessment method of upper limb motor function based on posture and distribution force.",
+   "year": "2024",
+   "journal": "Frontiers in neuroscience",
+   "first_author": "Bai J",
+   "doi": "10.3389/fnins.2024.1362495",
+   "source": "pubmed/esummary"
+  },
+  "38491540": {
+   "exists": true,
+   "title": "Extended reality to assess post-stroke manual dexterity: contrasts between the classic box and block test, immersive virtual reality with controllers, with hand-tracking, and mixed-reality tests.",
+   "year": "2024",
+   "journal": "Journal of neuroengineering and rehabilitation",
+   "first_author": "Everard G",
+   "doi": "10.1186/s12984-024-01332-x",
+   "source": "pubmed/esummary"
+  },
+  "38693881": {
+   "exists": true,
+   "title": "Clinical validation of automated depth camera-based measurement of the Fugl-Meyer assessment for upper extremity.",
+   "year": "2024",
+   "journal": "Clinical rehabilitation",
+   "first_author": "Wang Z",
+   "doi": "10.1177/02692155241251434",
+   "source": "pubmed/esummary"
+  },
+  "39186425": {
+   "exists": true,
+   "title": "A Hierarchical Bayesian Model for Cyber-Human Assessment of Movement in Upper Extremity Stroke Rehabilitation.",
+   "year": "2024",
+   "journal": "IEEE transactions on neural systems and rehabilitation engineering : a publication of the IEEE Engineering in Medicine and Biology Society",
+   "first_author": "Ahmed T",
+   "doi": "10.1109/TNSRE.2024.3450008",
+   "source": "pubmed/esummary"
+  },
+  "39224885": {
+   "exists": true,
+   "title": "The association between dexterity and upper limb impairment during stroke recovery.",
+   "year": "2024",
+   "journal": "Frontiers in neurology",
+   "first_author": "Valladares B",
+   "doi": "10.3389/fneur.2024.1429929",
+   "source": "pubmed/esummary"
+  },
+  "39593603": {
+   "exists": true,
+   "title": "Comparison of computational pose estimation models for joint angles with 3D motion capture.",
+   "year": "2024",
+   "journal": "Journal of bodywork and movement therapies",
+   "first_author": "Hamilton RI",
+   "doi": "10.1016/j.jbmt.2024.04.033",
+   "source": "pubmed/esummary"
+  },
+  "40031831": {
+   "exists": true,
+   "title": "Estimating Upper Extremity Fugl-Meyer Assessment Scores From Reaching Motions Using Wearable Sensors.",
+   "year": "2025",
+   "journal": "IEEE journal of biomedical and health informatics",
+   "first_author": "Zhou YM",
+   "doi": "10.1109/JBHI.2025.3542037",
+   "source": "pubmed/esummary"
+  },
+  "40067873": {
+   "exists": true,
+   "title": "LLM-FMS: A fine-grained dataset for functional movement screen action quality assessment.",
+   "year": "2025",
+   "journal": "PloS one",
+   "first_author": "Xing Q",
+   "doi": "10.1371/journal.pone.0313707",
+   "source": "pubmed/esummary"
+  },
+  "40486204": {
+   "exists": true,
+   "title": "Validity and reliability of single camera markerless motion capture systems with RGB-D sensors for measuring shoulder range-of-motion: a systematic review.",
+   "year": "2025",
+   "journal": "Frontiers in bioengineering and biotechnology",
+   "first_author": "Lee U",
+   "doi": "10.3389/fbioe.2025.1570637",
+   "source": "pubmed/esummary"
+  },
+  "40644012": {
+   "exists": true,
+   "title": "Automated Prediction of Item-Level Arat Scores From Wearable Sensors.",
+   "year": "2025",
+   "journal": "IEEE ... International Conference on Rehabilitation Robotics : [proceedings]",
+   "first_author": "Weikert T",
+   "doi": "10.1109/ICORR66766.2025.11063162",
+   "source": "pubmed/esummary"
+  },
+  "41228884": {
+   "exists": true,
+   "title": "Estimation of Fugl-Meyer Assessment Upper-Extremity Sub-Scores Using a Mixup-Augmented LSTM Autoencoder and Wearable Sensor Data.",
+   "year": "2025",
+   "journal": "Sensors (Basel, Switzerland)",
+   "first_author": "Liu M",
+   "doi": "10.3390/s25216663",
+   "source": "pubmed/esummary"
+  },
+  "41571171": {
+   "exists": true,
+   "title": "PEER: Towards reliable and efficient inference via Patience-Based Early Exiting with Rejection.",
+   "year": "2026",
+   "journal": "Journal of biomedical informatics",
+   "first_author": "Zhan Z",
+   "doi": "10.1016/j.jbi.2026.104988",
+   "source": "pubmed/esummary"
+  },
+  "41606212": {
+   "exists": true,
+   "title": "AI-driven low-cost rehabilitation exergame as a lightweight framework for stroke assessment.",
+   "year": "2026",
+   "journal": "NPJ digital medicine",
+   "first_author": "Tannús J",
+   "doi": "10.1038/s41746-026-02383-1",
+   "source": "pubmed/esummary"
+  },
+  "42351847": {
+   "exists": true,
+   "title": "Computer Vision for Movement Observation and Recovery Enhancement (C-MORE): Box and Blocks Test.",
+   "year": "2026",
+   "journal": "Bioengineering (Basel, Switzerland)",
+   "first_author": "Kim JM",
+   "doi": "10.3390/bioengineering13060602",
+   "source": "pubmed/esummary"
+  },
+  "42406872": {
+   "exists": true,
+   "title": "Vision-language models for human motion understanding: Lessons from stroke rehabilitation.",
+   "year": "2026",
+   "journal": "PLOS digital health",
+   "first_author": "Li V",
+   "doi": "10.1371/journal.pdig.0001506",
+   "source": "pubmed/esummary"
+  },
+  "42510442": {
+   "exists": true,
+   "title": "From Optical to AI-Driven Markerless Motion Capture in Motor Learning and Rehabilitation.",
+   "year": "2026",
+   "journal": "Bioengineering (Basel, Switzerland)",
+   "first_author": "Georganakis P",
+   "doi": "10.3390/bioengineering13070776",
+   "source": "pubmed/esummary"
+  },
+  "42548713": {
+   "exists": true,
+   "title": "Perception, assessment, and coaching: a systematic review and taxonomy of computer vision-based physical rehabilitation techniques.",
+   "year": "2026",
+   "journal": "Frontiers in rehabilitation sciences",
+   "first_author": "Ye P",
+   "doi": "10.3389/fresc.2026.1906327",
+   "source": "pubmed/esummary"
+  },
+  "42612206": {
+   "exists": true,
+   "title": "NeuroSift for Task-Aware Quality Assurance of Multimedia Data in Remote Parkinson Disease Assessment: Machine Learning Model Development and Validation Study.",
+   "year": "2026",
+   "journal": "Journal of medical Internet research",
+   "first_author": "Islam MS",
+   "doi": "10.2196/91756",
+   "source": "pubmed/esummary"
+  },
+  "9634306": {
+   "exists": true,
+   "title": "Analysis of quinolone resistance mechanisms in Neisseria gonorrhoeae isolates in vitro.",
+   "year": "1998",
+   "journal": "Sexually transmitted infections",
+   "first_author": "Tanaka M",
+   "doi": "10.1136/sti.74.1.59",
+   "source": "pubmed/esummary"
+  }
+ },
+ "pmcid": {
+  "PMC10295999": {
+   "exists": true,
+   "title": "The Application of Soft Robotic Gloves in Stroke Patients: A Systematic Review and Meta-Analysis of Randomized Controlled Trials.",
+   "doi": "",
+   "source": "pmc/esummary"
+  },
+  "PMC10330436": {
+   "exists": true,
+   "title": "Measuring Arm and Hand Joint Kinematics to Estimate Impairment During a Functional Reach and Grasp Task after Stroke.",
+   "doi": "",
+   "source": "pmc/esummary"
+  },
+  "PMC10530637": {
+   "exists": true,
+   "title": "StrokeRehab: A Benchmark Dataset for Sub-second Action Identification.",
+   "doi": "",
+   "source": "pmc/esummary"
+  },
+  "PMC10602593": {
+   "exists": true,
+   "title": "aBnormal motION capture In aCute Stroke (BIONICS): A Low-Cost Tele-Evaluation Tool for Automated Assessment of Upper Extremity Function in Stroke Patients.",
+   "doi": "",
+   "source": "pmc/esummary"
+  },
+  "PMC12251801": {
+   "exists": true,
+   "title": "Design and Evaluation of a Soft Robotic Actuator with Non-Intrusive Vision-Based Bending Measurement.",
+   "doi": "",
+   "source": "pmc/esummary"
+  },
+  "PMC12343119": {
+   "exists": true,
+   "title": "Evaluating prompt and data perturbation sensitivity in large language models for radiology reports classification.",
+   "doi": "",
+   "source": "pmc/esummary"
+  },
+  "PMC12646571": {
+   "exists": true,
+   "title": "A multimodal machine learning approach to predict Fugl-Meyer scores and motor recovery potential in stroke rehabilitation: Toward precision-based therapies.",
+   "doi": "",
+   "source": "pmc/esummary"
+  },
+  "PMC13336467": {
+   "exists": true,
+   "title": "Vision-language models for human motion understanding: Lessons from stroke rehabilitation.",
+   "doi": "",
+   "source": "pmc/esummary"
+  },
+  "PMC13439064": {
+   "exists": true,
+   "title": "Vision-Language Models for automated quality control: a benchmarking framework and comprehensive study.",
+   "doi": "",
+   "source": "pmc/esummary"
+  },
+  "PMC2827935": {
+   "exists": true,
+   "title": "Shoulder abduction-induced reductions in reaching work area following hemiparetic stroke: neuroscientific implications.",
+   "doi": "",
+   "source": "pmc/esummary"
+  },
+  "PMC4729670": {
+   "exists": true,
+   "title": "Impact of Shoulder Abduction Loading on Brain-Machine Interface in Predicting Hand Opening and Closing in Individuals With Chronic Stroke.",
+   "doi": "",
+   "source": "pmc/esummary"
+  },
+  "PMC4913118": {
+   "exists": true,
+   "title": "A Guideline of Selecting and Reporting Intraclass Correlation Coefficients for Reliability Research.",
+   "doi": "",
+   "source": "pmc/esummary"
+  },
+  "PMC8408353": {
+   "exists": true,
+   "title": "Addressing Measurement Error in Random Forests Using Quantitative Bias Analysis.",
+   "doi": "",
+   "source": "pmc/esummary"
+  },
+  "PMC9110656": {
+   "exists": true,
+   "title": "Using Wearable Inertial Sensors to Estimate Clinical Scores of Upper Limb Movement Quality in Stroke.",
+   "doi": "",
+   "source": "pmc/esummary"
+  },
+  "PMC9716480": {
+   "exists": true,
+   "title": "Evaluation of Changes in Kinematic Measures of Three Dimensional Reach to Grasp Movements in the Early Subacute Period of Recovery from Stroke.",
+   "doi": "",
+   "source": "pmc/esummary"
+  }
+ },
+ "doi": {
+  "10.1002/14651858.CD008449.pub3": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Mirror therapy for improving motor function after stroke",
+   "year": "2018",
+   "journal": "Cochrane Database of Systematic Reviews",
+   "first_author": "Thieme Holm",
+   "type": "journal-article"
+  },
+  "10.1002/acn3.488": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "PREP2: A biomarker‐based algorithm for predicting upper limb function after stroke",
+   "year": "2017",
+   "journal": "Annals of Clinical and Translational Neurology",
+   "first_author": "Stinear Cathy M.",
+   "type": "journal-article"
+  },
+  "10.1002/ejsc.70049": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Get in the Virtual Hole! Examination of Gaze and Performance of Experts, Athletes, and Novices While Putting in Virtual Reality and in the Real‐World",
+   "year": "2025",
+   "journal": "European Journal of Sport Science",
+   "first_author": "Bennett Jayke B.",
+   "type": "journal-article"
+  },
+  "10.1002/pmrj.12964": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Effects of mirror therapy on spasticity and sensory impairment after stroke: Systematic review and meta‐analysis",
+   "year": "2023",
+   "journal": "PM&amp;R",
+   "first_author": "Muñoz‐Gómez Elena",
+   "type": "journal-article"
+  },
+  "10.1002/sim.6498": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "The impact of covariate measurement error on risk prediction",
+   "year": "2015",
+   "journal": "Statistics in Medicine",
+   "first_author": "Khudyakov Polyna",
+   "type": "journal-article"
+  },
+  "10.1002/sim.8183": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Impact of predictor measurement heterogeneity across settings on the performance of prediction models: A measurement error perspective",
+   "year": "2019",
+   "journal": "Statistics in Medicine",
+   "first_author": "Luijken K.",
+   "type": "journal-article"
+  },
+  "10.1007/978-3-030-20873-8_6": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Partially Occluded Hands:",
+   "year": "2019",
+   "journal": "Lecture Notes in Computer Science",
+   "first_author": "Myanganbayar Battushig",
+   "type": "book-chapter"
+  },
+  "10.1007/978-3-031-72086-4_24": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Enhancing Gait Video Analysis in Neurodegenerative Diseases by Knowledge Augmentation in Vision Language Model",
+   "year": "2024",
+   "journal": "Lecture Notes in Computer Science",
+   "first_author": "Wang Diwei",
+   "type": "book-chapter"
+  },
+  "10.1007/978-3-031-75823-2_2": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "REHAB24-6: Physical Therapy Dataset for Analyzing Pose Estimation Methods",
+   "year": "2024",
+   "journal": "Lecture Notes in Computer Science",
+   "first_author": "Černek Andrej",
+   "type": "book-chapter"
+  },
+  "10.1007/978-3-540-89991-4_1": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Quality-Based Score Normalization and Frame Selection for Video-Based Person Authentication",
+   "year": "2008",
+   "journal": "Lecture Notes in Computer Science",
+   "first_author": "Argones Rúa Enrique",
+   "type": "book-chapter"
+  },
+  "10.1007/978-981-95-0568-5_5": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Rehabilitation Exercise Quality Assessment and Feedback Generation Using Large Language Models with Prompt Engineering",
+   "year": "2025",
+   "journal": "Communications in Computer and Information Science",
+   "first_author": "Tang Jessica",
+   "type": "book-chapter"
+  },
+  "10.1007/s00221-003-1807-8": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Target-dependent differences between free and constrained arm movements in chronic hemiparesis",
+   "year": "2004",
+   "journal": "Experimental Brain Research",
+   "first_author": "Beer Randall F.",
+   "type": "journal-article"
+  },
+  "10.1007/s00221-005-2350-6": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Deficits in grasp versus reach during acute hemiparesis",
+   "year": "2005",
+   "journal": "Experimental Brain Research",
+   "first_author": "Lang Catherine E.",
+   "type": "journal-article"
+  },
+  "10.1007/s00221-012-3169-6": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Unraveling the interaction between pathological upper limb synergies and compensatory trunk movements during reach-to-grasp after stroke: a cross-sectional study",
+   "year": "2012",
+   "journal": "Experimental Brain Research",
+   "first_author": "van Kordelaar Joost",
+   "type": "journal-article"
+  },
+  "10.1007/s00530-025-01860-z": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Systematic frame selection and quality assessment for efficient video summarization",
+   "year": "2025",
+   "journal": "Multimedia Systems",
+   "first_author": "Kadam Payal",
+   "type": "journal-article"
+  },
+  "10.1007/s11548-023-02887-1": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Comparative evaluation of three commercially available markerless depth sensors for close-range use in surgical simulation",
+   "year": "2023",
+   "journal": "International Journal of Computer Assisted Radiology and Surgery",
+   "first_author": "Burger Lukas",
+   "type": "journal-article"
+  },
+  "10.1016/S0140-6736(86)90837-8": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "STATISTICAL METHODS FOR ASSESSING AGREEMENT BETWEEN TWO METHODS OF CLINICAL MEASUREMENT",
+   "year": "1986",
+   "journal": "The Lancet",
+   "first_author": "Martin Bland J.",
+   "type": "journal-article"
+  },
+  "10.1016/S1388-2457(03)00042-7": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Grip force control during object manipulation in cerebral stroke",
+   "year": "2003",
+   "journal": "Clinical Neurophysiology",
+   "first_author": "Hermsdörfer J",
+   "type": "journal-article"
+  },
+  "10.1016/j.actpsy.2010.12.008": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "The influence of quiet eye training and pressure on attention and visuo-motor control",
+   "year": "2011",
+   "journal": "Acta Psychologica",
+   "first_author": "Vine Samuel J.",
+   "type": "journal-article"
+  },
+  "10.1016/j.aei.2026.104454": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Act or ask: Interactive construction robots via vision–language models with confidence-guided decision deferral",
+   "year": "2026",
+   "journal": "Advanced Engineering Informatics",
+   "first_author": "Huang Lei",
+   "type": "journal-article"
+  },
+  "10.1016/j.apmr.2007.08.162": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Mirror Therapy Improves Hand Function in Subacute Stroke: A Randomized Controlled Trial",
+   "year": "2008",
+   "journal": "Archives of Physical Medicine and Rehabilitation",
+   "first_author": "Yavuzer Gunes",
+   "type": "journal-article"
+  },
+  "10.1016/j.apmr.2008.02.022": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Estimating Minimal Clinically Important Differences of Upper-Extremity Measures Early After Stroke",
+   "year": "2008",
+   "journal": "Archives of Physical Medicine and Rehabilitation",
+   "first_author": "Lang Catherine E.",
+   "type": "journal-article"
+  },
+  "10.1016/j.apmr.2024.10.004": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Interpreting Variations in Fugl-Meyer Assessment Protocols: Results and Recommendations From a Nominal Group Consensus Process",
+   "year": "2025",
+   "journal": "Archives of Physical Medicine and Rehabilitation",
+   "first_author": "Fasoli Susan E.",
+   "type": "journal-article"
+  },
+  "10.1016/j.brainresbull.2021.02.001": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Phenanthroline impairs βAPP processing and expression, increases p53 protein levels and induces cell cycle arrest in human neuroblastoma cells",
+   "year": "2021",
+   "journal": "Brain Research Bulletin",
+   "first_author": "Maitra Subhamita",
+   "type": "journal-article"
+  },
+  "10.1016/j.brainresbull.2021.10.003": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Mirror therapy in upper limb motor recovery and activities of daily living, and its neural correlates in stroke individuals: A systematic review and meta-analysis",
+   "year": "2021",
+   "journal": "Brain Research Bulletin",
+   "first_author": "Nogueira Nathálya Gardênia de Holanda Marinho",
+   "type": "journal-article"
+  },
+  "10.1016/j.bspc.2024.106508": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Hand tracking for clinical applications: Validation of the Google MediaPipe Hand (GMH) and the depth-enhanced GMH-D frameworks",
+   "year": "2024",
+   "journal": "Biomedical Signal Processing and Control",
+   "first_author": "Amprimo Gianluca",
+   "type": "journal-article"
+  },
+  "10.1016/j.clinbiomech.2021.105322": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Differences in soleus H-reflex to M-wave ratio between obese and non-obese individuals",
+   "year": "2021",
+   "journal": "Clinical Biomechanics",
+   "first_author": "Maffiuletti Nicola A.",
+   "type": "journal-article"
+  },
+  "10.1016/j.clinph.2018.01.057": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Finger strength, individuation, and their interaction: Relationship to hand function and corticospinal tract injury after stroke",
+   "year": "2018",
+   "journal": "Clinical Neurophysiology",
+   "first_author": "Wolbrecht Eric T.",
+   "type": "journal-article"
+  },
+  "10.1016/j.compbiomed.2021.104282": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "A contactless method to measure real-time finger motion using depth-based pose estimation",
+   "year": "2021",
+   "journal": "Computers in Biology and Medicine",
+   "first_author": "Zhu Yean",
+   "type": "journal-article"
+  },
+  "10.1016/j.compind.2014.12.007": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Behavioral modeling and automated verification of a Cloud-based framework to share the knowledge and skills of human resources",
+   "year": "2015",
+   "journal": "Computers in Industry",
+   "first_author": "Jafari Navimipour Nima",
+   "type": "journal-article"
+  },
+  "10.1016/j.gaitpost.2004.05.003": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Human movement analysis using stereophotogrammetry",
+   "year": "2005",
+   "journal": "Gait &amp; Posture",
+   "first_author": "Della Croce Ugo",
+   "type": "journal-article"
+  },
+  "10.1016/j.gaitpost.2025.04.016": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Reliability and validity of current computer vision based motion capture systems in gait analysis: A systematic review",
+   "year": "2025",
+   "journal": "Gait &amp; Posture",
+   "first_author": "Cheng Xingye",
+   "type": "journal-article"
+  },
+  "10.1016/j.ipemt.2022.100004": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Characterizing sensor accuracy requirements in an artificial intelligence-enabled medical device",
+   "year": "2022",
+   "journal": "IPEM-Translation",
+   "first_author": "Bartlett Kristin A.",
+   "type": "journal-article"
+  },
+  "10.1016/j.jams.2019.04.004": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Concurrent Effects of Dry Needling and Electrical Stimulation in the Management of Upper Extremity Hemiparesis",
+   "year": "2019",
+   "journal": "Journal of Acupuncture and Meridian Studies",
+   "first_author": "Ghaffari Maryam S.",
+   "type": "journal-article"
+  },
+  "10.1016/j.jbi.2017.12.012": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "A Hidden Semi-Markov Model based approach for rehabilitation exercise assessment",
+   "year": "2018",
+   "journal": "Journal of Biomedical Informatics",
+   "first_author": "Capecci Marianna",
+   "type": "journal-article"
+  },
+  "10.1016/j.jbi.2026.104988": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "PEER: Towards reliable and efficient inference via Patience-Based Early Exiting with Rejection",
+   "year": "2026",
+   "journal": "Journal of Biomedical Informatics",
+   "first_author": "Zhan Zaifu",
+   "type": "journal-article"
+  },
+  "10.1016/j.jbiomech.2014.01.011": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Computational approaches for analyzing the mechanics of atherosclerotic plaques: A review",
+   "year": "2014",
+   "journal": "Journal of Biomechanics",
+   "first_author": "Holzapfel Gerhard A.",
+   "type": "journal-article"
+  },
+  "10.1016/j.jbmt.2024.04.033": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Comparison of computational pose estimation models for joint angles with 3D motion capture",
+   "year": "2024",
+   "journal": "Journal of Bodywork and Movement Therapies",
+   "first_author": "Hamilton Rebecca I.",
+   "type": "journal-article"
+  },
+  "10.1016/j.jcm.2016.02.012": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "A Guideline of Selecting and Reporting Intraclass Correlation Coefficients for Reliability Research",
+   "year": "2016",
+   "journal": "Journal of Chiropractic Medicine",
+   "first_author": "Koo Terry K.",
+   "type": "journal-article"
+  },
+  "10.1016/j.jesp.2013.03.013": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Detecting outliers: Do not use standard deviation around the mean, use absolute deviation around the median",
+   "year": "2013",
+   "journal": "Journal of Experimental Social Psychology",
+   "first_author": "Leys Christophe",
+   "type": "journal-article"
+  },
+  "10.1016/j.media.2023.103045": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Beam-wise dose composition learning for head and neck cancer dose prediction in radiotherapy",
+   "year": "2024",
+   "journal": "Medical Image Analysis",
+   "first_author": "Teng Lin",
+   "type": "journal-article"
+  },
+  "10.1016/j.physio.2017.10.002": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Getting a kinematic handle on reach-to-grasp: a meta-analysis",
+   "year": "2018",
+   "journal": "Physiotherapy",
+   "first_author": "Collins Kathryn C.",
+   "type": "journal-article"
+  },
+  "10.1016/j.robot.2014.08.014": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Soft robotic glove for combined assistance and at-home rehabilitation",
+   "year": "2015",
+   "journal": "Robotics and Autonomous Systems",
+   "first_author": "Polygerinos Panagiotis",
+   "type": "journal-article"
+  },
+  "10.1016/j.…": {
+   "source": "crossref/works",
+   "exists": false,
+   "http": 404,
+   "handle_probe": "HTTP Error 404: Not Found"
+  },
+  "10.1023/A:1014573219977": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "A Taxonomy and Evaluation of Dense Two-Frame Stereo Correspondence Algorithms",
+   "year": "2002",
+   "journal": "International Journal of Computer Vision",
+   "first_author": "Scharstein Daniel",
+   "type": "journal-article"
+  },
+  "10.1038/s41591-021-01614-0": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "AI in health and medicine",
+   "year": "2022",
+   "journal": "Nature Medicine",
+   "first_author": "Rajpurkar Pranav",
+   "type": "journal-article"
+  },
+  "10.1038/s41598-020-63092-7": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Sharing of hand kinematic synergies across subjects in daily living activities",
+   "year": "2020",
+   "journal": "Scientific Reports",
+   "first_author": "Gracia-Ibáñez Verónica",
+   "type": "journal-article"
+  },
+  "10.1038/s41598-026-67912-0": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Sparse frame selection for graph-based deadlift form assessment",
+   "year": "2026",
+   "journal": "Scientific Reports",
+   "first_author": "Shoaib Omar",
+   "type": "journal-article"
+  },
+  "10.1038/s41598-026-71999-w": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Systematic benchmarking of evaluation paradigms, safety boundaries, and clinical reasoning gaps for multimodal large language models in rehabilitation",
+   "year": "2026",
+   "journal": "Scientific Reports",
+   "first_author": "Ye Ping",
+   "type": "journal-article"
+  },
+  "10.1038/s41746-025-02108-w": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Understanding the robustness of vision-language models to medical image artefacts",
+   "year": "2025",
+   "journal": "npj Digital Medicine",
+   "first_author": "Cheng Zijie",
+   "type": "journal-article"
+  },
+  "10.1038/s41746-026-02383-1": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "AI-driven low-cost rehabilitation exergame as a lightweight framework for stroke assessment",
+   "year": "2026",
+   "journal": "npj Digital Medicine",
+   "first_author": "Tannús Júlia",
+   "type": "journal-article"
+  },
+  "10.1038/s44484-026-00014-6": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Prompt injection attacks on vision-language models for surgical decision support",
+   "year": "2026",
+   "journal": "npj Digital Surgery",
+   "first_author": "Zhang Zheyuan",
+   "type": "journal-article"
+  },
+  "10.1049/ipr2.12008": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "KS‐FQA: Keyframe selection based on face quality assessment for efficient face recognition in video",
+   "year": "2020",
+   "journal": "IET Image Processing",
+   "first_author": "Bahroun Sahbi",
+   "type": "journal-article"
+  },
+  "10.1073/pnas.96.8.4645": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Quantization of continuous arm movements in humans with brain injury",
+   "year": "1999",
+   "journal": "Proceedings of the National Academy of Sciences",
+   "first_author": "Krebs Hermano Igo",
+   "type": "journal-article"
+  },
+  "10.1080/00222895.1984.10735319": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "The Timing of Natural Prehension Movements",
+   "year": "1984",
+   "journal": "Journal of Motor Behavior",
+   "first_author": "Jeannerod M.",
+   "type": "journal-article"
+  },
+  "10.1080/09638288.2022.2153177": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Psychometric properties of the Action Research Arm Test using decision rules for skipping items in hemiparetic patients after stroke: a retrospective study",
+   "year": "2022",
+   "journal": "Disability and Rehabilitation",
+   "first_author": "Amano Satoru",
+   "type": "journal-article"
+  },
+  "10.1080/09638288.2025.2603843": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Reliability and validity of the 15-item Action Research Arm Test with a clinically-informed decision rule",
+   "year": "2025",
+   "journal": "Disability and Rehabilitation",
+   "first_author": "Yoshihara Shota",
+   "type": "journal-article"
+  },
+  "10.1080/10749357.2025.2509063": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "The effect of mirror therapy on spasticity in adult patients with stroke: a systematic review and meta-analysis",
+   "year": "2025",
+   "journal": "Topics in Stroke Rehabilitation",
+   "first_author": "Tekeoğlu Tosun Anıl",
+   "type": "journal-article"
+  },
+  "10.1093/brain/awx224": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Influence of cerebrovascular disease on brain networks in prodromal and clinical Alzheimer’s disease",
+   "year": "2017",
+   "journal": "Brain",
+   "first_author": "Chong Joanna Su Xian",
+   "type": "journal-article"
+  },
+  "10.1098/rspb.1996.0058": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Synaesthesia in phantom limbs induced with mirrors",
+   "year": "1996",
+   "journal": "Proceedings of the Royal Society of London. Series B: Biological Sciences",
+   "first_author": "",
+   "type": "journal-article"
+  },
+  "10.1109/ACCESS.2024.3441238": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Comparative Evaluation of Intel RealSense D415, D435i, D455, and Microsoft Azure Kinect DK Sensors for 3D Vision Applications",
+   "year": "2024",
+   "journal": "IEEE Access",
+   "first_author": "Servi Michaela",
+   "type": "journal-article"
+  },
+  "10.1109/ACCESS.2024.3482115": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Applying Hybrid Deep Learning Models to Assess Upper Limb Rehabilitation",
+   "year": "2024",
+   "journal": "IEEE Access",
+   "first_author": "Miao Sheng",
+   "type": "journal-article"
+  },
+  "10.1109/ACCESS.2025.3560810": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Empirical Comparison of Four Stereoscopic Depth Sensing Cameras for Robotics Applications",
+   "year": "2025",
+   "journal": "IEEE Access",
+   "first_author": "Rustler Lukas",
+   "type": "journal-article"
+  },
+  "10.1109/ACCESS.2026.3698553": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Task-Driven Dual-Path Keyframe Selection: Enhancing Multimodal Video Understanding",
+   "year": "2026",
+   "journal": "IEEE Access",
+   "first_author": "Wang Yurong",
+   "type": "journal-article"
+  },
+  "10.1109/CVPRW.2017.167": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Intel(R) RealSense(TM) Stereoscopic Depth Cameras",
+   "year": "2017",
+   "journal": "2017 IEEE Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)",
+   "first_author": "Keselman Leonid",
+   "type": "proceedings-article"
+  },
+  "10.1109/EMBC48229.2022.9871453": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "A Machine Learning Algorithm to Discriminating Between Bipolar and Major Depressive Disorders Based on Resting EEG Data",
+   "year": "2022",
+   "journal": "2022 44th Annual International Conference of the IEEE Engineering in Medicine &amp; Biology Society (EMBC)",
+   "first_author": "Margarette Sanchez M.",
+   "type": "proceedings-article"
+  },
+  "10.1109/EMBC48229.2022.9871891": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Evaluation of Changes in Kinematic Measures of Three Dimensional Reach to Grasp Movements in the Early Subacute Period of Recovery from Stroke",
+   "year": "2022",
+   "journal": "2022 44th Annual International Conference of the IEEE Engineering in Medicine &amp; Biology Society (EMBC)",
+   "first_author": "Qiu Qinyin",
+   "type": "proceedings-article"
+  },
+  "10.1109/ICORR60564.2025": {
+   "source": "crossref/works",
+   "exists": false,
+   "http": 404,
+   "handle_probe": "HTTP Error 404: Not Found"
+  },
+  "10.1109/ICORR66766.2025.11063162": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Automated Prediction of Item-Level Arat Scores From Wearable Sensors",
+   "year": "2025",
+   "journal": "2025 International Conference On Rehabilitation Robotics (ICORR)",
+   "first_author": "Weikert Thomas",
+   "type": "proceedings-article"
+  },
+  "10.1109/ICSENS.2014.6985077": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Review of methods for resolving multi-path interference in Time-of-Flight range cameras",
+   "year": "2014",
+   "journal": "IEEE SENSORS 2014 Proceedings",
+   "first_author": "Whyte Refael",
+   "type": "proceedings-article"
+  },
+  "10.1109/IROS60139.2025.11246826": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "3D-AMTA: Occlusion-Aware Real-Time 3D Hand Pose Estimation with Auto Mask and Token-Specific Attention",
+   "year": "2025",
+   "journal": "2025 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)",
+   "first_author": "Zhao Dongfang",
+   "type": "proceedings-article"
+  },
+  "10.1109/JBHI.2025.3542037": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Estimating Upper Extremity Fugl-Meyer Assessment Scores From Reaching Motions Using Wearable Sensors",
+   "year": "2025",
+   "journal": "IEEE Journal of Biomedical and Health Informatics",
+   "first_author": "Zhou Yu Meng",
+   "type": "journal-article"
+  },
+  "10.1109/JTEHM.2024.3435334": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Concurrent Validity of Motion Parameters Measured With an RGB-D Camera-Based Markerless 3D Motion Tracking Method in Children and Young Adults",
+   "year": "2024",
+   "journal": "IEEE Journal of Translational Engineering in Health and Medicine",
+   "first_author": "Hesse Nikolas",
+   "type": "journal-article"
+  },
+  "10.1109/MET59151.2023.00012": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Robustness Evaluation in Hand Pose Estimation Models using Metamorphic Testing",
+   "year": "2023",
+   "journal": "2023 IEEE/ACM 8th International Workshop on Metamorphic Testing (MET)",
+   "first_author": "Pu Muxin",
+   "type": "proceedings-article"
+  },
+  "10.1109/TBME.2011.2179545": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "A Robust and Sensitive Metric for Quantifying Movement Smoothness",
+   "year": "2012",
+   "journal": "IEEE Transactions on Biomedical Engineering",
+   "first_author": "Balasubramanian S.",
+   "type": "journal-article"
+  },
+  "10.1109/TBME.2012.2198083": {
+   "source": "crossref/works",
+   "exists": false,
+   "http": 404,
+   "handle_probe": "HTTP Error 404: Not Found"
+  },
+  "10.1109/TIM.2022.3168924": {
+   "source": "crossref/works",
+   "exists": false,
+   "http": 404,
+   "handle_probe": "HTTP Error 404: Not Found"
+  },
+  "10.1109/TNSRE.2016.2602941": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "A Magnetic Resonance Compatible Soft Wearable Robotic Glove for Hand Rehabilitation and Brain Imaging",
+   "year": "2017",
+   "journal": "IEEE Transactions on Neural Systems and Rehabilitation Engineering",
+   "first_author": "Yap Hong Kai",
+   "type": "journal-article"
+  },
+  "10.1109/TNSRE.2017.2755667": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Automated Evaluation of Upper-Limb Motor Function Impairment Using Fugl-Meyer Assessment",
+   "year": "2018",
+   "journal": "IEEE Transactions on Neural Systems and Rehabilitation Engineering",
+   "first_author": "Lee Seunghee",
+   "type": "journal-article"
+  },
+  "10.1109/TNSRE.2019.2939587": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Cellphone-Based Automated Fugl-Meyer Assessment to Evaluate Upper Extremity Motor Function After Stroke",
+   "year": "2019",
+   "journal": "IEEE Transactions on Neural Systems and Rehabilitation Engineering",
+   "first_author": "Song Xinyu",
+   "type": "journal-article"
+  },
+  "10.1109/TNSRE.2022.3150392": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Graph Convolutional Networks for Assessment of Physical Rehabilitation Exercises",
+   "year": "2022",
+   "journal": "IEEE Transactions on Neural Systems and Rehabilitation Engineering",
+   "first_author": "Deb Swakshar",
+   "type": "journal-article"
+  },
+  "10.1109/TNSRE.2022.3213076": {
+   "source": "crossref/works",
+   "exists": false,
+   "http": 404,
+   "handle_probe": "HTTP Error 404: Not Found"
+  },
+  "10.1109/TNSRE.2024.3358497": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Automatic Assessment of Upper Extremity Function and Mobile Application for Self-Administered Stroke Rehabilitation",
+   "year": "2024",
+   "journal": "IEEE Transactions on Neural Systems and Rehabilitation Engineering",
+   "first_author": "Kim Dong-Wook",
+   "type": "journal-article"
+  },
+  "10.1109/TNSRE.2024.3365821": {
+   "source": "crossref/works",
+   "exists": false,
+   "http": 404,
+   "handle_probe": "HTTP Error 404: Not Found"
+  },
+  "10.1109/TNSRE.2024.3412089": {
+   "source": "crossref/works",
+   "exists": false,
+   "http": 404,
+   "handle_probe": "HTTP Error 404: Not Found"
+  },
+  "10.1109/TNSRE.2024.3450008": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "A Hierarchical Bayesian Model for Cyber-Human Assessment of Movement in Upper Extremity Stroke Rehabilitation",
+   "year": "2024",
+   "journal": "IEEE Transactions on Neural Systems and Rehabilitation Engineering",
+   "first_author": "Ahmed Tamim",
+   "type": "journal-article"
+  },
+  "10.1109/TNSRE.2025.3596488": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Multivideo Models for Classifying Hand Impairment After Stroke Using Egocentric Video",
+   "year": "2025",
+   "journal": "IEEE Transactions on Neural Systems and Rehabilitation Engineering",
+   "first_author": "Mei Anne",
+   "type": "journal-article"
+  },
+  "10.1109/iccvw.2017.82": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Real-Time Hand Tracking Under Occlusion from an Egocentric RGB-D Sensor",
+   "year": "2017",
+   "journal": "2017 IEEE International Conference on Computer Vision Workshops (ICCVW)",
+   "first_author": "Mueller Franziska",
+   "type": "proceedings-article"
+  },
+  "10.1109/icorr66766.2025.11063104": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Machine Learning-Based Estimation of Upper Extremity Function in Stroke Rehabilitation Using Body-Worn Inertial Sensors",
+   "year": "2025",
+   "journal": "2025 International Conference On Rehabilitation Robotics (ICORR)",
+   "first_author": "Okita Shusuke",
+   "type": "proceedings-article"
+  },
+  "10.1109/…": {
+   "source": "crossref/works",
+   "exists": false,
+   "http": 404,
+   "handle_probe": "HTTP Error 404: Not Found"
+  },
+  "10.1115/1.4033035": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Design of a Soft Robotic Glove for Hand Rehabilitation of Stroke Patients With Clenched Fist Deformity Using Inflatable Plastic Actuators",
+   "year": "2016",
+   "journal": "Journal of Medical Devices",
+   "first_author": "Yap Hong Kai",
+   "type": "journal-article"
+  },
+  "10.1115/DMD2024-1039": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Accuracy of Mediapipe Visual Hand Tracking for use in Medical Training Procedures",
+   "year": "2024",
+   "journal": "2024 Design of Medical Devices Conference",
+   "first_author": "Budzinski Cynthia",
+   "type": "proceedings-article"
+  },
+  "10.1123/jsep.2015-0123": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Quiet Eye and Performance in Sport: A Meta-Analysis",
+   "year": "2016",
+   "journal": "Journal of Sport and Exercise Psychology",
+   "first_author": "Lebeau Jean-Charles",
+   "type": "journal-article"
+  },
+  "10.1126/scirobotics.abe1315": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Visual-inertial hand motion tracking with robustness against occlusion, interference, and contact",
+   "year": "2021",
+   "journal": "Science Robotics",
+   "first_author": "Lee Yongseok",
+   "type": "journal-article"
+  },
+  "10.1145/2207676.2208639": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "1 € filter",
+   "year": "2012",
+   "journal": "Proceedings of the SIGCHI Conference on Human Factors in Computing Systems",
+   "first_author": "Casiez Géry",
+   "type": "proceedings-article"
+  },
+  "10.1145/3130800.3130883": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Embodied hands",
+   "year": "2017",
+   "journal": "ACM Transactions on Graphics",
+   "first_author": "Romero Javier",
+   "type": "journal-article"
+  },
+  "10.1145/3130800.3130884": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "DeepToF",
+   "year": "2017",
+   "journal": "ACM Transactions on Graphics",
+   "first_author": "Marco Julio",
+   "type": "journal-article"
+  },
+  "10.1145/3301275.3302273": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Learning to assess the quality of stroke rehabilitation exercises",
+   "year": "2019",
+   "journal": "Proceedings of the 24th International Conference on Intelligent User Interfaces",
+   "first_author": "Lee Min Hun",
+   "type": "proceedings-article"
+  },
+  "10.1145/3610661.3617154": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "ASAR Dataset and Computational Model for Affective State Recognition During ARAT Assessment for Upper Extremity Stroke Survivors",
+   "year": "2023",
+   "journal": "International Cconference on Multimodal Interaction",
+   "first_author": "Ahmed Tamim",
+   "type": "proceedings-article"
+  },
+  "10.1152/jn.91310.2008": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Recovery of Thumb and Finger Extension and Its Relation to Grasp Performance After Stroke",
+   "year": "2009",
+   "journal": "Journal of Neurophysiology",
+   "first_author": "Lang Catherine E.",
+   "type": "journal-article"
+  },
+  "10.1155/2017/8567084": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Kinect V2 Performance Assessment in Daily-Life Gestures: Cohort Study on Healthy Subjects for a Reference Database for Automated Instrumental Evaluations on Neurological Patients",
+   "year": "2017",
+   "journal": "Applied Bionics and Biomechanics",
+   "first_author": "Scano Alessandro",
+   "type": "journal-article"
+  },
+  "10.1161/01.STR.0000189992.06654.ab": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Facilitation of Sensory and Motor Recovery by Thermal Intervention for the Hemiplegic Upper Limb in Acute Stroke Patients",
+   "year": "2005",
+   "journal": "Stroke",
+   "first_author": "Chen Jia-Ching",
+   "type": "journal-article"
+  },
+  "10.1161/STROKEAHA.108.542944": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Socioeconomic Differences in Stroke Incidence and Prognosis Under a Universal Healthcare System",
+   "year": "2009",
+   "journal": "Stroke",
+   "first_author": "Cesaroni Giulia",
+   "type": "journal-article"
+  },
+  "10.1161/STROKEAHA.109.572065": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Presence of Finger Extension and Shoulder Abduction Within 72 Hours After Stroke Predicts Functional Recovery",
+   "year": "2010",
+   "journal": "Stroke",
+   "first_author": "Nijland Rinske H.M.",
+   "type": "journal-article"
+  },
+  "10.1161/STROKEAHA.118.023531": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Systematic Review on Kinematic Assessments of Upper Limb Movements After Stroke",
+   "year": "2019",
+   "journal": "Stroke",
+   "first_author": "Schwarz Anne",
+   "type": "journal-article"
+  },
+  "10.1161/STROKEAHA.121.034537": {
+   "source": "crossref/works",
+   "exists": false,
+   "http": 404,
+   "handle_probe": "HTTP Error 404: Not Found"
+  },
+  "10.1161/STROKEAHA.121.035170": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Fast Outcome Categorization of the Upper Limb After Stroke",
+   "year": "2022",
+   "journal": "Stroke",
+   "first_author": "Jordan Harry T.",
+   "type": "journal-article"
+  },
+  "10.1161/STROKEAHA.124.049336": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Compensatory Proximal Adjustments Characterize Effective Reaching Movements After Stroke",
+   "year": "2025",
+   "journal": "Stroke",
+   "first_author": "Wolf Silke",
+   "type": "journal-article"
+  },
+  "10.1162/jocn.1991.3.3.220": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Arm Trajectory Modifications During Reaching Towards Visual Targets",
+   "year": "1991",
+   "journal": "Journal of Cognitive Neuroscience",
+   "first_author": "Flash Tamar",
+   "type": "journal-article"
+  },
+  "10.1177/02692155241251434": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Clinical validation of automated depth camera-based measurement of the Fugl-Meyer assessment for upper extremity",
+   "year": "2024",
+   "journal": "Clinical Rehabilitation",
+   "first_author": "Wang Zhaoyang",
+   "type": "journal-article"
+  },
+  "10.1177/02692155241299211": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Effects of mirror therapy on upper limb motor function of patients with stroke: A systematic review and meta-analysis of randomized controlled trials",
+   "year": "2025",
+   "journal": "Clinical Rehabilitation",
+   "first_author": "Saragih Ita Daryanti",
+   "type": "journal-article"
+  },
+  "10.1177/1545968307305353": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "A Standardized Approach to Performing the Action Research Arm Test",
+   "year": "2007",
+   "journal": "Neurorehabilitation and Neural Repair",
+   "first_author": "Yozbatiran Nuray",
+   "type": "journal-article"
+  },
+  "10.1177/1545968310370748": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Kinematic Variables Quantifying Upper-Extremity Performance After Stroke During Reaching and Drinking From a Glass",
+   "year": "2010",
+   "journal": "Neurorehabilitation and Neural Repair",
+   "first_author": "Murphy Margit Alt",
+   "type": "journal-article"
+  },
+  "10.1177/1545968312448234": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Movement Kinematics During a Drinking Task Are Associated With the Activity Capacity Level After Stroke",
+   "year": "2012",
+   "journal": "Neurorehabilitation and Neural Repair",
+   "first_author": "Alt Murphy Margit",
+   "type": "journal-article"
+  },
+  "10.1177/1545968319886477": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Standardized Measurement of Quality of Upper Limb Movement After Stroke: Consensus-Based Core Recommendations From the Second Stroke Recovery and Rehabilitation Roundtable",
+   "year": "2019",
+   "journal": "Neurorehabilitation and Neural Repair",
+   "first_author": "Kwakkel G.",
+   "type": "journal-article"
+  },
+  "10.1177/15459683231184186": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "aBnormal motION capture In aCute Stroke (BIONICS): A Low-Cost Tele-Evaluation Tool for Automated Assessment of Upper Extremity Function in Stroke Patients",
+   "year": "2023",
+   "journal": "Neurorehabilitation and Neural Repair",
+   "first_author": "Zamin Syed A.",
+   "type": "journal-article"
+  },
+  "10.1177/15459683251412300": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Standardized International Manual of the Fugl-Meyer Assessment of Motor Function After Stroke",
+   "year": "2026",
+   "journal": "Neurorehabilitation and Neural Repair",
+   "first_author": "Hervé-Colas Julie",
+   "type": "journal-article"
+  },
+  "10.1177/1747493019873519": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Standardized measurement of quality of upper limb movement after stroke: Consensus-based core recommendations from the Second Stroke Recovery and Rehabilitation Roundtable",
+   "year": "2019",
+   "journal": "International Journal of Stroke",
+   "first_author": "Kwakkel G",
+   "type": "journal-article"
+  },
+  "10.1186/1471-2288-10-1": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "A tutorial on pilot studies: the what, why and how",
+   "year": "2010",
+   "journal": "BMC Medical Research Methodology",
+   "first_author": "Thabane Lehana",
+   "type": "journal-article"
+  },
+  "10.1186/s12984-015-0090-9": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "On the analysis of movement smoothness",
+   "year": "2015",
+   "journal": "Journal of NeuroEngineering and Rehabilitation",
+   "first_author": "Balasubramanian Sivakumar",
+   "type": "journal-article"
+  },
+  "10.1186/s12984-019-0536-6": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Kinematic synergies of hand grasps: a comprehensive study on a large publicly available dataset",
+   "year": "2019",
+   "journal": "Journal of NeuroEngineering and Rehabilitation",
+   "first_author": "Jarque-Bou Néstor J.",
+   "type": "journal-article"
+  },
+  "10.1186/s12984-020-00705-2": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Upper limb kinematics during the first year after stroke: the stroke arm longitudinal study at the University of Gothenburg (SALGOT)",
+   "year": "2020",
+   "journal": "Journal of NeuroEngineering and Rehabilitation",
+   "first_author": "Thrane Gyrd",
+   "type": "journal-article"
+  },
+  "10.1186/s12984-021-00895-3": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "How many trials are needed in kinematic analysis of reach-to-grasp?—A study of the drinking task in persons with stroke and non-disabled controls",
+   "year": "2021",
+   "journal": "Journal of NeuroEngineering and Rehabilitation",
+   "first_author": "Frykberg Gunilla Elmgren",
+   "type": "journal-article"
+  },
+  "10.1186/s12984-021-00937-w": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Smoothness metric during reach-to-grasp after stroke: part 2. longitudinal association with motor impairment",
+   "year": "2021",
+   "journal": "Journal of NeuroEngineering and Rehabilitation",
+   "first_author": "Saes Mique",
+   "type": "journal-article"
+  },
+  "10.1186/s12984-021-00949-6": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Smoothness metrics for reaching performance after stroke. Part 1: which one to choose?",
+   "year": "2021",
+   "journal": "Journal of NeuroEngineering and Rehabilitation",
+   "first_author": "Mohamed Refai Mohamed Irfan",
+   "type": "journal-article"
+  },
+  "10.1186/s12984-022-01114-3": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Performing a shortened version of the Action Research Arm Test in immersive virtual reality to assess post-stroke upper limb activity",
+   "year": "2022",
+   "journal": "Journal of NeuroEngineering and Rehabilitation",
+   "first_author": "Burton Quentin",
+   "type": "journal-article"
+  },
+  "10.1186/s12984-023-01198-4": {
+   "source": "crossref/works",
+   "exists": false,
+   "http": 404,
+   "handle_probe": "HTTP Error 404: Not Found"
+  },
+  "10.1186/s12984-024-01332-x": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Extended reality to assess post-stroke manual dexterity: contrasts between the classic box and block test, immersive virtual reality with controllers, with hand-tracking, and mixed-reality tests",
+   "year": "2024",
+   "journal": "Journal of NeuroEngineering and Rehabilitation",
+   "first_author": "Everard Gauthier",
+   "type": "journal-article"
+  },
+  "10.1186/s12984-024-01382-1": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Measurement properties of movement smoothness metrics for upper limb reaching movements in people with moderate to severe subacute stroke",
+   "year": "2024",
+   "journal": "Journal of NeuroEngineering and Rehabilitation",
+   "first_author": "Cornec Gwenaël",
+   "type": "journal-article"
+  },
+  "10.1186/s12984-025-01808-4": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Using MediaPipe to track upper-limb reaching movements after stroke: a proof-of-principle study",
+   "year": "2025",
+   "journal": "Journal of NeuroEngineering and Rehabilitation",
+   "first_author": "Wagh Vaidehi",
+   "type": "journal-article"
+  },
+  "10.1310/TC87-8328-9844-4638": {
+   "source": "crossref/works",
+   "exists": false,
+   "http": 404,
+   "handle_probe": "HTTP Error 404: Not Found"
+  },
+  "10.1310/WA7K-NGDF-NHKK-JAGD": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Upper-Limb Discoordination in Hemiparetic Stroke: Implications for Neurorehabilitation",
+   "year": "2001",
+   "journal": "Topics in Stroke Rehabilitation",
+   "first_author": "Dewald Julius P. A.",
+   "type": "journal-article"
+  },
+  "10.1371/journal.pdig.0000044": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "PrimSeq: A deep learning-based pipeline to quantitate rehabilitation training",
+   "year": "2022",
+   "journal": "PLOS Digital Health",
+   "first_author": "Parnandi Avinash",
+   "type": "journal-article"
+  },
+  "10.1371/journal.pdig.0001506": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Vision-language models for human motion understanding: Lessons from stroke rehabilitation",
+   "year": "2026",
+   "journal": "PLOS Digital Health",
+   "first_author": "Li Victor",
+   "type": "journal-article"
+  },
+  "10.1371/journal.pone.0058289": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "The Head Tracks and Gaze Predicts: How the World’s Best Batters Hit a Ball",
+   "year": "2013",
+   "journal": "PLoS ONE",
+   "first_author": "Mann David L.",
+   "type": "journal-article"
+  },
+  "10.1371/journal.pone.0158640": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Upper Extremity Functional Evaluation by Fugl-Meyer Assessment Scoring Using Depth-Sensing Camera in Hemiplegic Stroke Patients",
+   "year": "2016",
+   "journal": "PLOS ONE",
+   "first_author": "Kim Won-Seok",
+   "type": "journal-article"
+  },
+  "10.1371/journal.pone.0213162": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Tify: A quality-based frame selection tool for improving the output of unstable biomedical imaging",
+   "year": "2019",
+   "journal": "PLOS ONE",
+   "first_author": "Kavanagh Dean Philip John",
+   "type": "journal-article"
+  },
+  "10.1371/journal.pone.0234969": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Analysis of subject specific grasping patterns",
+   "year": "2020",
+   "journal": "PLOS ONE",
+   "first_author": "Herbst Yair",
+   "type": "journal-article"
+  },
+  "10.1371/journal.pone.0292321": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "The effect of motivational and instructional self-talk on attentional control under noise distraction",
+   "year": "2023",
+   "journal": "PLOS ONE",
+   "first_author": "Yang Liu",
+   "type": "journal-article"
+  },
+  "10.1371/journal.pone.0313707": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "LLM-FMS: A fine-grained dataset for functional movement screen action quality assessment",
+   "year": "2025",
+   "journal": "PLOS ONE",
+   "first_author": "Xing Qingjun",
+   "type": "journal-article"
+  },
+  "10.1523/JNEUROSCI.05-07-01688.1985": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "The coordination of arm movements: an experimentally confirmed mathematical model",
+   "year": "1985",
+   "journal": "The Journal of Neuroscience",
+   "first_author": "Flash T",
+   "type": "journal-article"
+  },
+  "10.1523/JNEUROSCI.22-18-08297.2002": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Movement Smoothness Changes during Stroke Recovery",
+   "year": "2002",
+   "journal": "The Journal of Neuroscience",
+   "first_author": "Rohrer Brandon",
+   "type": "journal-article"
+  },
+  "10.1525/collabra.33267": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Sample Size Justification",
+   "year": "2022",
+   "journal": "Collabra: Psychology",
+   "first_author": "Lakens Daniël",
+   "type": "journal-article"
+  },
+  "10.2196/56682": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Quantifying Similarities Between MediaPipe and a Known Standard to Address Issues in Tracking 2D Upper Limb Trajectories: Proof of Concept Study",
+   "year": "2024",
+   "journal": "JMIR Formative Research",
+   "first_author": "Wagh Vaidehi",
+   "type": "journal-article"
+  },
+  "10.2196/73142": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Combined Immersive and Nonimmersive Virtual Reality With Mirror Therapy for Patients With Stroke: Systematic Review and Meta-Analysis of Randomized Controlled Trials",
+   "year": "2025",
+   "journal": "Journal of Medical Internet Research",
+   "first_author": "Gao Chaoran",
+   "type": "journal-article"
+  },
+  "10.2196/91756": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "NeuroSift for Task-Aware Quality Assurance of Multimedia Data in Remote Parkinson Disease Assessment: Machine Learning Model Development and Validation Study",
+   "year": "2026",
+   "journal": "Journal of Medical Internet Research",
+   "first_author": "Islam Md Saiful",
+   "type": "journal-article"
+  },
+  "10.2196/preprints.26825": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Proposal for Post Hoc Quality Control in Instrumented Motion Analysis Using Markerless Motion Capture: Development and Usability Study (Preprint)",
+   "year": "2020",
+   "journal": "",
+   "first_author": "Röhling Hanna Marie",
+   "type": "posted-content"
+  },
+  "10.2340/16501977-2357": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Feasibility of a wearable soft-robotic glove to support impaired hand function in stroke patients",
+   "year": "2018",
+   "journal": "Journal of Rehabilitation Medicine",
+   "first_author": "Radder B",
+   "type": "journal-article"
+  },
+  "10.2340/16501977-2534": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Evaluation of a short assessment for upper extremity activity capacity early after stroke",
+   "year": "2019",
+   "journal": "Journal of Rehabilitation Medicine",
+   "first_author": "Kristersson T",
+   "type": "journal-article"
+  },
+  "10.2340/16501977-2590": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Intra- and inter-rater reliability of Fugl-Meyer Assessment of Upper Extremity in stroke",
+   "year": "2019",
+   "journal": "Journal of Rehabilitation Medicine",
+   "first_author": "Hernández E",
+   "type": "journal-article"
+  },
+  "10.2340/1650197771331": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "The post-stroke hemiplegic patient. 1. a method for evaluation of physical performance",
+   "year": "1975",
+   "journal": "Journal of Rehabilitation Medicine",
+   "first_author": "Fugl-Meyer AR",
+   "type": "journal-article"
+  },
+  "10.2352/ei.2025.37.9.iqsp-251": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Optimizing Frame Selection for Improved Video Quality Assessment Through Embedding Similarity",
+   "year": "2025",
+   "journal": "Electronic Imaging",
+   "first_author": "Sendjasni Abderrezzaq",
+   "type": "journal-article"
+  },
+  "10.2522/ptj.20070255": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Reproducibility and Minimal Detectable Change of Three-Dimensional Kinematic Analysis of Reaching Tasks in People With Hemiparesis After Stroke",
+   "year": "2008",
+   "journal": "Physical Therapy",
+   "first_author": "Wagner Joanne M",
+   "type": "journal-article"
+  },
+  "10.2522/ptj.20080285": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Psychometric Comparisons of 4 Measures for Assessing Upper-Extremity Function in People With Stroke",
+   "year": "2009",
+   "journal": "Physical Therapy",
+   "first_author": "Lin Jau-Hong",
+   "type": "journal-article"
+  },
+  "10.2522/ptj.20110008": {
+   "source": "crossref/works",
+   "exists": false,
+   "http": 404,
+   "handle_probe": "HTTP Error 404: Not Found"
+  },
+  "10.2522/ptj.20110009": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Clinically Important Differences for the Upper-Extremity Fugl-Meyer Scale in People With Minimal to Moderate Impairment Due to Chronic Stroke",
+   "year": "2012",
+   "journal": "Physical Therapy",
+   "first_author": "Page Stephen J.",
+   "type": "journal-article"
+  },
+  "10.3389/fbioe.2020.567842": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Scalable Biomimetic Coaxial Aligned Nanofiber Cardiac Patch: A Potential Model for “Clinical Trials in a Dish”",
+   "year": "2020",
+   "journal": "Frontiers in Bioengineering and Biotechnology",
+   "first_author": "Kumar Naresh",
+   "type": "journal-article"
+  },
+  "10.3389/fbioe.2025.1570637": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Validity and reliability of single camera markerless motion capture systems with RGB-D sensors for measuring shoulder range-of-motion: a systematic review",
+   "year": "2025",
+   "journal": "Frontiers in Bioengineering and Biotechnology",
+   "first_author": "Lee Unhyung",
+   "type": "journal-article"
+  },
+  "10.3389/fnbot.2017.00067": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Segmenting Continuous Motions with Hidden Semi-markov Models and Gaussian Processes",
+   "year": "2017",
+   "journal": "Frontiers in Neurorobotics",
+   "first_author": "Nakamura Tomoaki",
+   "type": "journal-article"
+  },
+  "10.3389/fncel.2022.982881": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Exploration on neurobiological mechanisms of the central–peripheral–central closed-loop rehabilitation",
+   "year": "2022",
+   "journal": "Frontiers in Cellular Neuroscience",
+   "first_author": "Jia Jie",
+   "type": "journal-article"
+  },
+  "10.3389/fneur.2018.00472": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Kinematic Components of the Reach-to-Target Movement After Stroke for Focused Rehabilitation Interventions: Systematic Review and Meta-Analysis",
+   "year": "2018",
+   "journal": "Frontiers in Neurology",
+   "first_author": "Collins Kathryn C.",
+   "type": "journal-article"
+  },
+  "10.3389/fneur.2019.00408": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "A Modified Reach-to-Grasp Task in a Supine Position Shows Coordination Between Elbow and Hand Movements After Stroke",
+   "year": "2019",
+   "journal": "Frontiers in Neurology",
+   "first_author": "Broome Kate",
+   "type": "journal-article"
+  },
+  "10.3389/fneur.2020.577855": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Item Difficulty of Fugl-Meyer Assessment for Upper Extremity in Persons With Chronic Stroke With Moderate-to-Severe Upper Limb Impairment",
+   "year": "2020",
+   "journal": "Frontiers in Neurology",
+   "first_author": "Hijikata Nanako",
+   "type": "journal-article"
+  },
+  "10.3389/fneur.2023.1225425": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Kinematic analysis of movement patterns during a reach-and-grasp task in stroke patients",
+   "year": "2023",
+   "journal": "Frontiers in Neurology",
+   "first_author": "Choi Hyoseon",
+   "type": "journal-article"
+  },
+  "10.3389/fneur.2024.1429929": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "The association between dexterity and upper limb impairment during stroke recovery",
+   "year": "2024",
+   "journal": "Frontiers in Neurology",
+   "first_author": "Valladares Belen",
+   "type": "journal-article"
+  },
+  "10.3389/fneur.2024.1453508": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Robot-assisted therapy in stratified intervention: a randomized controlled trial on poststroke motor recovery",
+   "year": "2024",
+   "journal": "Frontiers in Neurology",
+   "first_author": "Liu Yang",
+   "type": "journal-article"
+  },
+  "10.3389/fneur.2025.1602896": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Combination of robot-assisted glove and mirror therapy improves upper limb motor function in subacute stroke patients: a randomized controlled pilot study",
+   "year": "2025",
+   "journal": "Frontiers in Neurology",
+   "first_author": "Qian Jin",
+   "type": "journal-article"
+  },
+  "10.3389/fneur.2026.1876892": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Reliability, validity, and usability of an 18-item immersive virtual reality action research arm test: a validation study in stroke survivors",
+   "year": "2026",
+   "journal": "Frontiers in Neurology",
+   "first_author": "Pan Zhipeng",
+   "type": "journal-article"
+  },
+  "10.3389/fnhum.2015.00112": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "EEVEE: the Empathy-Enhancing Virtual Evolving Environment",
+   "year": "2015",
+   "journal": "Frontiers in Human Neuroscience",
+   "first_author": "Jackson Philip L.",
+   "type": "journal-article"
+  },
+  "10.3389/fnins.2024.1362495": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Automatic rehabilitation assessment method of upper limb motor function based on posture and distribution force",
+   "year": "2024",
+   "journal": "Frontiers in Neuroscience",
+   "first_author": "Bai Jing",
+   "type": "journal-article"
+  },
+  "10.3389/fnins.2025.1737407": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Phase-specific multimodal biomarkers enable explainable assessment of upper limb dysfunction in chronic stroke",
+   "year": "2025",
+   "journal": "Frontiers in Neuroscience",
+   "first_author": "Li Lei",
+   "type": "journal-article"
+  },
+  "10.3389/fpsyg.2017.02183": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Transfer of Training from Virtual to Real Baseball Batting",
+   "year": "2017",
+   "journal": "Frontiers in Psychology",
+   "first_author": "Gray Rob",
+   "type": "journal-article"
+  },
+  "10.3389/fpsyg.2025.1510367": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Mirror therapy in the neuroadaptive training paradigm in rehabilitation and potential mechanisms of neural remodeling: a 20-year bibliometrics analysis",
+   "year": "2025",
+   "journal": "Frontiers in Psychology",
+   "first_author": "Wang Yinkai",
+   "type": "journal-article"
+  },
+  "10.3389/fresc.2022.856012": {
+   "source": "crossref/works",
+   "exists": false,
+   "http": 404,
+   "handle_probe": "HTTP Error 404: Not Found"
+  },
+  "10.3389/fresc.2023.1181766": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Exercise repetition rate measured with simple sensors at home can be used to estimate Upper Extremity Fugl-Meyer score after stroke",
+   "year": "2023",
+   "journal": "Frontiers in Rehabilitation Sciences",
+   "first_author": "Swanson Veronica A.",
+   "type": "journal-article"
+  },
+  "10.3389/fresc.2026.1906327": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Perception, assessment, and coaching: a systematic review and taxonomy of computer vision-based physical rehabilitation techniques",
+   "year": "2026",
+   "journal": "Frontiers in Rehabilitation Sciences",
+   "first_author": "Ye Ping",
+   "type": "journal-article"
+  },
+  "10.3389/fspor.2023.1304911": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Noisy condition and three-point shot performance in skilled basketball players: the limited effect of self-talk",
+   "year": "2024",
+   "journal": "Frontiers in Sports and Active Living",
+   "first_author": "Yang Liu",
+   "type": "journal-article"
+  },
+  "10.3390/act13090368": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "An Actively Vision-Assisted Low-Load Wearable Hand Function Mirror Rehabilitation System",
+   "year": "2024",
+   "journal": "Actuators",
+   "first_author": "Chen Zheyu",
+   "type": "journal-article"
+  },
+  "10.3390/app16031202": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Accuracy and Reliability of Markerless Human Pose Estimation for Upper Limb Kinematic Analysis Across Full and Partial Range of Motion Tasks",
+   "year": "2026",
+   "journal": "Applied Sciences",
+   "first_author": "Francia Carlalberto",
+   "type": "journal-article"
+  },
+  "10.3390/bioengineering13060602": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Computer Vision for Movement Observation and Recovery Enhancement (C-MORE): Box and Blocks Test",
+   "year": "2026",
+   "journal": "Bioengineering",
+   "first_author": "Kim Jun Min",
+   "type": "journal-article"
+  },
+  "10.3390/bioengineering13070776": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "From Optical to AI-Driven Markerless Motion Capture in Motor Learning and Rehabilitation",
+   "year": "2026",
+   "journal": "Bioengineering",
+   "first_author": "Georganakis Panagiotis",
+   "type": "journal-article"
+  },
+  "10.3390/biomimetics10030129": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "A Pneumatic Soft Glove System Based on Bidirectional Bending Functionality for Rehabilitation",
+   "year": "2025",
+   "journal": "Biomimetics",
+   "first_author": "Wang Xiaohui",
+   "type": "journal-article"
+  },
+  "10.3390/biomimetics9070400": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Verification of Criterion-Related Validity for Developing a Markerless Hand Tracking Device",
+   "year": "2024",
+   "journal": "Biomimetics",
+   "first_author": "Suwabe Ryota",
+   "type": "journal-article"
+  },
+  "10.3390/brainsci12101380": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "A Novel Automated RGB-D Sensor-Based Measurement of Voluntary Items of the Fugl-Meyer Assessment for Upper Extremity: A Feasibility Study",
+   "year": "2022",
+   "journal": "Brain Sciences",
+   "first_author": "Li Yue",
+   "type": "journal-article"
+  },
+  "10.3390/brainsci13060900": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "The Application of Soft Robotic Gloves in Stroke Patients: A Systematic Review and Meta-Analysis of Randomized Controlled Trials",
+   "year": "2023",
+   "journal": "Brain Sciences",
+   "first_author": "Ko Ming-Jian",
+   "type": "journal-article"
+  },
+  "10.3390/fi17110522": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "ReHAb Playground: A DL-Based Framework for Game-Based Hand Rehabilitation",
+   "year": "2025",
+   "journal": "Future Internet",
+   "first_author": "Rasetto Samuele",
+   "type": "journal-article"
+  },
+  "10.3390/mps8040071": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Automated Video Quality Assessment for the Edinburgh Visual Gait Score (EVGS)",
+   "year": "2025",
+   "journal": "Methods and Protocols",
+   "first_author": "Arumugam Jeeva Rajkumar",
+   "type": "journal-article"
+  },
+  "10.3390/mti4020014": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Analysis of Upper-Limb and Trunk Kinematic Variability: Accuracy and Reliability of an RGB-D Sensor",
+   "year": "2020",
+   "journal": "Multimodal Technologies and Interaction",
+   "first_author": "Scano Alessandro",
+   "type": "journal-article"
+  },
+  "10.3390/s100201154": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Machine Learning Methods for Classifying Human Physical Activity from On-Body Accelerometers",
+   "year": "2010",
+   "journal": "Sensors",
+   "first_author": "Mannini Andrea",
+   "type": "journal-article"
+  },
+  "10.3390/s20082445": {
+   "source": "crossref/works",
+   "exists": false,
+   "http": 404,
+   "handle_probe": "HTTP Error 404: Not Found"
+  },
+  "10.3390/s20185104": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Evaluation of the Pose Tracking Performance of the Azure Kinect and Kinect v2 for Gait Analysis in Comparison with a Gold Standard: A Pilot Study",
+   "year": "2020",
+   "journal": "Sensors",
+   "first_author": "Albert Justin Amadeus",
+   "type": "journal-article"
+  },
+  "10.3390/s20247175": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Development and Application of a Vehicle-Mounted Soil Texture Detector",
+   "year": "2020",
+   "journal": "Sensors",
+   "first_author": "Meng Chao",
+   "type": "journal-article"
+  },
+  "10.3390/s21020413": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Evaluation of the Azure Kinect and Its Comparison to Kinect V1 and Kinect V2",
+   "year": "2021",
+   "journal": "Sensors",
+   "first_author": "Tölgyessy Michal",
+   "type": "journal-article"
+  },
+  "10.3390/s22072469": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Evaluating the Accuracy of the Azure Kinect and Kinect v2",
+   "year": "2022",
+   "journal": "Sensors",
+   "first_author": "Kurillo Gregorij",
+   "type": "journal-article"
+  },
+  "10.3390/s22072735": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Validity and Reliability of Kinect v2 for Quantifying Upper Body Kinematics during Seated Reaching",
+   "year": "2022",
+   "journal": "Sensors",
+   "first_author": "Faity Germain",
+   "type": "journal-article"
+  },
+  "10.3390/s22093276": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Hand Motion Analysis during the Execution of the Action Research Arm Test Using Multiple Sensors",
+   "year": "2022",
+   "journal": "Sensors",
+   "first_author": "Padilla-Magaña Jesus Fernando",
+   "type": "journal-article"
+  },
+  "10.3390/s22103604": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Quantitative Assessment of Hand Function in Healthy Subjects and Post-Stroke Patients with the Action Research Arm Test",
+   "year": "2022",
+   "journal": "Sensors",
+   "first_author": "Padilla-Magaña Jesus Fernando",
+   "type": "journal-article"
+  },
+  "10.3390/s22197378": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "An Experimental Assessment of Depth Estimation in Transparent and Translucent Scenes for Intel RealSense D415, SR305 and L515",
+   "year": "2022",
+   "journal": "Sensors",
+   "first_author": "Curto Eva",
+   "type": "journal-article"
+  },
+  "10.3390/s22228806": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Traffic Load Optimization for Multi-Satellite Relay Systems in Space Information Network: A Proportional Fairness Approach",
+   "year": "2022",
+   "journal": "Sensors",
+   "first_author": "Zhong Xudong",
+   "type": "journal-article"
+  },
+  "10.3390/s22239078": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Classification Models of Action Research Arm Test Activities in Post-Stroke Patients Based on Human Hand Motion",
+   "year": "2022",
+   "journal": "Sensors",
+   "first_author": "Padilla-Magaña Jesus Fernando",
+   "type": "journal-article"
+  },
+  "10.3390/s23010003": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Validation of Angle Estimation Based on Body Tracking Data from RGB-D and RGB Cameras for Biomechanical Assessment",
+   "year": "2022",
+   "journal": "Sensors",
+   "first_author": "Lafayette Thiago Buarque de Gusmão",
+   "type": "journal-article"
+  },
+  "10.3390/s23187906": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Quantitative Comparison of Hand Kinematics Measured with a Markerless Commercial Head-Mounted Display and a Marker-Based Motion Capture System in Stroke Survivors",
+   "year": "2023",
+   "journal": "Sensors",
+   "first_author": "Casile Antonino",
+   "type": "journal-article"
+  },
+  "10.3390/s24113686": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Accuracy, Validity, and Reliability of Markerless Camera-Based 3D Motion Capture Systems versus Marker-Based 3D Motion Capture Systems in Gait Analysis: A Systematic Review and Meta-Analysis",
+   "year": "2024",
+   "journal": "Sensors",
+   "first_author": "Scataglini Sofia",
+   "type": "journal-article"
+  },
+  "10.3390/s25041079": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Optimisation and Comparison of Markerless and Marker-Based Motion Capture Methods for Hand and Finger Movement Analysis",
+   "year": "2025",
+   "journal": "Sensors",
+   "first_author": "Maggioni Valentin",
+   "type": "journal-article"
+  },
+  "10.3390/s25133858": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Design and Evaluation of a Soft Robotic Actuator with Non-Intrusive Vision-Based Bending Measurement",
+   "year": "2025",
+   "journal": "Sensors",
+   "first_author": "Ghobadi Narges",
+   "type": "journal-article"
+  },
+  "10.3390/s25154633": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Proof of Concept and Validation of Single-Camera AI-Assisted Live Thumb Motion Capture",
+   "year": "2025",
+   "journal": "Sensors",
+   "first_author": "Dinh Huy G.",
+   "type": "journal-article"
+  },
+  "10.3390/s25185659": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Robot-Assisted Mirror Rehabilitation for Post-Stroke Upper Limbs: A Personalized Control Strategy",
+   "year": "2025",
+   "journal": "Sensors",
+   "first_author": "Chen Jiayue",
+   "type": "journal-article"
+  },
+  "10.3390/s25185716": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Evaluation of Commercial Camera-Based Solutions for Tracking Hand Kinematics",
+   "year": "2025",
+   "journal": "Sensors",
+   "first_author": "Sprague Alexander H.",
+   "type": "journal-article"
+  },
+  "10.3390/s25216663": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Estimation of Fugl–Meyer Assessment Upper-Extremity Sub-Scores Using a Mixup-Augmented LSTM Autoencoder and Wearable Sensor Data",
+   "year": "2025",
+   "journal": "Sensors",
+   "first_author": "Liu Minghao",
+   "type": "journal-article"
+  },
+  "10.3969/j.issn.0253-9802.2024.06.001": {
+   "source": "crossref/works",
+   "exists": false,
+   "http": 404,
+   "handle_probe": "HTTP Error 404: Not Found"
+  },
+  "10.5014/ajot.39.6.386": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Adult Norms for the Box and Block Test of Manual Dexterity",
+   "year": "1985",
+   "journal": "American Journal of Occupational Therapy",
+   "first_author": "Mathiowetz Virgil",
+   "type": "journal-article"
+  },
+  "10.5281/zenodo.19765336": {
+   "source": "crossref/works",
+   "exists": true,
+   "http": 404,
+   "resolved_by": "doi.org/handles",
+   "handle_url": "https://zenodo.org/doi/10.5281/zenodo.19765336"
+  },
+  "10.64898/2026.09.10.26361944": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Accuracy Overstates Evidence Grounding and Abstention Reliability in Mammography Vision-Language Models",
+   "year": "2026",
+   "journal": "",
+   "first_author": "Qu Bowen",
+   "type": "posted-content"
+  },
+  "10.7759/cureus.63375": {
+   "source": "crossref/works",
+   "exists": true,
+   "title": "Effects of Thermal Stimulation and Transcutaneous Electrical Nerve Stimulation on Sensory and Motor Function of Upper Extremity in Acute Stroke Survivors: A Randomized Controlled Pilot Study",
+   "year": "2024",
+   "journal": "Cureus",
+   "first_author": "Wang Hong-Chi",
+   "type": "journal-article"
+  }
+ },
+ "arxiv": {
+  "2006.06669": {
+   "exists": true,
+   "title": "Understanding Human Hands in Contact at Internet Scale",
+   "year": "2020",
+   "first_author": "Dandan Shan",
+   "version": "2006.06669v1",
+   "source": "arxiv/api"
+  },
+  "2006.10214": {
+   "exists": true,
+   "title": "MediaPipe Hands: On-device Real-time Hand Tracking",
+   "year": "2020",
+   "first_author": "Fan Zhang",
+   "version": "2006.10214v1",
+   "source": "arxiv/api"
+  },
+  "2007.09545": {
+   "exists": true,
+   "title": "ContactPose: A Dataset of Grasps with Object Contact and Hand Pose",
+   "year": "2020",
+   "first_author": "Samarth Brahmbhatt",
+   "version": "2007.09545v1",
+   "source": "arxiv/api"
+  },
+  "2008.08324": {
+   "exists": true,
+   "title": "FrankMocap: Fast Monocular 3D Hand and Body Motion Capture by Regression and Integration",
+   "year": "2020",
+   "first_author": "Yu Rong",
+   "version": "2008.08324v1",
+   "source": "arxiv/api"
+  },
+  "2103.16693": {
+   "exists": true,
+   "title": "Mask-ToF: Learning Microlens Masks for Flying Pixel Correction in Time-of-Flight Imaging",
+   "year": "2021",
+   "first_author": "Ilya Chugunov",
+   "version": "2103.16693v1",
+   "source": "arxiv/api"
+  },
+  "2204.14198": {
+   "exists": true,
+   "title": "Flamingo: a Visual Language Model for Few-Shot Learning",
+   "year": "2022",
+   "first_author": "Jean-Baptiste Alayrac",
+   "version": "2204.14198v2",
+   "source": "arxiv/api"
+  },
+  "2303.04566": {
+   "exists": true,
+   "title": "Robustness Evaluation in Hand Pose Estimation Models using Metamorphic Testing",
+   "year": "2023",
+   "first_author": "Muxin Pu",
+   "version": "2303.04566v1",
+   "source": "arxiv/api"
+  },
+  "2303.07399": {
+   "exists": true,
+   "title": "RTMPose: Real-Time Multi-Person Pose Estimation based on MMPose",
+   "year": "2023",
+   "first_author": "Tao Jiang",
+   "version": "2303.07399v2",
+   "source": "arxiv/api"
+  },
+  "2303.12712": {
+   "exists": true,
+   "title": "Sparks of Artificial General Intelligence: Early experiments with GPT-4",
+   "year": "2023",
+   "first_author": "Sébastien Bubeck",
+   "version": "2303.12712v5",
+   "source": "arxiv/api"
+  },
+  "2305.04388": {
+   "exists": true,
+   "title": "Language Models Don't Always Say What They Think: Unfaithful Explanations in Chain-of-Thought Prompting",
+   "year": "2023",
+   "first_author": "Miles Turpin",
+   "version": "2305.04388v2",
+   "source": "arxiv/api"
+  },
+  "2306.00890": {
+   "exists": true,
+   "title": "LLaVA-Med: Training a Large Language-and-Vision Assistant for Biomedicine in One Day",
+   "year": "2023",
+   "first_author": "Chunyuan Li",
+   "version": "2306.00890v1",
+   "source": "arxiv/api"
+  },
+  "2307.12981": {
+   "exists": true,
+   "title": "3D-LLM: Injecting the 3D World into Large Language Models",
+   "year": "2023",
+   "first_author": "Yining Hong",
+   "version": "2307.12981v1",
+   "source": "arxiv/api"
+  },
+  "2307.15189": {
+   "exists": true,
+   "title": "Med-Flamingo: a Multimodal Medical Few-shot Learner",
+   "year": "2023",
+   "first_author": "Michael Moor",
+   "version": "2307.15189v1",
+   "source": "arxiv/api"
+  },
+  "2308.01088": {
+   "exists": true,
+   "title": "Hand tracking for clinical applications: validation of the Google MediaPipe Hand (GMH) and the depth-enhanced GMH-D frameworks",
+   "year": "2023",
+   "first_author": "Gianluca Amprimo",
+   "version": "2308.01088v1",
+   "source": "arxiv/api"
+  },
+  "2308.10526": {
+   "exists": true,
+   "title": "UbiPhysio: Support Daily Functioning, Fitness, and Rehabilitation with Action Understanding and Feedback in Natural Language",
+   "year": "2023",
+   "first_author": "Chongyang Wang",
+   "version": "2308.10526v3",
+   "source": "arxiv/api"
+  },
+  "2308.12966": {
+   "exists": true,
+   "title": "Qwen-VL: A Versatile Vision-Language Model for Understanding, Localization, Text Reading, and Beyond",
+   "year": "2023",
+   "first_author": "Jinze Bai",
+   "version": "2308.12966v3",
+   "source": "arxiv/api"
+  },
+  "2310.02989": {
+   "exists": true,
+   "title": "xVal: A Continuous Numerical Tokenization for Scientific Language Models",
+   "year": "2023",
+   "first_author": "Siavash Golkar",
+   "version": "2310.02989v2",
+   "source": "arxiv/api"
+  },
+  "2310.11441": {
+   "exists": true,
+   "title": "Set-of-Mark Prompting Unleashes Extraordinary Visual Grounding in GPT-4V",
+   "year": "2023",
+   "first_author": "Jianwei Yang",
+   "version": "2310.11441v2",
+   "source": "arxiv/api"
+  },
+  "2312.00784": {
+   "exists": true,
+   "title": "ViP-LLaVA: Making Large Multimodal Models Understand Arbitrary Visual Prompts",
+   "year": "2023",
+   "first_author": "Mu Cai",
+   "version": "2312.00784v2",
+   "source": "arxiv/api"
+  },
+  "2312.05251": {
+   "exists": true,
+   "title": "Reconstructing Hands in 3D with Transformers",
+   "year": "2023",
+   "first_author": "Georgios Pavlakos",
+   "version": "2312.05251v1",
+   "source": "arxiv/api"
+  },
+  "2401.06209": {
+   "exists": true,
+   "title": "Eyes Wide Shut? Exploring the Visual Shortcomings of Multimodal LLMs",
+   "year": "2024",
+   "first_author": "Shengbang Tong",
+   "version": "2401.06209v2",
+   "source": "arxiv/api"
+  },
+  "2402.15610": {
+   "exists": true,
+   "title": "Selective \"Selective Prediction\": Reducing Unnecessary Abstention in Vision-Language Reasoning",
+   "year": "2024",
+   "first_author": "Tejas Srinivasan",
+   "version": "2402.15610v2",
+   "source": "arxiv/api"
+  },
+  "2403.00476": {
+   "exists": true,
+   "title": "TempCompass: Do Video LLMs Really Understand Videos?",
+   "year": "2024",
+   "first_author": "Yuanxin Liu",
+   "version": "2403.00476v3",
+   "source": "arxiv/api"
+  },
+  "2404.10227": {
+   "exists": true,
+   "title": "MS-MANO: Enabling Hand Pose Tracking with Biomechanical Constraints",
+   "year": "2024",
+   "first_author": "Pengfei Xie",
+   "version": "2404.10227v1",
+   "source": "arxiv/api"
+  },
+  "2407.08634": {
+   "exists": true,
+   "title": "RTMW: Real-Time Multi-Person 2D and 3D Whole-body Pose Estimation",
+   "year": "2024",
+   "first_author": "Tao Jiang",
+   "version": "2407.08634v1",
+   "source": "arxiv/api"
+  },
+  "2408.03326": {
+   "exists": true,
+   "title": "LLaVA-OneVision: Easy Visual Task Transfer",
+   "year": "2024",
+   "first_author": "Bo Li",
+   "version": "2408.03326v3",
+   "source": "arxiv/api"
+  },
+  "2409.12259": {
+   "exists": true,
+   "title": "WiLoR: End-to-end 3D Hand Localization and Reconstruction in-the-wild",
+   "year": "2024",
+   "first_author": "Rolandos Alexandros Potamias",
+   "version": "2409.12259v2",
+   "source": "arxiv/api"
+  },
+  "2409.18125": {
+   "exists": true,
+   "title": "LLaVA-3D: A Simple yet Effective Pathway to Empowering LMMs with 3D-awareness",
+   "year": "2024",
+   "first_author": "Chenming Zhu",
+   "version": "2409.18125v3",
+   "source": "arxiv/api"
+  },
+  "2411.14794": {
+   "exists": true,
+   "title": "VideoEspresso: A Large-Scale Chain-of-Thought Dataset for Fine-Grained Video Reasoning via Core Frame Selection",
+   "year": "2024",
+   "first_author": "Songhao Han",
+   "version": "2411.14794v1",
+   "source": "arxiv/api"
+  },
+  "2412.01537": {
+   "exists": true,
+   "title": "HandOS: 3D Hand Reconstruction in One Stage",
+   "year": "2024",
+   "first_author": "Xingyu Chen",
+   "version": "2412.01537v2",
+   "source": "arxiv/api"
+  },
+  "2501.02955": {
+   "exists": true,
+   "title": "MotionBench: Benchmarking and Improving Fine-grained Video Motion Understanding for Vision Language Models",
+   "year": "2025",
+   "first_author": "Wenyi Hong",
+   "version": "2501.02955v2",
+   "source": "arxiv/api"
+  },
+  "2502.06884": {
+   "exists": true,
+   "title": "Learning Conformal Abstention Policies for Adaptive Risk Management in Large Language and Vision-Language Models",
+   "year": "2025",
+   "first_author": "Sina Tayebati",
+   "version": "2502.06884v1",
+   "source": "arxiv/api"
+  },
+  "2503.12496": {
+   "exists": true,
+   "title": "Does Your Vision-Language Model Get Lost in the Long Video Sampling Dilemma?",
+   "year": "2025",
+   "first_author": "Tianyuan Qu",
+   "version": "2503.12496v2",
+   "source": "arxiv/api"
+  },
+  "2503.14935": {
+   "exists": true,
+   "title": "FAVOR-Bench: A Comprehensive Benchmark for Fine-Grained Video Motion Understanding",
+   "year": "2025",
+   "first_author": "Chongjun Tu",
+   "version": "2503.14935v1",
+   "source": "arxiv/api"
+  },
+  "2504.12921": {
+   "exists": true,
+   "title": "IdentiARAT: Toward Automated Identification of Individual ARAT Items from Wearable Sensors",
+   "year": "2025",
+   "first_author": "Daniel Homm",
+   "version": "2504.12921v1",
+   "source": "arxiv/api"
+  },
+  "2505.01680": {
+   "exists": true,
+   "title": "Automated ARAT Scoring Using Multimodal Video Analysis, Multi-View Fusion, and Hierarchical Bayesian Models: A Clinician Study",
+   "year": "2025",
+   "first_author": "Tamim Ahmed",
+   "version": "2505.01680v1",
+   "source": "arxiv/api"
+  },
+  "2505.15425": {
+   "exists": true,
+   "title": "On the Robustness of Medical Vision-Language Models: Are they Truly Generalizable?",
+   "year": "2025",
+   "first_author": "Raza Imam",
+   "version": "2505.15425v2",
+   "source": "arxiv/api"
+  },
+  "2505.18412": {
+   "exists": true,
+   "title": "Rehabilitation Exercise Quality Assessment and Feedback Generation Using Large Language Models with Prompt Engineering",
+   "year": "2025",
+   "first_author": "Jessica Tang",
+   "version": "2505.18412v1",
+   "source": "arxiv/api"
+  },
+  "2505.18465": {
+   "exists": true,
+   "title": "BiomechGPT: Extending Motion-Language Models to Clinical Motion Understanding",
+   "year": "2025",
+   "first_author": "Ruize Yang",
+   "version": "2505.18465v2",
+   "source": "arxiv/api"
+  },
+  "2506.02472": {
+   "exists": true,
+   "title": "HRTR: A Single-stage Transformer for Fine-grained Sub-second Action Segmentation in Stroke Rehabilitation",
+   "year": "2025",
+   "first_author": "Halil Ismail Helvaci",
+   "version": "2506.02472v2",
+   "source": "arxiv/api"
+  },
+  "2507.21188": {
+   "exists": true,
+   "title": "Embeddings to Diagnosis: Latent Fragility under Agentic Perturbations in Clinical LLMs",
+   "year": "2025",
+   "first_author": "Raj Krishnan Vijayaraj",
+   "version": "2507.21188v1",
+   "source": "arxiv/api"
+  },
+  "2509.01242": {
+   "exists": true,
+   "title": "Learning Correlation-aware Aleatoric Uncertainty for 3D Hand Pose Estimation",
+   "year": "2025",
+   "first_author": "Lee Chae-Yeon",
+   "version": "2509.01242v1",
+   "source": "arxiv/api"
+  },
+  "2510.00049": {
+   "exists": true,
+   "title": "AI-Based Stroke Rehabilitation Domiciliary Assessment System with ST_GCN Attention",
+   "year": "2025",
+   "first_author": "Suhyeon Lim",
+   "version": "2510.00049v2",
+   "source": "arxiv/api"
+  },
+  "2511.17727": {
+   "exists": true,
+   "title": "The Potential and Limitations of Vision-Language Models for Human Motion Understanding: A Case Study in Data-Driven Stroke Rehabilitation",
+   "year": "2025",
+   "first_author": "Victor Li",
+   "version": "2511.17727v1",
+   "source": "arxiv/api"
+  },
+  "2512.14017": {
+   "exists": true,
+   "title": "KFS-Bench: Comprehensive Evaluation of Key Frame Sampling in Long Video Understanding",
+   "year": "2025",
+   "first_author": "Zongyao Li",
+   "version": "2512.14017v1",
+   "source": "arxiv/api"
+  },
+  "2601.00138": {
+   "exists": true,
+   "title": "Explicit Abstention Knobs for Predictable Reliability in Video Question Answering",
+   "year": "2025",
+   "first_author": "Jorge Ortiz",
+   "version": "2601.00138v2",
+   "source": "arxiv/api"
+  },
+  "2603.07071": {
+   "exists": true,
+   "title": "VirtueBench: Evaluating Trustworthiness under Uncertainty in Long Video Understanding",
+   "year": "2026",
+   "first_author": "Xueqing Yu",
+   "version": "2603.07071v2",
+   "source": "arxiv/api"
+  },
+  "2603.08564": {
+   "exists": true,
+   "title": "BioGait-VLM: A Tri-Modal Vision-Language-Biomechanics Framework for Interpretable Clinical Gait Assessment",
+   "year": "2026",
+   "first_author": "Erdong Chen",
+   "version": "2603.08564v1",
+   "source": "arxiv/api"
+  },
+  "2603.18850": {
+   "exists": true,
+   "title": "HORNet: Task-Guided Frame Selection for Video Question Answering with Vision-Language Models",
+   "year": "2026",
+   "first_author": "Xiangyu Bai",
+   "version": "2603.18850v1",
+   "source": "arxiv/api"
+  },
+  "2605.07919": {
+   "exists": true,
+   "title": "MedVIGIL: Evaluating Trustworthy Medical VLMs Under Broken Visual Evidence",
+   "year": "2026",
+   "first_author": "Hanqi Jiang",
+   "version": "2605.07919v2",
+   "source": "arxiv/api"
+  },
+  "2605.16386": {
+   "exists": true,
+   "title": "Auditing Multimodal LLM Raters: Central Tendency Bias in Clinical Ordinal Scoring",
+   "year": "2026",
+   "first_author": "Jiaqing Zhang",
+   "version": "2605.16386v1",
+   "source": "arxiv/api"
+  },
+  "2605.17742": {
+   "exists": true,
+   "title": "UST-Hand: An Uncertainty-aware Spatiotemporal Point Cloud Interaction Network for 3D Self-supervised Hand Pose Estimation",
+   "year": "2026",
+   "first_author": "Tianhao Han",
+   "version": "2605.17742v1",
+   "source": "arxiv/api"
+  },
+  "2605.18553": {
+   "exists": true,
+   "title": "StableHand: Quality-Aware Flow Matching for World-Space Dual-Hand Motion Estimation from Egocentric Video",
+   "year": "2026",
+   "first_author": "Huajian Zeng",
+   "version": "2605.18553v1",
+   "source": "arxiv/api"
+  },
+  "2606.07237": {
+   "exists": true,
+   "title": "When Large Language Models Fail in Healthcare: Evaluating Sensitivity to Prompt Variations",
+   "year": "2026",
+   "first_author": "Mahdi Alkaeed",
+   "version": "2606.07237v1",
+   "source": "arxiv/api"
+  },
+  "2606.13028": {
+   "exists": true,
+   "title": "Comparing Commercial Depth Sensor Accuracy for Medical Applications",
+   "year": "2026",
+   "first_author": "Pit Henrich",
+   "version": "2606.13028v3",
+   "source": "arxiv/api"
+  },
+  "2606.15910": {
+   "exists": true,
+   "title": "Calibrated Triage, Not Autonomy: Confidence Estimation for Medical Vision-Language Models",
+   "year": "2026",
+   "first_author": "Reza Khanmohammadi",
+   "version": "2606.15910v2",
+   "source": "arxiv/api"
+  },
+  "2606.16667": {
+   "exists": true,
+   "title": "Look Again Before You Abstain:Budgeted Conformal Evidence Acquisition for Reliable Vision-Language Model",
+   "year": "2026",
+   "first_author": "Jian Xu",
+   "version": "2606.16667v4",
+   "source": "arxiv/api"
+  },
+  "2606.17427": {
+   "exists": true,
+   "title": "Impact of Hand Impairment and Occlusions on Hand Pose Estimation Accuracy in Augmented Reality Applications",
+   "year": "2026",
+   "first_author": "Damian M. Manzone",
+   "version": "2606.17427v1",
+   "source": "arxiv/api"
+  },
+  "2606.24960": {
+   "exists": true,
+   "title": "Enhancing Clinician Decision-Making via Uncertainty-Aware Multi-Expert Fusion for Stroke Rehabilitation",
+   "year": "2026",
+   "first_author": "Tamim Ahmed",
+   "version": "2606.24960v1",
+   "source": "arxiv/api"
+  },
+  "2606.25838": {
+   "exists": true,
+   "title": "Edges Before Embeddings: A Confidence-Aware Blur Gate for Vision-Language Pipelines",
+   "year": "2026",
+   "first_author": "Duy Tran Thanh",
+   "version": "2606.25838v1",
+   "source": "arxiv/api"
+  },
+  "2607.22034": {
+   "exists": true,
+   "title": "Small Vision-Language Models Know When They Are Wrong But Cannot Say So: A Two-Model Study of Stated versus Internal Confidence Under Realistic Image Degradation",
+   "year": "2026",
+   "first_author": "M M Asif Ferdous",
+   "version": "2607.22034v1",
+   "source": "arxiv/api"
+  },
+  "2607.23608": {
+   "exists": true,
+   "title": "Markerless Motion Capture in Routine Clinical Upper Limb Assessments: Validity and Insights Beyond Ordinal Scoring",
+   "year": "2026",
+   "first_author": "Tim Unger",
+   "version": "2607.23608v1",
+   "source": "arxiv/api"
+  },
+  "2607.24440": {
+   "exists": true,
+   "title": "Bigger or Cheaper? Scale and Quantization Effects on Uncertainty Signals in Vision-Language Models Under Image Degradation",
+   "year": "2026",
+   "first_author": "M M Asif Ferdous",
+   "version": "2607.24440v1",
+   "source": "arxiv/api"
+  },
+  "2608.02790": {
+   "exists": true,
+   "title": "Confident but Unreliable: A Behavioral Safety Audit of Vision-Language Models on Brain MRI",
+   "year": "2026",
+   "first_author": "Amir Sabbaghziarani",
+   "version": "2608.02790v1",
+   "source": "arxiv/api"
+  },
+  "2608.11574": {
+   "exists": true,
+   "title": "Hand Visibility Detector: Per-Keypoint Visibility Estimation for Hands",
+   "year": "2026",
+   "first_author": "Ryosei Hara",
+   "version": "2608.11574v1",
+   "source": "arxiv/api"
+  },
+  "2609.05540": {
+   "exists": true,
+   "title": "Knowing When Not to Answer: Abstention and Refusal Reasoning in Vision--Language Models",
+   "year": "2026",
+   "first_author": "Karan Dua",
+   "version": "2609.05540v1",
+   "source": "arxiv/api"
+  }
+ }
+}

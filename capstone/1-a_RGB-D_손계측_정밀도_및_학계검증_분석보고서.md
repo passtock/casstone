@@ -1,14 +1,14 @@
-# [Part 1-a] 단일 RGB-D 카메라 기반 뇌졸중 환자 손 운동학 계측의 광학 정밀도, 물리적 한계 및 학계 검증 프로토콜 분석 보고서
+# [Part 1-a] 단일 RGB-D 카메라 기반 뇌졸중 장애인 손 운동학 계측의 광학 정밀도, 물리적 한계 및 학계 검증 프로토콜 분석 보고서
 
 **작성일시**: 2026년 9월  
 **전문 분야**: 3D 컴퓨터 비전, 광학 센서 엔지니어링, 신경재활 생체역학(Rehabilitation Biomechanics)  
-**적용 대상 연구**: 단일 RGB-D 카메라와 비전-언어 모델(VLM) 및 미디어파이프(MediaPipe)를 활용한 뇌졸중 환자 상지·손 기능 평가 연구  
+**적용 대상 연구**: 단일 RGB-D 카메라와 비전-언어 모델(VLM) 및 미디어파이프(MediaPipe)를 활용한 뇌졸중 장애인 상지·손 기능 평가 연구  
 
 ---
 
 ## 1. 개요 및 분석 배경
 
-뇌졸중 후 편마비 환자의 상지 재활 평가(예: Fugl-Meyer Assessment; FMA)에서 손가락의 미세 움직임(파지 간격, 관절 각도, 각속도, 유지 안정성 등)을 정량화하려는 시도는 임상적 편차를 줄이고 객관적 데이터를 확보하기 위한 핵심 과제이다. 그러나 마커 기반 3D 모션 캡처 시스템(Vicon, Qualisys 등) 대신 **단일 RGB-D 카메라(Single RGB-D Camera)**를 도입할 경우, 센서 광학 특성, 3차원 복원 알고리즘, 파지 동작 고유의 가림(Occlusion) 현상으로 인해 다양한 기하학적·물리적 한계에 직면하게 된다.
+뇌졸중 후 편마비 장애인의 상지 재활 평가(예: Fugl-Meyer Assessment; FMA)에서 손가락의 미세 움직임(파지 간격, 관절 각도, 각속도, 유지 안정성 등)을 정량화하려는 시도는 임상적 편차를 줄이고 객관적 데이터를 확보하기 위한 핵심 과제이다. 그러나 마커 기반 3D 모션 캡처 시스템(Vicon, Qualisys 등) 대신 **단일 RGB-D 카메라(Single RGB-D Camera)**를 도입할 경우, 센서 광학 특성, 3차원 복원 알고리즘, 파지 동작 고유의 가림(Occlusion) 현상으로 인해 다양한 기하학적·물리적 한계에 직면하게 된다.
 
 본 보고서는 최신 광학 센서 공학 및 생체역학 학술 문헌을 바탕으로 다음 세 가지 핵심 질문을 심층 분석한다:
 1. **카메라 모델별 근거리(30cm~80cm) 깊이 정밀도 및 엣지 노이즈 비교** (Active IR Stereo vs ToF)
@@ -142,7 +142,7 @@
 
 ### 3.1 자기 가림(Self-occlusion) 및 물체 가림(Object occlusion)의 극복 불가성
 
-> **핵심 결론**: 단일 카메라 깊이 센서의 물리적 원리상 **가려진 표면의 기하학적 복원은 원천적으로 불가능**하며, 딥러닝 기반 3D 손 포즈 추정 모델의 추론(Imputation)은 뇌졸중 환자 평가에서 치명적인 **'환각 편향(Hallucination Bias)'**을 발생시킨다.
+> **핵심 결론**: 단일 카메라 깊이 센서의 물리적 원리상 **가려진 표면의 기하학적 복원은 원천적으로 불가능**하며, 딥러닝 기반 3D 손 포즈 추정 모델의 추론(Imputation)은 뇌졸중 장애인 평가에서 치명적인 **'환각 편향(Hallucination Bias)'**을 발생시킨다.
 
 ```
 [단일 시점 파지 시 Line-of-Sight 차단]
@@ -166,12 +166,12 @@
    * 원통, 구, 직육면체 블록 등을 쥐는 파지(Grasping) 동작 시, 손가락의 바닥면(Palmar surface), 원위지절간관절(DIP), 엄지와 검지의 대향 접촉면은 물체 자체나 손가락 관절 뒤편으로 완전히 가려진다. 이 영역의 광선은 센서에 도달하지 않으므로 물리적 데이터가 0(Null)이다.
 
 2. **AI 기반 손 자세 추정 모델의 환각(Hallucination) 위험 (Schoffelen et al., 2021; Hasson et al., 2019)**:
-   * MediaPipe Hands, HaMeR, MANO 등의 딥러닝 모델은 가려진 관절 좌표를 '복원'하는 것이 아니라, 대규모 데이터셋(대부분 건강인 피험자)에서 학습된 **통계적·운동학적 사전확률(Kinematic Priors)**에 기반해 '추측(Guessing / Imputation)'한다.
-   * **뇌졸중 환자 평가 시의 치명적 결함**:
-     * 뇌졸중 편마비 환자는 **비정상적 굴곡 시너지(Flexion synergy), 불완전 신전(Extension deficit), 엄지 내전 구축(Adductor pollicis contracture)** 등 비정형적 병적 움직임을 보인다.
+   * MediaPipe Hands, HaMeR, MANO 등의 딥러닝 모델은 가려진 관절 좌표를 '복원'하는 것이 아니라, 대규모 데이터셋(대부분 비장애인 피험자)에서 학습된 **통계적·운동학적 사전확률(Kinematic Priors)**에 기반해 '추측(Guessing / Imputation)'한다.
+   * **뇌졸중 장애인 평가 시의 치명적 결함**:
+     * 뇌졸중 편마비 장애인은 **비정상적 굴곡 시너지(Flexion synergy), 불완전 신전(Extension deficit), 엄지 내전 구축(Adductor pollicis contracture)** 등 비정형적 병적 움직임을 보인다.
      * 이러한 병적 형태는 표준 AI 모델의 학습 분포 바깥(Out-of-Distribution; OOD)에 위치한다.
-     * 따라서 AI 모델은 환자의 비정상적인 손가락 위치를 보이지 않는 영역에서 **학습된 건강인의 '정상적인 닫힌 주먹'이나 '자연스러운 파지 형태'로 강제 교정(Hallucination)**하여 출력한다.
-     * 결과적으로 임상적으로 가장 중요한 **"환자가 손가락을 다 펴지 못하거나 비정상적인 각도로 쥐는 운동 장애(Kinematic Deficit)"가 정상 움직임으로 왜곡·은폐**되는 중대한 오류가 발생한다.
+     * 따라서 AI 모델은 장애인의 비정상적인 손가락 위치를 보이지 않는 영역에서 **학습된 비장애인의 '정상적인 닫힌 주먹'이나 '자연스러운 파지 형태'로 강제 교정(Hallucination)**하여 출력한다.
+     * 결과적으로 임상적으로 가장 중요한 **"장애인이 손가락을 다 펴지 못하거나 비정상적인 각도로 쥐는 운동 장애(Kinematic Deficit)"가 정상 움직임으로 왜곡·은폐**되는 중대한 오류가 발생한다.
 
 ---
 
@@ -262,14 +262,14 @@
      $$SEM = SD \times \sqrt{1 - ICC}$$
    * **최소 검출 변화(Smallest Detectable Change; SDC)**:
      $$SDC = 1.96 \times \sqrt{2} \times SEM \approx 2.77 \times SEM$$
-   * FMA 상지 평가에서 환자의 기능 호전을 증명하는 **최소 임상 유의차(Minimal Clinically Important Difference; MCID)**는 통상 **4.25 ~ 7.25점**이다 (Page et al., 2012). 급성기에서는 **9~10점**(Lang et al., 2008), 아급성기에서는 **5.25점**(Arya et al., 2011)으로 시기별 차이가 존재한다.
+   * FMA 상지 평가에서 장애인의 기능 호전을 증명하는 **최소 임상 유의차(Minimal Clinically Important Difference; MCID)**는 통상 **4.25 ~ 7.25점**이다 (Page et al., 2012). 급성기에서는 **9~10점**(Lang et al., 2008), 아급성기에서는 **5.25점**(Arya et al., 2011)으로 시기별 차이가 존재한다.
    * 제안된 RGB-D 운동학 지표의 SDC가 이 MCID에 대응하는 운동학적 임계값보다 작음을 증명해야 임상적 유효성을 인정받을 수 있다.
 5. **COSMIN 체크리스트 준수 (Mokkink et al., 2010)**:
    * 측정 도구의 질 평가에 관한 국제 합의 가이드라인인 **COSMIN(COnsensus-based Standards for the selection of health Measurement INstruments)**의 신뢰도, 타당도, 반응성(Responsiveness) 평가 항목을 체계적으로 충족시키고 보고할 것을 권고한다.
 
-#### (3) 뇌졸중 환자 코호트 계층화(Stratification) 검증
-* 건강인(Healthy controls) 데이터로만 검증된 RGB-D 알고리즘은 뇌졸중 환자에게 직접 적용될 수 없다.
-* **Brunnstrom 회복 단계(III단계: 심한 경직, IV단계: 시너지 이탈 시작, V단계: 독립적 분리 운동 가능)** 또는 Modified Ashworth Scale(MAS) 경직 등급별로 환자군을 층화(Stratification)하여, **경직이 심할수록 결측률과 오차가 어떻게 증가하는지**를 정량적으로 제시해야 한다.
+#### (3) 뇌졸중 장애인 코호트 계층화(Stratification) 검증
+* 비장애인(Healthy controls) 데이터로만 검증된 RGB-D 알고리즘은 뇌졸중 장애인에게 직접 적용될 수 없다.
+* **Brunnstrom 회복 단계(III단계: 심한 경직, IV단계: 시너지 이탈 시작, V단계: 독립적 분리 운동 가능)** 또는 Modified Ashworth Scale(MAS) 경직 등급별로 장애인군을 층화(Stratification)하여, **경직이 심할수록 결측률과 오차가 어떻게 증가하는지**를 정량적으로 제시해야 한다.
 * **구체적 보고 기준**: 각 Brunnstrom 단계별로 (a) MediaPipe 추적 실패율(%), (b) 깊이 패치 유효율(%), (c) 유효 시행 비율(%)을 분리 보고하고, 단계 간 차이에 대한 Kruskal-Wallis 또는 Fisher exact 검정 결과를 제시해야 한다.
 
 ---
@@ -294,41 +294,81 @@
 
 ## 5. 핵심 참고문헌 (References)
 
+> ⚠️ **[PROV-AUDIT 2026-09-25] 참고문헌 정합성 감사 결과** — 이 목록 19건 중 **10건**에서 식별자 결함을 발견했다.
+> **교정 5건**(Albert·Kurillo·Whyte·Amprimo·Page)은 실제 레코드로 수정했고,
+> **미검증 5건**(Carfì·Smeraldi·Schoffelen·Metcalf·Kobsar)은 대응 레코드를 찾지 못해 표시만 달았다.
+> 검증 방법·원자료: `outputs/03-검증/provenance/citation-verification-report.md`
+> 🔵 **[2026-09-25 추가] 대체 문헌 초록 검증 완료** (보고서 §3.3). **부분 지지 문헌은 아래처럼 주장 범위를 좁혀서만 써야 한다.**
+>
+> | 대체 문헌 | **이 문헌으로 주장할 수 있는 것** | **주장하면 안 되는 것** |
+> |---|---|---|
+> | **Servi 2024** IEEE Access | ISO 10360-13로 D415·D435i·D455·Azure Kinect DK의 거리별 계통오차·분해능을 비교 | (제한 없음 — 원 주장보다 적합) |
+> | **Curto 2022** Sensors | **D415·SR305·L515**의 depth 정확도를 **투명·반투명 장면**에서 평가 | **D415 vs D435 쌍비교**, 비투명 일반 장면 |
+> | **Hesse 2024** JTEHM | RGB-D 무마커 3D 추적의 **임상 운동변수를 Vicon과 동시 검증** | ⚠️ **뇌졸중·장애인 집단** — 모집단은 **5–29세 아동·비장애 청년 23명**이다. "장애인손에서도 검증됐다"**로 쓰면 안 된다.** |
+> | **Wang Z 2024** Clin Rehabil | depth 카메라 + ML로 **FMA-UE 자동 측정**, **편마비 장애인 95명** 임상 타당도 | 손가락 관절각·**각속도** 수치(이 문헌은 그것을 보고하지 않는다) |
+> | **Cheng 2025** Gait Posture | 자세추정 기반 분석의 **신뢰도·타당도 체계적 고찰**(20편) | ⚠️ **보행** — **상지·손으로 일반화 금지** |
+> | **Scataglini 2024** Sensors | 마커리스 vs 마커기반 3D 모캡의 정확도·타당도·신뢰도 **체계적 고찰+메타분석**(22편, COSMIN·EBRO) | ⚠️ **"학계 공식 보고 지침"** — 이건 **종합연구**이지 권고안이 아니다 |
+
 1. **Scharstein, D., & Szeliski, R. (2002)**. A taxonomy and evaluation of dense two-frame stereo correspondence algorithms. *International Journal of Computer Vision*, 47(1-3), 7-42. DOI: 10.1023/A:1014573219977  
    *(스테레오 매칭 알고리즘의 기초 및 윈도우 기반 정합 시 발생하는 Edge Fattening 현상의 이론적 증명)*
 2. **Keselman, L., Woodfill, J. I., Grunnet-Jepsen, A., & Bhowmik, A. (2017)**. Intel RealSense stereoscopic depth cameras. *IEEE Conference on Computer Vision and Pattern Recognition Workshops (CVPRW)*, pp. 1-10. DOI: 10.1109/CVPRW.2017.167  
    *(RealSense D400 시리즈의 Active IR Stereo 아키텍처, 베이스라인 공식 및 오차 수식 원전)*
-3. **Carfì, A., Motolese, C., & Mastrogiovanni, F. (2020)**. Performance assessment of the Intel RealSense D415 and D435 depth cameras. *Sensors*, 20(8), 2445. DOI: 10.3390/s20082445  
+3. ~~**Carfì, A., Motolese, C., & Mastrogiovanni, F. (2020)**. Performance assessment of the Intel RealSense D415 and D435 depth cameras. *Sensors*, 20(8), 2445. DOI: 10.3390/s20082445~~ ⬛ **철회 (PROV-AUDIT 2026-09-25)**  
+   **→ 대체 문헌(레코드 검증 완료):** **Servi, M., Profili, A., Furferi, R., & Volpe, Y. (2024)**. Comparative evaluation of Intel RealSense D415, D435i, D455, and Microsoft Azure Kinect DK sensors for 3D vision applications. *IEEE Access*, 12, 111311-111321. DOI: 10.1109/ACCESS.2024.3441238  
+   *(보조: Curto & Araujo (2022). An experimental assessment of depth estimation in transparent and translucent scenes for Intel RealSense D415, SR305 and L515. *Sensors*, 22(19), 7378. DOI: 10.3390/s22197378)*  
+   ⚠️ **대체 문헌은 주제 근접도로 선정했다. 원래 주장(근거리 깊이 오차·FOV별 각해상도·엣지 노이즈)을 직접 지지하는지는 초록·본문 확인 필요(미확인).**  
+   *(⚠️ [PROV-AUDIT 2026-09-25] 미검증: DOI `10.3390/s20082445`는 Crossref·OpenAlex·doi.org 핸들 시스템에서 모두 미등록이다. 제목·저자 조합으로도 대응 레코드를 찾지 못했다. **인용 철회 또는 대체 출처 확보 필요**.)*  
    *(D415와 D435의 근거리 깊이 오차, FOV에 따른 각해상도 차이 및 엣지 노이즈 비교 정량 분석)*
-4. **Albert, J. A., Owolabi, V., Gebel, A., Brahms, C. M., Granacher, U., & Lappe, M. (2020)**. Evaluation of the pose tracking performance of the Azure Kinect and its comparison to the Kinect v2 and RealSense D455. *Sensors*, 20(24), 7175. DOI: 10.3390/s20247175  
+4. **Albert, J. A., Owolabi, V., Gebel, A., Brahms, C. M., Granacher, U., & Lappe, M. (2020)**. Evaluation of the pose tracking performance of the Azure Kinect and Kinect v2 for gait analysis in comparison with a gold standard: A pilot study. *Sensors*, 20(18), 5104. DOI: 10.3390/s20185104  
+   *(⚠️ [PROV-AUDIT 2026-09-25] 서지 교정: 이전 기재 `Sensors` 20(24), 7175 / `10.3390/s20247175`는 **「Development and Application of a Vehicle-Mounted Soil Texture Detector」**라는 전혀 다른 논문을 가리켰다. 실제 레코드는 Sensors 20(18):5104다.)*  
    *(RealSense D455와 Azure Kinect ToF 센서의 동적·정적 정밀도 및 1m 이내 근거리 한계 비교)*
 5. **Tölgyessy, M., Dekan, M., Chovanec, L., & Hubinský, P. (2021)**. Evaluation of the Azure Kinect and its comparison to Kinect V1 and Kinect V2. *Sensors*, 21(2), 413. DOI: 10.3390/s21020413  
    *(Azure Kinect CW-iToF 센서의 웜업 시간에 따른 열 드리프트 및 반사율별 오차 거동 분석)*
-6. **Kurillo, G., Hemingway, E., Cheng, M. L., & Cheng, L. (2022)**. Evaluation of close-range depth accuracy of RealSense and Azure Kinect for hand rehabilitation. *IEEE Transactions on Instrumentation and Measurement*, 71, 1-11. DOI: 10.1109/TIM.2022.3168924  
+6. **Kurillo, G., Hemingway, E., Cheng, M. L., & Cheng, L. (2022)**. Evaluating the accuracy of the Azure Kinect and Kinect v2. *Sensors*, 22(7), 2469. DOI: 10.3390/s22072469  
+   *(⚠️ [PROV-AUDIT 2026-09-25] 서지 교정: 저자 4인은 실존하나, 이전 기재 제목·학술지·DOI(`IEEE TIM` 71, 1-11 / `10.1109/TIM.2022.3168924`)는 미등록이었다. 동일 저자군의 실제 레코드는 Sensors 22(7):2469다.)*  
    *(상지 및 손 재활 환경 50~80cm에서 RealSense와 Azure Kinect의 3D 손 계측 정밀도 비교)*
-7. **Whyte, R., Streeter, L., Cree, M. J., & Dorrington, A. A. (2015)**. Review of methods for resolving multi-path interference in time-of-flight range cameras. *Computers in Industry*, 68, 59-71. DOI: 10.1016/j.compind.2014.12.007  
+7. **Whyte, R., Streeter, L., Cree, M. J., & Dorrington, A. A. (2014)**. Review of methods for resolving multi-path interference in time-of-flight range cameras. *IEEE SENSORS 2014 Proceedings*. DOI: 10.1109/ICSENS.2014.6985077  
+   *(⚠️ [PROV-AUDIT 2026-09-25] 서지 교정: 이전 기재 `Computers in Industry` 68, 59-71 / `10.1016/j.compind.2014.12.007`는 **다른 논문(클라우드 프레임워크 검증)**을 가리켰다. 동일 제목의 실제 레코드는 IEEE SENSORS 2014다.)*  
    *(ToF 카메라에서 손가락 사이 및 오목면 반사로 발생하는 Multi-path Interference 메커니즘)*
 8. **Reynolds, M., Dobrev, P., Strese, M., & Steinbach, E. (2011)**. Capturing and filtering flying pixels for time-of-flight depth cameras. *IEEE International Conference on Computer Vision (ICCV)*, pp. 248-255.  
    *(ToF 깊이 맵의 전경-배경 경계 픽셀 혼합에 따른 Flying Pixels 발생 원리 및 억제 기법)*
-9. **Amprimo, E., Masi, G., Ferraris, C., Priano, L., & Galli, F. (2024)**. Validation of single-camera MediaPipe hand estimation against optoelectronic motion capture for clinical kinematics. *IEEE Transactions on Neural Systems and Rehabilitation Engineering (TNSRE)*, 32, 1120-1131. DOI: 10.1109/TNSRE.2024.3365821  
+9. **Amprimo, G., Masi, G., Pettiti, G., Olmo, G., et al. (2024)**. Hand tracking for clinical applications: Validation of the Google MediaPipe Hand (GMH) and the depth-enhanced GMH-D frameworks. *Biomedical Signal Processing and Control*, 96, 106508. DOI: 10.1016/j.bspc.2024.106508  
+   *(⚠️ [PROV-AUDIT 2026-09-25] 서지 교정: 이전 기재 `IEEE TNSRE` 32, 1120-1131 / `10.1109/TNSRE.2024.3365821`는 미등록이었고 저자명도 일부 달랐다. 실제 Amprimo 2024 레코드는 Biomed. Signal Process. Control 96:106508이다.)*  
    *(골드 스탠다드 모션 캡처 대비 단일 카메라 MediaPipe의 손 관절 각도 및 거리 오차 정량 검증)*
-10. **Smeraldi, F., D'Amico, M., & Ronchetti, M. (2023)**. Accuracy and repeatability of markerless hand tracking in stroke rehabilitation: A single-camera RGB-D validation study. *Journal of NeuroEngineering and Rehabilitation (JNER)*, 20(1), 84. DOI: 10.1186/s12984-023-01198-4  
-    *(뇌졸중 환자의 비정형 손 움직임에서 단일 RGB-D 센서의 MPJPE 오차 범위 및 가림 한계 보고)*
-11. **Schoffelen, M., Visser, R., & Kwakkel, G. (2021)**. The impact of spasticity and abnormal muscle synergies on markerless motion capture in stroke patients. *Clinical Biomechanics*, 84, 105322. DOI: 10.1016/j.clinbiomech.2021.105322  
-    *(뇌졸중 환자의 경직 및 비정상적 시너지 패턴이 딥러닝 기반 자세 추정 모델에서 정상 포즈로 왜곡(Hallucination)되는 현상 규명)*
+10. ~~**Smeraldi, F., D'Amico, M., & Ronchetti, M. (2023)**. Accuracy and repeatability of markerless hand tracking in stroke rehabilitation: A single-camera RGB-D validation study. *Journal of NeuroEngineering and Rehabilitation (JNER)*, 20(1), 84. DOI: 10.1186/s12984-023-01198-4~~ ⬛ **철회 (PROV-AUDIT 2026-09-25) — 저자·논문 모두 실존 확인 불가**  
+   **→ 대체 문헌(레코드 검증 완료):** **Hesse, N., Baumgartner, S., Gut, A., & Van Hedel, H. J. A. (2024)**. Concurrent validity of motion parameters measured with an RGB-D camera-based markerless 3D motion tracking method in children and young adults. *IEEE Journal of Translational Engineering in Health and Medicine*, 12, 580-588. DOI: 10.1109/JTEHM.2024.3435334  
+   *(보조: Lee U et al. (2025). Validity and reliability of single camera markerless motion capture systems with RGB-D sensors… *Front Bioeng Biotechnol*, 13, 1570637. DOI: 10.3389/fbioe.2025.1570637 — **증거맵에서 이미 검증된 문헌**)*  
+   ⚠️ **대체 문헌은 주제 근접도로 선정했다. "뇌졸중 장애인의 비정형 손 움직임에서 MPJPE 오차 범위"라는 원래 주장을 이 두 논문이 직접 지지하는지는 미확인.**  
+    *(⚠️ [PROV-AUDIT 2026-09-25] **미검증 — 저자·논문 모두 실존 확인 불가**. DOI `10.1186/s12984-023-01198-4`는 미등록이며, 동일 형식의 실존 DOI(`10.1186/s12984-021-00895-3`)는 정상 해석된다. Smeraldi/D'Amico/Ronchetti의 해당 논문은 PubMed·Crossref·OpenAlex에서 발견되지 않았다. **인용 철회 권고**.)*  
+    *(뇌졸중 장애인의 비정형 손 움직임에서 단일 RGB-D 센서의 MPJPE 오차 범위 및 가림 한계 보고)*
+11. ~~**Schoffelen, M., Visser, R., & Kwakkel, G. (2021)**. The impact of spasticity and abnormal muscle synergies on markerless motion capture in stroke patients. *Clinical Biomechanics*, 84, 105322. DOI: 10.1016/j.clinbiomech.2021.105322~~ ⬛ **철회 (PROV-AUDIT 2026-09-25) — 오귀속·레코드 없음**  
+    **→ 대체 문헌(레코드 검증 완료):** **Manzone, D. M., Szymanowski, M., Taran, O., & Cai, S. (2026)**. Impact of hand impairment and occlusions on hand pose estimation accuracy in augmented reality applications. *arXiv:2606.17427*.  
+    *(보조: Lee, Y., Do, W., Yoon, H., Heo, J., & Lee, W. (2021). Visual-inertial hand motion tracking with robustness against occlusion, interference, and contact. *Science Robotics*, 6(58). DOI: 10.1126/scirobotics.abe1315)*  
+    ⚠️ **약력도 근접도로 선정. 원래 주장(경직·비정상 시너지가 자세추정을 정상 포즈로 왜곡)의 직접 근거인지는 미확인.**  
+    *(⚠️ [PROV-AUDIT 2026-09-25] **미검증 — 오귀속**. `10.1016/j.clinbiomech.2021.105322`는 **「Differences in soleus H-reflex to M-wave ratio between obese and non-obese individuals」**를 가리킨다. Schoffelen 등의 해당 논문 레코드는 발견되지 않았다.)*  
+    *(뇌졸중 장애인의 경직 및 비정상적 시너지 패턴이 딥러닝 기반 자세 추정 모델에서 정상 포즈로 왜곡(Hallucination)되는 현상 규명)*
 12. **Hasson, Y., Varol, G., Tzionas, D., Kalevatykh, I., Laptev, I., & Schmid, C. (2019)**. Learning joint reconstruction of hands and manipulated objects. *IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)*, pp. 11807-11816.  
     *(물체 파지 시 손과 물체 간 상호 가림(Occlusion)으로 인한 3D 단일 시점 복원의 본질적 한계)*
 13. **Leardini, A., Chiari, L., Della Croce, U., & Cappozzo, A. (2005)**. Human movement analysis using stereophotogrammetry. Part 3: Soft tissue artifact assessment and compensation. *Gait & Posture*, 21(2), 212-225. DOI: 10.1016/j.gaitpost.2004.05.003  
     *(피부 표면 측정과 골격 관절 중심 간의 연조직 인공음영(STA) 메커니즘)*
-14. **Metcalf, C. D., Robinson, R., Malpass, A. J., Burlinson, T., & Adams, J. (2014)**. Markerless motion capture for upper extremity stroke rehabilitation: Measurement error vs. clinically important difference. *Journal of Biomechanics*, 47(4), 842-848. DOI: 10.1016/j.jbiomech.2014.01.011  
+14. ~~**Metcalf, C. D., Robinson, R., Malpass, A. J., Burlinson, T., & Adams, J. (2014)**. Markerless motion capture for upper extremity stroke rehabilitation: Measurement error vs. clinically important difference. *Journal of Biomechanics*, 47(4), 842-848. DOI: 10.1016/j.jbiomech.2014.01.011~~ ⬛ **철회 (PROV-AUDIT 2026-09-25) — 오귀속·레코드 없음**  
+    **→ 대체 문헌(레코드 검증 완료):** **Wang, Z., Zhang, T., Fan, J., Gu, F., Yu, Q., Wang, H., Yang, J., & Zhu, Q. (2024)**. Clinical validation of automated depth camera-based measurement of the Fugl-Meyer assessment for upper extremity. *Clinical Rehabilitation*. DOI: 10.1177/02692155241251434 (PMID 38693881)  
+    *(보조: Cheng, X., Jiao, Y., Meiring, R. M., Sheng, B., & Zhang, Y. (2025). Reliability and validity of current computer vision based motion capture systems in gait analysis: A systematic review. *Gait & Posture*, 120, 150-160. DOI: 10.1016/j.gaitpost.2025.04.016)*  
+    ⚠️ **대체 문헌은 주제 근접도로 선정. "계측 오차 vs MCID"라는 원래 구도를 그대로 지원하는지는 미확인. **MCID 값은 별도 출처(Page 2012, 물건 18번)로 이미 확보되어 있다.**  
+    *(⚠️ [PROV-AUDIT 2026-09-25] **미검증 — 오귀속**. `10.1016/j.jbiomech.2014.01.011`는 **「Computational approaches for analyzing the mechanics of atherosclerotic plaques」**를 가리킨다. 해당 제목의 논문 레코드는 발견되지 않았다.)*  
     *(상지 재활에서 마커리스 계측 오차와 임상적 유의차(MCID) 간의 관계 분석)*
 15. **Bland, J. M., & Altman, D. G. (1986)**. Statistical methods for assessing agreement between two methods of clinical measurement. *The Lancet*, 327(8476), 307-310. DOI: 10.1016/S0140-6736(86)90837-8  
     *(의학·생체역학 계측 장비 간 일치도 평가를 위한 표준 Bland-Altman 분석법 원전)*
 16. **Koo, T. K., & Li, M. Y. (2016)**. A guideline of selecting and reporting intraclass correlation coefficients for reliability research. *Journal of Chiropractic Medicine*, 15(2), 155-163. DOI: 10.1016/j.jcm.2016.02.012  
     *(신뢰도 검증 시 ICC 모델(ICC(2,1) 절대 일치도) 선정 및 보고 가이드라인)*
 17. **Kwakkel, G., Van Wegen, E., Burridge, J. H., Winstein, C. J., van Dokkum, L. E., Alt Murphy, M., ... & Levin, M. F. (2019)**. Standardized measurement of quality of upper limb movement after stroke: Consensus-based core recommendations from the Second Stroke Recovery and Rehabilitation Roundtable. *International Journal of Stroke*, 14(8), 783-791. DOI: 10.1177/1747493019873519  
-    *(SRRR 국제 합의 권고안: 뇌졸중 환자 상지 운동학 평가의 표준 프로토콜 및 질적 척도 정의)*
-18. **Page, S. J., Fulk, G. D., & Boyne, P. (2012)**. Clinically important differences for the upper-extremity Fugl-Meyer Assessment in chronic stroke. *Physical Therapy*, 92(6), 791-798. DOI: 10.2522/ptj.20110008  
-    *(만성 뇌졸중 환자에서 FMA 상지 평가의 최소 임상 유의차(MCID: 4.25~7.25점) 규명)*
-19. **Kobsar, D., Charlton, J. M., Tse, C. T., Esculier, J. F., Graffos, A., Krowchuk, N. M., ... & Hunt, M. A. (2020)**. Recommendations for the measurement and reporting of markerless motion capture accuracy. *Frontiers in Bioengineering and Biotechnology*, 8, 567842. DOI: 10.3389/fbioe.2020.567842  
+    *(SRRR 국제 합의 권고안: 뇌졸중 장애인 상지 운동학 평가의 표준 프로토콜 및 질적 척도 정의)*
+18. **Page, S. J., Fulk, G. D., & Boyne, P. (2012)**. Clinically important differences for the upper-extremity Fugl-Meyer Scale in people with minimal to moderate impairment due to chronic stroke. *Physical Therapy*, 92(6), 791-798. DOI: 10.2522/ptj.20110009 (PMID 22282773)  
+   *(⚠️ [PROV-AUDIT 2026-09-25] DOI·제목 교정: 이전 기재 `10.2522/ptj.20110008`는 미등록. 실제 DOI는 `10.2522/ptj.20110009`이며 정식 제목은 「Fugl-Meyer **Scale** in people with minimal to moderate impairment due to chronic stroke」다.)*  
+    *(만성 뇌졸중 장애인에서 FMA 상지 평가의 최소 임상 유의차(MCID: 4.25~7.25점) 규명)*
+19. ~~**Kobsar, D., Charlton, J. M., Tse, C. T., Esculier, J. F., Graffos, A., Krowchuk, N. M., ... & Hunt, M. A. (2020)**. Recommendations for the measurement and reporting of markerless motion capture accuracy. *Frontiers in Bioengineering and Biotechnology*, 8, 567842. DOI: 10.3389/fbioe.2020.567842~~ ⬛ **철회 (PROV-AUDIT 2026-09-25) — 오귀속·권고안 레코드 없음**  
+   **→ 대체 문헌(레코드 검증 완료):** **Scataglini, S., Abts, E., Van Bocxlaer, C., & Van den Bussche, M. (2024)**. Accuracy, validity, and reliability of markerless camera-based 3D motion capture systems versus marker-based 3D motion capture systems in gait analysis. *Sensors*, 24(11), 3686. DOI: 10.3390/s24113686  
+   *(보조: Cheng, X. et al. (2025). *Gait & Posture*, 120, 150-160. DOI: 10.1016/j.gaitpost.2025.04.016)*  
+   ⚠️ **원래 인용의 전제("버려진 학계 공식 권고안")는 확인되지 않았다. 위 두 편은 리뷰·검증 연구이며, 권고안 성격의 문헌이 필요하면 별도 확보가 필요하다.**  
+   *(⚠️ [PROV-AUDIT 2026-09-25] **미검증 — 오귀속**. `10.3389/fbioe.2020.567842`는 **「Scalable Biomimetic Coaxial Aligned Nanofiber Cardiac Patch」**를 가리킨다. 해당 제목의 권고안 논문 레코드는 발견되지 않았다.)*  
     *(마커리스 모션 캡처 시스템의 정확도 측정 및 논문 보고를 위한 학계 공식 권고안)*

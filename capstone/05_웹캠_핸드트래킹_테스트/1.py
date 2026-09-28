@@ -822,7 +822,7 @@ class CapstoneClinicalApp(QMainWindow):
         # 1. 피험자 구분
         group_type = QGroupBox("1. 피험자 구분 (Subject Group)")
         gt_layout = QHBoxLayout(group_type)
-        self.rb_patient = QRadioButton("편마비 환자군 (Patient)")
+        self.rb_patient = QRadioButton("편마비 장애인군 (Patient)")
         self.rb_healthy = QRadioButton("정상인 대조군 (Healthy)")
         self.rb_patient.setChecked(True)
         self.btn_group_type = QButtonGroup(self)
@@ -1080,7 +1080,7 @@ class CapstoneClinicalApp(QMainWindow):
         else:
             self.group_clinical.setEnabled(True)
             self.group_clinical.setTitle("3. 임상 재활 척도 (Clinical Scales)")
-            self.show_toast("피험자 군 설정: [편마비 환자군]")
+            self.show_toast("피험자 군 설정: [편마비 장애인군]")
 
     def make_subject_folder(self):
         date_str = datetime.now().strftime("%Y%m%d")

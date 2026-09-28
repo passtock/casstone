@@ -74,7 +74,7 @@ def make_fig_hallucination():
     # Draw Hand overlapping
     hand = patches.Rectangle((3.5, 4.0), 3.0, 3.0, facecolor='#FCA5A5', edgecolor='#DC2626', linewidth=2, alpha=0.7)
     ax1.add_patch(hand)
-    ax1.text(4.2, 6.2, '환자 손 (Hand)', ha='center', va='center', fontsize=10, fontweight='bold', color='#991B1B')
+    ax1.text(4.2, 6.2, '장애인 손 (Hand)', ha='center', va='center', fontsize=10, fontweight='bold', color='#991B1B')
 
     ax1.text(5.0, 1.2, '[2D 오판] 화면상 겹침 발생\n→ VLM: "파지 완료" 허위 판독 (환각!)',
              ha='center', va='center', fontsize=10.5, fontweight='bold', color='#DC2626',
@@ -95,7 +95,7 @@ def make_fig_hallucination():
     # Draw Hand in 3D (separated by 10cm)
     hand3d = patches.Rectangle((3.8, 2.5), 2.4, 1.8, facecolor='#86EFAC', edgecolor='#15803D', linewidth=2)
     ax2.add_patch(hand3d)
-    ax2.text(5.0, 3.4, '환자 손\nZ=65cm', ha='center', va='center', fontsize=9.5, fontweight='bold', color='#14532D')
+    ax2.text(5.0, 3.4, '장애인 손\nZ=65cm', ha='center', va='center', fontsize=9.5, fontweight='bold', color='#14532D')
 
     # Arrow showing gap
     ax2.annotate('', xy=(5.0, 5.8), xytext=(5.0, 4.3),
@@ -123,7 +123,7 @@ def make_fig_engineering():
 
     boxes = [
         ("1. 3D 생체역학 엔진", "• RealSense D455 하드웨어 정렬\n• OpenCV K행렬 왜곡 보정\n• 21개 관절 3D mm 좌표 역투영", "#EFF6FF", "#0284C7"),
-        ("2. 속도 변곡점 알고리즘", "• |v(t)| < 10 mm/s 진입/이탈 탐색\n• 환자 3초 버퍼 지시 연동\n• 2초 유지(Plateau) 객관적 검출", "#F0FDF4", "#0D9488"),
+        ("2. 속도 변곡점 알고리즘", "• |v(t)| < 10 mm/s 진입/이탈 탐색\n• 장애인 3초 버퍼 지시 연동\n• 2초 유지(Plateau) 객관적 검출", "#F0FDF4", "#0D9488"),
         ("3. 결정론적 채점 머신", "• VLM은 증거 기반 상태만 추출\n• 파이썬 규칙 엔진 0/1/2점 변환\n• 모델 점수 왜곡/환각 원천 차단", "#FFFBEB", "#D97706"),
         ("4. 엣지 아키텍처 최적화", "• 단일 PC RTX 5090 32GB 구동\n• AWQ 4-bit / SDPA 메모리 바운딩\n• 외부 API 의존 0%, 의료 보안 100%", "#FAF5FF", "#7E22CE"),
     ]

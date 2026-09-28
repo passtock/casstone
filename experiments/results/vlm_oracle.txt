@@ -23,7 +23,7 @@ T2 → T2 PASS
 Trial #3 → t3 PASS 
 조합 PASS S01__Right__T2__t1
 합성 영상 생성 PASS size=147646
-프레임 54장 저장 PASS {'video': 'C:\\Users\\passp\\AppData\\Local\\Temp\\vlm_selftest_62h8lepo\\vid\\합성_테스트.avi', 'fps': 30.0, 'total_frames_read': 210, 'expected_n': 54, 'saved_n': 54, 'frame_cap': 64}
+프레임 54장 저장 PASS {'video': 'C:\\Users\\passp\\AppData\\Local\\Temp\\vlm_selftest_ip86qqpk\\vid\\합성_테스트.avi', 'fps': 30.0, 'total_frames_read': 210, 'expected_n': 54, 'saved_n': 54, 'frame_cap': 64}
 640×480 로 축소 PASS (480, 640)
 파일 크기 > 0 PASS 
 행 5개 생성 PASS got 5
@@ -43,6 +43,6 @@ manifest 에 프레임 수 기록 PASS 54
 trial_id 가 conditions 규칙과 일치 PASS S01__Right__T1__t1
 점수 보존 PASS 
 analysis_harness 가 오류 없이 실행 PASS 
-보고서에 PR-1 포함 PASS stdout 3176자
+보고서에 PR-1 포함 PASS stdout 3507자
 보류율 표가 계산됨 PASS 
 PR-1 배선 표기 확인 PASS 

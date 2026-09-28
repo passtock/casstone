@@ -1,0 +1,12 @@
+A0 특성 수 = 2(K) + 6(Q) + 2(T,과제) PASS (2, 10)
+A0-time 특성 수 = 2(T,과제) PASS (2, 2)
+A0-time 은 K1·K2·Q 를 안 씀 PASS 
+분산 0 → 전부 0 PASS [0. 0.]
+정규화 후 평균 0·표준편차 1 PASS 
+합성 학습 정확도 > 0.45 (무작위 0.25) PASS acc=0.720
+예측 행 생성됨 (12명×3시행) PASS n=36
+필드가 PRED_FIELDS 와 일치 PASS 
+점수가 0~3 정수 PASS 
+MAE 산출됨(NaN 아님) PASS mae=1.3333
+A0-time 은 조건명 A0time PASS n=36
+A0 은 조건명 A0 PASS n=36

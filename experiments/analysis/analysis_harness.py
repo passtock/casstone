@@ -13,8 +13,9 @@ v6.1 배선 (2026-09-24, 결함 D-12 해소)
 --------------------------------------
 | 주 결과 | 정의 | 부호 해석 |
 |---|---|---|
-| **PR-1 (게이팅 효과)** | `G_i = MAE_i(A2) − MAE_i(A3)` | **양수 = A3가 더 정확 = 게이팅이 도움** |
-| **PR-2 (게이팅의 고유 가치)** | `E_i = MAE_i(R) − MAE_i(A3)` | **양수 = A3가 R보다 나음 = 품질 규칙의 고유 기여** |
+| **PR-1 (수치 주입 효과)** | `I_i = MAE_i(A2) − MAE_i(A1)` | **양수 = 주입이 해로움** (v6.3 신규) |
+| **PR-2 (게이팅 효과)** | `G_i = MAE_i(A2) − MAE_i(A3)` | **양수 = A3가 더 정확 = 게이팅이 도움** |
+| **PR-3 (게이팅의 고유 가치)** | `E_i = MAE_i(R) − MAE_i(A3)` | **양수 = A3가 R보다 나음 = 품질 규칙의 고유 기여** |
 
 **1급 기술 결과(검정 아님, 반드시 보고):** 보류율 · 큰 오차(≥2점) 비율 · Pareto 곡선
 **탐색적:** `A2−A1`(숫자 추가), `A3−A4`(영상의 가치), A0/A0time, 주입 수준별(A3), 설명 평가
@@ -42,7 +43,7 @@ v6.1 배선 (2026-09-24, 결함 D-12 해소)
 출력
 ----
 - 콘솔/파일 보고서: 조건별 MAE · PR-1 · PR-2 · bootstrap CI · Holm · κ · 보류율 · 큰 오차
-- per_patient_mae.csv: 환자×조건 MAE (재분석 가능)
+- per_patient_mae.csv: 장애인×조건 MAE (재분석 가능)
 
 실행
 ----
@@ -91,7 +92,7 @@ def stdev(xs):
 
 
 def bootstrap_ci_mean(xs, n_boot=BOOT_N, seed=BOOT_SEED, alpha=0.05):
-    """환자 단위 bootstrap 백분위 CI. 반환 (lo, hi, p_two_sided).
+    """장애인 단위 bootstrap 백분위 CI. 반환 (lo, hi, p_two_sided).
 
     ⚠️ 분산이 0이면 부트스트랩 분포가 퇴화한다 → **p는 NaN**(정의 불가)을 돌려준다.
        (이전 판은 이 경우 p=0.0001을 돌려주어 잘못된 '유의'를 만들었다.)
@@ -323,7 +324,7 @@ def abstention_stats(preds, condition, injection="none", run=1):
 
 
 def paired_diff(a, b, key="mae", pids=None):
-    """a - b 의 환자별 차이. 양쪽에 값이 있는 환자만."""
+    """a - b 의 장애인별 차이. 양쪽에 값이 있는 장애인만."""
     ids = sorted(set(a) & set(b)) if pids is None else [p for p in pids if p in a and p in b]
     diffs = []
     for pid in ids:
@@ -431,25 +432,26 @@ def analyze(preds, refs, reference="therapist", run=1, out_csv=None, sweep_rows=
     pids = sorted({p["pid"] for p in preds})
     L.append("# 분석 결과 (v6.1 계획서 §9)")
     L.append("")
-    L.append("- 환자 수: %d" % len(pids))
+    L.append("- 장애인 수: %d" % len(pids))
     L.append("- 참조 평가자: **%s**" % reference)
     L.append("- run: %d (1=주결과)" % run)
     L.append("- bootstrap: %d회, seed=%d, 백분위 95%% CI" % (BOOT_N, BOOT_SEED))
-    L.append("- **PR-1 = 게이팅 효과** `MAE(A2) − MAE(A3)` (양수 = A3가 더 정확)")
-    L.append("- **PR-2 = 게이팅의 고유 가치** `MAE(R) − MAE(A3)` (양수 = 품질 규칙이 기여)")
+    L.append("- **PR-1 = 수치 주입 효과** `MAE(A2) − MAE(A1)` (양수 = 주입이 해로움)")
+    L.append("- **PR-2 = 게이팅 효과** `MAE(A2) − MAE(A3)` (양수 = A3가 더 정확)")
+    L.append("- **PR-3 = 게이팅의 고유 가치** `MAE(R) − MAE(A3)` (양수 = 품질 규칙이 기여)")
     L.append("- 오염 전파(bias_3u)는 **H5 기전, 탐색적**으로 보고")
     L.append("")
 
-    # 환자×조건 MAE 표
+    # 장애인×조건 MAE 표
     per_cond = {}
     for c in CONDITIONS:
         per_cond[c] = per_patient_mae(preds, refs, c, "none", run, reference)
-    L.append("## 조건별 환자평균 MAE (주입 없음)")
+    L.append("## 조건별 장애인평균 MAE (주입 없음)")
     L.append("")
-    L.append("> ⚠️ 이 표의 MAE는 **환자별 MAE의 평균(환자 동등 가중)** 이다. "
-             "전체 시행을 풀링한 평균이 아니다. 분석 단위가 환자이므로 이쪽이 맞다.")
+    L.append("> ⚠️ 이 표의 MAE는 **장애인별 MAE의 평균(장애인 동등 가중)** 이다. "
+             "전체 시행을 풀링한 평균이 아니다. 분석 단위가 장애인이므로 이쪽이 맞다.")
     L.append("")
-    L.append("| 조건 | 환자수 | 평균 MAE | SD | 최소 | 최대 | 실패수 | 실패포함 손실 |")
+    L.append("| 조건 | 장애인수 | 평균 MAE | SD | 최소 | 최대 | 실패수 | 실패포함 손실 |")
     L.append("|---|---:|---:|---:|---:|---:|---:|---:|")
     for c in CONDITIONS:
         vals = [v["mae"] for v in per_cond[c].values()
@@ -495,7 +497,7 @@ def analyze(preds, refs, reference="therapist", run=1, out_csv=None, sweep_rows=
     L.append("")
     L.append("> 평균 MAE는 위험을 숨긴다. 척도가 0–3이므로 **2점 이상 오차**는 임상적으로 다른 사건이다.")
     L.append("")
-    L.append("| 조건 | 환자수 | 평균 큰오차 비율 | SD | 전체 큰오차/유효시행 |")
+    L.append("| 조건 | 장애인수 | 평균 큰오차 비율 | SD | 전체 큰오차/유효시행 |")
     L.append("|---|---:|---:|---:|---:|")
     for c in CONDITIONS:
         be = per_patient_big_error(preds, refs, c, "none", run, reference)
@@ -519,21 +521,24 @@ def analyze(preds, refs, reference="therapist", run=1, out_csv=None, sweep_rows=
         L.append("  → 양수 = 게이팅이 큰 오차를 줄임 (RQ-B3)")
         L.append("")
 
-    # ---- 확증적: PR-1, PR-2 ----
+    # ---- 확증적: PR-1, PR-2, PR-3 (v6.3, Holm k=3) ----
+    a1 = per_cond["A1"]
     a2 = per_cond["A2"]
     a3 = per_cond["A3"]
     r_cond = per_cond["R"]
     a3_b3 = per_patient_mae(preds, refs, "A3", "bias_3u", run, reference)
 
-    pr1 = paired_diff(a2, a3)          # MAE(A2) − MAE(A3)
-    pr2 = paired_diff(r_cond, a3)      # MAE(R)  − MAE(A3)
+    pr1 = paired_diff(a2, a1)          # MAE(A2) − MAE(A1)  수치 주입 효과
+    pr2 = paired_diff(a2, a3)          # MAE(A2) − MAE(A3)  게이팅 효과
+    pr3 = paired_diff(r_cond, a3)      # MAE(R)  − MAE(A3)  고유 가치
 
     ci1 = bootstrap_ci_mean(pr1)
     ci2 = bootstrap_ci_mean(pr2)
-    raw_p = [ci1[2], ci2[2]]
+    ci3 = bootstrap_ci_mean(pr3)
+    raw_p = [ci1[2], ci2[2], ci3[2]]
     adj_p = holm(raw_p)
 
-    L.append("## 확증적 결과 (Holm 보정, α=0.05)")
+    L.append("## 확증적 결과 (Holm 보정 **k=3**, α=0.05)")
     L.append("")
     L.append("| # | 정의 | 방향 | n | 평균 차이 | 95% CI | p(원) | p(Holm) | 판정 |")
     L.append("|---|---|---|---:|---:|---|---:|---:|---|")
@@ -543,22 +548,28 @@ def analyze(preds, refs, reference="therapist", run=1, out_csv=None, sweep_rows=
         if ci[0] > 0 or ci[1] < 0:
             return "✅ 0 미포함"
         return "❌ 0 포함"
-    L.append("| **PR-1** | MAE(A2) − MAE(A3) | 양수 = 게이팅이 도움 | %d | %+.3f | [%+.3f, %+.3f] | %.4f | %.4f | %s |"
+    L.append("| **PR-1** | MAE(A2) − MAE(A1) | 양수 = 주입이 해로움 | %d | %+.3f | [%+.3f, %+.3f] | %.4f | %.4f | %s |"
              % (len(pr1), mean(pr1), ci1[0], ci1[1], raw_p[0], adj_p[0], verdict(ci1)))
-    L.append("| **PR-2** | MAE(R) − MAE(A3) | 양수 = 품질 규칙 기여 | %d | %+.3f | [%+.3f, %+.3f] | %.4f | %.4f | %s |"
+    L.append("| **PR-2** | MAE(A2) − MAE(A3) | 양수 = 게이팅이 도움 | %d | %+.3f | [%+.3f, %+.3f] | %.4f | %.4f | %s |"
              % (len(pr2), mean(pr2), ci2[0], ci2[1], raw_p[1], adj_p[1], verdict(ci2)))
+    L.append("| **PR-3** | MAE(R) − MAE(A3) | 양수 = 품질 규칙 기여 | %d | %+.3f | [%+.3f, %+.3f] | %.4f | %.4f | %s |"
+             % (len(pr3), mean(pr3), ci3[0], ci3[1], raw_p[2], adj_p[2], verdict(ci3)))
     L.append("")
-    L.append("**부호 해석:** PR-1 양수 = A3(게이팅)가 A2(전체)보다 정확. "
-             "PR-2 양수 = A3가 R(같은 양 무작위 제거)보다 정확.")
+    L.append("**부호 해석:** PR-1 양수 = A2(수치 제공)가 A1(영상만)보다 나쁨. "
+             "PR-2 양수 = A3(게이팅)가 A2(전체)보다 정확. "
+             "PR-3 양수 = A3가 R(같은 양 무작위 제거)보다 정확.")
     L.append("")
     L.append("**판정표 연결(계획서 §10):**")
     L.append("")
     L.append("| 관측 | 허용되는 결론 |")
     L.append("|---|---|")
-    L.append("| PR-1 유의 | 품질 게이팅이 채점 오차를 줄임 |")
-    L.append("| PR-1 비유의 | 이 표본에서 게이팅의 채점 개선을 확인하지 못함 |")
-    L.append("| PR-2 유의 | 게이팅의 고유 가치 확인 (정보량 감소로 설명되지 않음) |")
-    L.append("| PR-2 비유의 | 이득이 정보량 감소 효과로 설명될 수 있음 |")
+    L.append("| PR-1 유의, A2>A1 | 수치 주입이 채점을 악화시킴 |")
+    L.append("| PR-1 유의, A2<A1 | 수치 주입이 채점을 개선함 |")
+    L.append("| PR-1 비유의 | 이 표본에서 주입 효과를 확인하지 못함 → PR-2 해석이 약해짐 |")
+    L.append("| PR-2 유의 | 품질 게이팅이 채점 오차를 줄임 |")
+    L.append("| PR-2 비유의 | 이 표본에서 게이팅의 채점 개선을 확인하지 못함 |")
+    L.append("| PR-3 유의 | 게이팅의 고유 가치 확인 (정보량 감소로 설명되지 않음) |")
+    L.append("| PR-3 비유의 | 이득이 정보량 감소 효과로 설명될 수 있음 |")
     L.append("")
 
     # ---- 탐색적 ----
@@ -740,23 +751,27 @@ def selftest():
     d = paired_diff(a, b)
     chk("a-b == [1.0, 2.0]", d == [1.0, 2.0], str(d))
 
-    print("[A7] PR-1 배선 (D-12 회귀 방지)")
+    print("[A7] PR-1/PR-2 배선 (D-12 회귀 방지)")
     # A2가 A3보다 나쁜 상황을 만들면 MAE(A2)-MAE(A3) > 0 이어야 한다.
     mk = lambda cond, s: [{"pid": "P1", "trial": "t%d" % i, "condition": cond,
                            "injection": "none", "run": 1, "score": s,
                            "status": "ok", "task": "T1",
                            "k1_provided": 1, "k2_provided": 1} for i in range(4)]
-    pr_a2 = mk("A2", 3)     # 모두 3 → 참조 0과 오차 3
-    pr_a3 = mk("A3", 1)     # 모두 1 → 참조 0과 오차 1
+    pr_a1 = mk("A1", 1)     # 오차 1
+    pr_a2 = mk("A2", 3)     # 오차 3
+    pr_a3 = mk("A3", 1)     # 오차 1
     refs0 = {"t%d" % i: {"pid": "P1", "therapist": 0, "independent": 0, "task": "T1"}
              for i in range(4)}
+    m_a1 = per_patient_mae(pr_a1, refs0, "A1", "none", 1, "therapist")
     m_a2 = per_patient_mae(pr_a2, refs0, "A2", "none", 1, "therapist")
     m_a3 = per_patient_mae(pr_a3, refs0, "A3", "none", 1, "therapist")
-    dpr1 = paired_diff(m_a2, m_a3)
-    chk("PR-1 = MAE(A2)-MAE(A3) == +2.0", abs(dpr1[0] - 2.0) < 1e-9, str(dpr1))
-    # 구 배선(오염전파)이 실수로 PR-1 자리에 오면 이 값이 0이 된다 → 회귀 감지
-    d_old = paired_diff(per_patient_mae(pr_a3, refs0, "A3", "none", 1, "therapist"), m_a3)
-    chk("구 배선(A3 none - A3 none) == 0.0 (구분됨)", abs(d_old[0]) < 1e-9, str(d_old))
+    dpr1 = paired_diff(m_a2, m_a1)      # 주입 효과 = 3-1 = +2
+    dpr2 = paired_diff(m_a2, m_a3)      # 게이팅 효과 = 3-1 = +2
+    chk("PR-1 = MAE(A2)-MAE(A1) == +2.0", abs(dpr1[0] - 2.0) < 1e-9, str(dpr1))
+    chk("PR-2 = MAE(A2)-MAE(A3) == +2.0", abs(dpr2[0] - 2.0) < 1e-9, str(dpr2))
+    # 동일 조건끼리는 0 (배선이 조건을 섞으면 여기가 깨진다)
+    d_same = paired_diff(m_a3, m_a1)
+    chk("A3(1) - A1(1) == 0.0 (조건 미분리 감지)", abs(d_same[0]) < 1e-9, str(d_same))
 
     print("[A8] 보류율 계산")
     pr_ab = [{"pid": "P1", "trial": "a", "condition": "A3", "injection": "none",
@@ -840,9 +855,10 @@ def make_demo(root, n_pat=12, n_trials=3, seed=20260922):
     """알려진 효과를 심은 합성 데이터셋을 만든다.
 
     ⚠️ **합성이다. 실제 결과 아님. 논문 인용 금지.**
-    심어둔 효과 (v6.1 배선에 맞춤):
-      - **A3(게이팅)가 A2(전체)보다 정확** → PR-1 = MAE(A2)−MAE(A3) > 0 검출 기대
-      - **R(무작위 제거)이 A3보다 나쁨** → PR-2 = MAE(R)−MAE(A3) > 0 검출 기대
+    심어둔 효과 (v6.3 배선에 맞춤):
+      - **A2(수치 제공)가 A1(영상만)보다 나쁨** → PR-1 = MAE(A2)−MAE(A1) > 0 검출 기대
+      - **A3(게이팅)가 A2(전체)보다 정확** → PR-2 = MAE(A2)−MAE(A3) > 0 검출 기대
+      - **R(무작위 제거)이 A3보다 나쁨** → PR-3 = MAE(R)−MAE(A3) > 0 검출 기대
       - **A3는 수치를 일부 보류** → 보류율 > 0
     ⚠️ 효과 크기는 **파이프라인 검출 능력을 보이려고 크게** 잡았다. 실제 효과크기가 아니다.
     """

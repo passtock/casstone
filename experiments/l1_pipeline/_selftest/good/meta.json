@@ -1,0 +1,14 @@
+{
+  "participant_id": "SYN",
+  "group": "selftest",
+  "camera_model": "SYNTHETIC",
+  "width": 640,
+  "height": 480,
+  "fps": 30.0,
+  "fx": 500.0,
+  "fy": 500.0,
+  "cx": 320.0,
+  "cy": 240.0,
+  "depth_scale": 1.0,
+  "aligned_to": "color"
+}

@@ -646,7 +646,7 @@ class CapstoneClinicalApp(QMainWindow):
 
         g1 = QGroupBox("1. 피험자 구분 (Subject Group)")
         g1l = QHBoxLayout(g1)
-        self.rb_patient = QRadioButton("편마비 환자군 (Patient)")
+        self.rb_patient = QRadioButton("편마비 장애인군 (Patient)")
         self.rb_healthy = QRadioButton("정상인 대조군 (Healthy)")
         self.rb_patient.setChecked(True)
         self.btn_group_type = QButtonGroup(self)

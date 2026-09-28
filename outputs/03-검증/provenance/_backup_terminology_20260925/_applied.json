@@ -1,0 +1,170 @@
+{
+ "outputs/research-plan-v6.md": {
+  "건강인→비장애인": 8,
+  "환자→장애인": 30,
+  "after_비장애인": 8,
+  "after_장애인": 38,
+  "written": true
+ },
+ "outputs/research-plan-v6-easy.md": {
+  "건강인→비장애인": 4,
+  "환자→장애인": 20,
+  "after_비장애인": 4,
+  "after_장애인": 24,
+  "written": true
+ },
+ "outputs/protocol-v6-frozen.md": {
+  "건강인→비장애인": 8,
+  "환자→장애인": 19,
+  "after_비장애인": 8,
+  "after_장애인": 27,
+  "written": true
+ },
+ "outputs/01-조사문헌/arat-fma-ue-evidence-map.md": {
+  "건강인→비장애인": 32,
+  "환자→장애인": 140,
+  "after_비장애인": 34,
+  "after_장애인": 174,
+  "written": true
+ },
+ "outputs/01-조사문헌/arat-fma-ue-evidence-map-ko.md": {
+  "건강인→비장애인": 6,
+  "환자→장애인": 27,
+  "after_비장애인": 8,
+  "after_장애인": 35,
+  "written": true
+ },
+ "outputs/01-조사문헌/arat-fma-ue-evidence-map.provenance.md": {
+  "건강인→비장애인": 1,
+  "환자→장애인": 1,
+  "after_비장애인": 1,
+  "after_장애인": 2,
+  "written": true
+ },
+ "outputs/01-조사문헌/rgbd-grasp-vlm-protocol-analysis.md": {
+  "건강인→비장애인": 27,
+  "환자→장애인": 131,
+  "after_비장애인": 27,
+  "after_장애인": 158,
+  "written": true
+ },
+ "outputs/02-설계이력/experiment-plan-v6-naive.md": {
+  "건강인→비장애인": 32,
+  "환자→장애인": 49,
+  "after_비장애인": 32,
+  "after_장애인": 81,
+  "written": true
+ },
+ "outputs/03-검증/systematic-search-novelty-audit.md": {
+  "건강인→비장애인": 1,
+  "환자→장애인": 2,
+  "after_비장애인": 1,
+  "after_장애인": 3,
+  "written": true
+ },
+ "outputs/03-검증/experiment-plan-v6-verification.md": {
+  "건강인→비장애인": 5,
+  "환자→장애인": 4,
+  "after_비장애인": 5,
+  "after_장애인": 9,
+  "written": true
+ },
+ "outputs/03-검증/provenance/citation-verification-report.md": {
+  "건강인→비장애인": 0,
+  "환자→장애인": 0,
+  "after_비장애인": 0,
+  "after_장애인": 0,
+  "written": false
+ },
+ "outputs/.drafts/arat-fma-ue-evidence-map-cited.md": {
+  "건강인→비장애인": 2,
+  "환자→장애인": 8,
+  "after_비장애인": 3,
+  "after_장애인": 11,
+  "written": true
+ },
+ "outputs/.drafts/arat-fma-ue-evidence-map-draft.md": {
+  "건강인→비장애인": 1,
+  "환자→장애인": 3,
+  "after_비장애인": 2,
+  "after_장애인": 5,
+  "written": true
+ },
+ "outputs/.drafts/arat-fma-ue-evidence-map-research-direct.md": {
+  "건강인→비장애인": 0,
+  "환자→장애인": 0,
+  "after_비장애인": 0,
+  "after_장애인": 0,
+  "written": false
+ },
+ "outputs/.drafts/arat-fma-ue-evidence-map-revised.md": {
+  "건강인→비장애인": 16,
+  "환자→장애인": 81,
+  "after_비장애인": 18,
+  "after_장애인": 99,
+  "written": true
+ },
+ "outputs/.drafts/arat-fma-ue-evidence-map-verification.md": {
+  "건강인→비장애인": 0,
+  "환자→장애인": 0,
+  "after_비장애인": 0,
+  "after_장애인": 0,
+  "written": false
+ },
+ "outputs/.plans/arat-fma-ue-evidence-map.md": {
+  "건강인→비장애인": 1,
+  "환자→장애인": 2,
+  "after_비장애인": 3,
+  "after_장애인": 5,
+  "written": true
+ },
+ "outputs/.plans/arat-fma-vlm-deep-research.md": {
+  "건강인→비장애인": 2,
+  "환자→장애인": 2,
+  "after_비장애인": 3,
+  "after_장애인": 5,
+  "written": true
+ },
+ "INDEX.md": {
+  "건강인→비장애인": 1,
+  "환자→장애인": 1,
+  "after_비장애인": 2,
+  "after_장애인": 3,
+  "written": true
+ },
+ "CHANGELOG.md": {
+  "건강인→비장애인": 11,
+  "환자→장애인": 15,
+  "after_비장애인": 14,
+  "after_장애인": 29,
+  "written": true
+ },
+ "experiments/analysis/analysis_harness.py": {
+  "건강인→비장애인": 0,
+  "환자→장애인": 12,
+  "after_비장애인": 0,
+  "after_장애인": 12,
+  "written": true
+ },
+ "experiments/l1_pipeline/k1k2_from_files.py": {
+  "건강인→비장애인": 1,
+  "환자→장애인": 1,
+  "after_비장애인": 1,
+  "after_장애인": 2,
+  "written": true
+ },
+ "experiments/session_tools/make_session.py": {
+  "건강인→비장애인": 2,
+  "환자→장애인": 3,
+  "after_비장애인": 2,
+  "after_장애인": 5,
+  "written": true
+ },
+ "experiments/vlm_conditions/make_conditions.py": {
+  "건강인→비장애인": 0,
+  "환자→장애인": 1,
+  "after_비장애인": 1,
+  "after_장애인": 2,
+  "written": true
+ }
+}

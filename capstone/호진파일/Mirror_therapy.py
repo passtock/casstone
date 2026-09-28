@@ -1696,7 +1696,7 @@ class ClinicalApp(QMainWindow):
 
         g1 = QGroupBox("1. 피험자 구분")
         r1 = QHBoxLayout(g1)
-        self.rb_patient, self.rb_healthy = QRadioButton("편마비 환자군"), QRadioButton("비장애인 대조군")
+        self.rb_patient, self.rb_healthy = QRadioButton("편마비 장애인군"), QRadioButton("비장애인 대조군")
         self.rb_patient.setChecked(True)
         grp = QButtonGroup(self)
         grp.addButton(self.rb_patient)
@@ -2061,7 +2061,7 @@ class ClinicalApp(QMainWindow):
         self.spin_auto.setEnabled(self.chk_auto.isChecked())
         self._trial_btn(not self.trial_on)
         self.toast("피험자 군: " + (f"비장애인 대조군 ({'자동 ' + str(self.spin_auto.value()) + '초 측정' if self.chk_auto.isChecked() else '수동 측정'})"
-                                     if healthy else "편마비 환자군 (수동 구간 측정)"))
+                                     if healthy else "편마비 장애인군 (수동 구간 측정)"))
 
     def _on_palm(self, mm):
         self.worker.set_palm_calib(mm)

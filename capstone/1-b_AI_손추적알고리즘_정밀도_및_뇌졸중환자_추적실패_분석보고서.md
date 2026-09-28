@@ -1,8 +1,8 @@
-# [Part 1-b] AI 기반 3D 손 추적 알고리즘 벤치마크 및 뇌졸중 환자 특이적 추적 실패 모드·필터링 기법 분석 보고서
+# [Part 1-b] AI 기반 3D 손 추적 알고리즘 벤치마크 및 뇌졸중 장애인 특이적 추적 실패 모드·필터링 기법 분석 보고서
 
 **작성일시**: 2026년 9월  
 **전문 분야**: AI 컴퓨터 비전, 마커리스 모션 캡처(Markerless Motion Capture), 신경재활 운동학(Stroke Rehabilitation Kinematics)  
-**분석 목적**: 뇌졸중 편마비 환자의 손가락 미세 운동학 평가를 위한 최신 SOTA 3D 손 추적 모델의 기술적 타당성 검토 및 이상 자세 필터링 파이프라인 수립  
+**분석 목적**: 뇌졸중 편마비 장애인의 손가락 미세 운동학 평가를 위한 최신 SOTA 3D 손 추적 모델의 기술적 타당성 검토 및 이상 자세 필터링 파이프라인 수립  
 
 ---
 
@@ -40,7 +40,7 @@
 
 *(참고: PA-MPJPE = Procrustes-Aligned Mean Per-Joint Position Error, 낮을수록 정밀함)*
 
-> **벤치마크 데이터셋 상세**: FreiHAND(Zimmermann et al., ICCV 2019)는 건강인 32명이 37개 물체를 조작하는 130,240개 학습 + 3,960개 테스트 이미지로 구성되며, PA-MPJPE는 Procrustes 정렬(스케일/회전/이동 보정) 후 21개 관절의 평균 유클리드 거리 오차이다. InterHand2.6M(Moon et al., ECCV 2020)은 양손 상호작용 260만 프레임을 포함하며, 두 손이 겹치는 상황의 평가에 사용된다. **주의**: 이 벤치마크는 모두 건강인 데이터이므로, 뇌졸중 환자의 비정형적 손 형태에 대한 정확도를 직접적으로 보증하지 않는다.
+> **벤치마크 데이터셋 상세**: FreiHAND(Zimmermann et al., ICCV 2019)는 비장애인 32명이 37개 물체를 조작하는 130,240개 학습 + 3,960개 테스트 이미지로 구성되며, PA-MPJPE는 Procrustes 정렬(스케일/회전/이동 보정) 후 21개 관절의 평균 유클리드 거리 오차이다. InterHand2.6M(Moon et al., ECCV 2020)은 양손 상호작용 260만 프레임을 포함하며, 두 손이 겹치는 상황의 평가에 사용된다. **주의**: 이 벤치마크는 모두 비장애인 데이터이므로, 뇌졸중 장애인의 비정형적 손 형태에 대한 정확도를 직접적으로 보증하지 않는다.
 
 ---
 
@@ -75,9 +75,20 @@ Google MediaPipe Hands는 출력값으로 `landmarks`(정규화된 2D 픽셀 좌
   * **결론**: 연구계획서(4.2절)에 명시된 **"3×3 이웃 패치 유효값 필터링 및 20mm 이상 깊이 불연속 시 null 처리"**와 같은 엄격한 이상치 차단 필터가 결합되지 않는 한, 단독 역투영 방식은 파지 동작에서 신뢰성을 보장할 수 없다.
 
 #### (3) MediaPipe 버전별 추적 파라미터 및 성능 차이 (실무 참고)
+
+> ⚠️ **[PROV-AUDIT 2026-09-25] 이 절(및 바로 위 §2)의 수치들은 출처가 비어 있다.** — 정량 수치의 출처 실태:
+>
+> | 수치 | 상태 |
+> |---|---|
+> | `r > 0.85, RMSE 5~8mm` (무가림 상관) | ⚠️ **출처 없음** — 실존 문헌의 실제 값은 **Amprimo 2024 (GMH-D)**: 손가락 수준, 거리·속도·과제별로 보고 (DOI: 10.1016/j.bspc.2024.106508) |
+> | `5~10mm 구조적 편향` (관절중심 vs 피부표면) | ⚠️ **추정치** — 측정값으로 제시돼 있지 않다. 이는 **본 계획서 §5.1 step 3(표면점 정의)가 생기는 이유**로는 타당하나, 크기는 미검증 |
+> | `검출률 15~20% 개선` · `PA-MPJPE 약 2mm 개선` · `추론속도 40% 감소` · `지터 20~30% 감소` | ⚠️ **출처 없음** — MediaPipe 공식 문서는 `model_complexity` 0/1의 **존재와 용도**를 문서화하나 **위 퍼센트는 문서에 없다** |
+> | `Edge Bleeding 1~2픽셀` | ⚠️ **추정치** — 기제 설명은 타당하나 수치는 미검증 |
+>
+> **조치:** 이 절은 **튜닝 실무 참고용 가설 목록**으로만 쓰고, **논문·보고서에 수치로 인용하지 말 것.** 수치가 필요하면 **자체 치구 135기록(§4.6)으로 직접 측정**하거나 **Amprimo 2024 원문**에서 인용해야 한다.
 * **MediaPipe Hands v0.10.x (Solutions API)**:
-  * `min_detection_confidence`: 손바닥 탐지 임계값 (기본값 0.5, 경직 환자에서 0.3~0.4로 낮추면 검출률 향상되나 False Positive 급증)
-  * `min_tracking_confidence`: 프레임 간 추적 유지 임계값 (기본값 0.5, 경직 환자에서 0.3으로 낮출 경우 추적 유지율 15~20% 개선되나 ID 스와핑 위험 증가)
+  * `min_detection_confidence`: 손바닥 탐지 임계값 (기본값 0.5, 경직 장애인에서 0.3~0.4로 낮추면 검출률 향상되나 False Positive 급증)
+  * `min_tracking_confidence`: 프레임 간 추적 유지 임계값 (기본값 0.5, 경직 장애인에서 0.3으로 낮출 경우 추적 유지율 15~20% 개선되나 ID 스와핑 위험 증가)
   * `model_complexity`: 0(경량)/1(전체) — 복잡도 1에서 PA-MPJPE가 약 2mm 개선되나 추론 속도 40% 감소
 * **MediaPipe Tasks API (2024~)**:
   * `running_mode`: IMAGE / VIDEO / LIVE_STREAM 선택. VIDEO 모드에서는 프레임 간 시간적 연속성(Temporal smoothing)이 내장 적용되어 지터가 20~30% 감소하지만, 급격한 파지 동작에서 1~2프레임 지연 발생.
@@ -85,9 +96,9 @@ Google MediaPipe Hands는 출력값으로 `landmarks`(정규화된 2D 픽셀 좌
 
 ---
 
-## 2. 뇌졸중 환자 특이적 손 추적 실패 문제 (Failure Modes)
+## 2. 뇌졸중 장애인 특이적 손 추적 실패 문제 (Failure Modes)
 
-일반적인 3D 손 포즈 추정 모델(MediaPipe, HaMeR, MANO 등)은 주로 건강한 성인이 수행하는 자연스럽고 완전한 동작 데이터셋(FreiHAND, InterHand2.6M, Rendered Hand 등)으로 학습되었다. 뇌졸중 편마비 환자가 이를 수행할 때 신경학적 결함으로 인해 다음과 같은 **5대 대표 실패 모드(Failure Modes)**가 발생한다.
+일반적인 3D 손 포즈 추정 모델(MediaPipe, HaMeR, MANO 등)은 주로 비장애인한 성인이 수행하는 자연스럽고 완전한 동작 데이터셋(FreiHAND, InterHand2.6M, Rendered Hand 등)으로 학습되었다. 뇌졸중 편마비 장애인이 이를 수행할 때 신경학적 결함으로 인해 다음과 같은 **5대 대표 실패 모드(Failure Modes)**가 발생한다.
 
 ```
 [뇌졸중 특이적 5대 손 추적 실패 모드]
@@ -100,44 +111,71 @@ Google MediaPipe Hands는 출력값으로 `landmarks`(정규화된 2D 픽셀 좌
 
 ### 2.1 대표적 실패 모드 상세 메커니즘 (Schoffelen et al., 2021; Smeraldi et al., 2023)
 
+> 🔴 **[PROV-AUDIT 2026-09-25] 이 절의 1차 근거 두 편이 철회됐다.**
+> `Schoffelen et al., 2021`(Clin Biomech 84:105322)과 `Smeraldi et al., 2023`(JNER 20(1):84)은 **대응 레코드를 찾지 못했다**(DOI 미등록 + 저자·제목 검색 0건 + 오류귀속).
+> 아래 **정량 수치(10~20%, 15~25%, 30~50% 등)는 실험 데이터가 아니라 추정치**이며, 원 출처가 없다.
+> **이 표를 논문·보고서에 인용하지 말 것.** 실제 근거가 필요하면 `outputs/01-조사문헌/rgbd-grasp-vlm-protocol-analysis.md`(검증 완료)의 해당 문헌을 쓰고, **검증된 문헌이 실제로 뒷받침하는 범위까지만** 주장할 것.
+
 #### (1) 관절 뭉침(Landmark Collapse) 현상
-* **환자 증상**: 수지 굴곡근의 강직(Spasticity)으로 인해 원위지절(DIP)과 근위지절(PIP) 관절이 손바닥 안쪽으로 100% 말려 들어가 주먹이 꽉 쥐어짐(Claw hand deformity).
+* **장애인 증상**: 수지 굴곡근의 강직(Spasticity)으로 인해 원위지절(DIP)과 근위지절(PIP) 관절이 손바닥 안쪽으로 100% 말려 들어가 주먹이 꽉 쥐어짐(Claw hand deformity).
 * **알고리즘 실패 메커니즘**: 2D 영상에서 손가락 마디들이 서로 겹쳐 원위 관절이 은닉된다. 검출기는 손바닥 표면의 작은 음영을 손가락 끝으로 잘못 인식하여 모든 관절 랜드마크가 손바닥 중앙의 한 점으로 수렴되어 뭉개진다.
 
 #### (2) 손가락 정체성 교환(Finger Identity Swapping)
-* **환자 증상**: 엄지 내전근의 경직으로 엄지가 검지와 중지 아래로 파고드는 엄지 내재 변형(Thumb-in-palm deformity) 또는 손가락 교차(Scissors pattern).
+* **장애인 증상**: 엄지 내전근의 경직으로 엄지가 검지와 중지 아래로 파고드는 엄지 내재 변형(Thumb-in-palm deformity) 또는 손가락 교차(Scissors pattern).
 * **알고리즘 실패 메커니즘**: 좌우 및 손가락 간의 해부학적 상대 배치가 무너지면서, 알고리즘이 엄지 끝(Landmark 4)과 검지 끝(Landmark 8)의 ID를 순간적으로 맞바꾸어 추적하는 스와핑 에러가 빈번하게 발생한다.
 
 #### (3) 손 방향 반전(Bounding Box & Hand Inversion)
-* **환자 증상**: 도달-파지 시 상완-전완 분리 운동이 되지 않아 어깨를 들어 올리고 손목을 과도하게 비틀거나 척측 편위(Ulnar deviation)를 일으키는 보상 운동(Compensatory movement).
-* **알고리즘 실패 메커니즘**: BlazePalm 등 손바닥 탐지기는 손목에서 중지 기저부로 이어지는 축 벡터를 기준으로 손의 회전 각도를 추정한다. 환자의 손목이 심하게 꺾이면 손바닥 앞뒤(Dorsal vs Palmar)를 거꾸로 인식하여 손가락 랜드마크 전체가 180도 뒤집히는 치명적 에러가 발생한다.
+* **장애인 증상**: 도달-파지 시 상완-전완 분리 운동이 되지 않아 어깨를 들어 올리고 손목을 과도하게 비틀거나 척측 편위(Ulnar deviation)를 일으키는 보상 운동(Compensatory movement).
+* **알고리즘 실패 메커니즘**: BlazePalm 등 손바닥 탐지기는 손목에서 중지 기저부로 이어지는 축 벡터를 기준으로 손의 회전 각도를 추정한다. 장애인의 손목이 심하게 꺾이면 손바닥 앞뒤(Dorsal vs Palmar)를 거꾸로 인식하여 손가락 랜드마크 전체가 180도 뒤집히는 치명적 에러가 발생한다.
 
 #### (4) 고주파 떨림(Tremor)과 랜드마크 지터(Jitter)의 결합
-* **환자 증상**: 뇌졸중 후 소뇌 손상 또는 척수로 손상 환자에서 관찰되는 3~8Hz 대역의 활동 진전(Action tremor) 및 간헐적 클로누스(Clonus).
-* **알고리즘 실패 메커니즘**: 모션 블러와 겹쳐 랜드마크가 프레임마다 급격하게 튀는 고주파 지터(Jitter)가 발생한다. 표준 필터(Moving average 등)를 적용할 경우 환자의 실제 병적 떨림까지 삭제해버리는 임상 평가 오류가 발생한다.
+* **장애인 증상**: 뇌졸중 후 소뇌 손상 또는 척수로 손상 장애인에서 관찰되는 3~8Hz 대역의 활동 진전(Action tremor) 및 간헐적 클로누스(Clonus).
+* **알고리즘 실패 메커니즘**: 모션 블러와 겹쳐 랜드마크가 프레임마다 급격하게 튀는 고주파 지터(Jitter)가 발생한다. 표준 필터(Moving average 등)를 적용할 경우 장애인의 실제 병적 떨림까지 삭제해버리는 임상 평가 오류가 발생한다.
 
 #### (5) 사전확률에 의한 강제 정상화(Normalization Hallucination)
-* **환자 증상**: 불완전한 신전(Incomplete Extension; 손가락을 30%밖에 펴지 못함).
+* **장애인 증상**: 불완전한 신전(Incomplete Extension; 손가락을 30%밖에 펴지 못함).
 * **알고리즘 실패 메커니즘**: MANO 기반 모델(HaMeR, FrankMocap 등)은 잠재 공간(Latent Pose Prior)에서 손가락이 덜 펴진 어정쩡한 자세에 낮은 확률을 부여한다. 그 결과 가려진 손가락을 **정상인의 완전히 펴진 손 형태(Fully extended hand)로 강제 보정(Hallucination)**하여 임상적 결함을 은폐한다.
-* **정량적 환각 크기 추정**: Brunnstrom Stage III 환자의 MCP 굴곡이 실제 80°인데 모델이 45°로 출력하는 경우, 관절 각도 오차가 **35°(~15mm 원위부 위치 오차에 해당)**에 달하며, 이는 FMA Hand 채점에서 0점(불완전 굴곡)과 2점(완전 굴곡)의 구별을 완전히 불가능하게 만든다.
+* **정량적 환각 크기**: ⚠️ **[PROV-AUDIT 2026-09-25] 아래 수치는 철회한다.** "MCP 굴곡 실제 80° → 모델 45° → 오차 35°(~15mm)"는 **근거 없는 예시값**이었다(원 출처 없음).
+  → 실존 문헌이 보고한 실제 규모는 **Manzone 2026: 전체 평균 오차 13 mm, 가림 유무 차이 약 0.1 mm**(arXiv:2606.17427). **관절각 오차 35° 라는 값은 어느 검증된 문헌에서도 확인되지 않았다.**
 
 ### 2.2 실패 모드별 발생 빈도 추정치 (문헌 종합)
 
-| 실패 모드 | 건강인에서의 발생률 | Brunnstrom III 환자 | Brunnstrom IV~V 환자 | 주요 영향 |
-| :--- | :--- | :--- | :--- | :--- |
-| **Landmark Collapse** | < 1% | **25~40%** | 5~15% | 파지 간격 $a(t)$ 0으로 수렴 |
-| **Identity Swapping** | < 2% | **15~30%** | 5~10% | 파지 간격 폭증 (스파이크) |
-| **Bounding Box Inversion** | < 0.5% | **10~20%** | 3~8% | 전체 프레임 무효화 |
-| **High-freq Jitter** | 2~5% (센서 노이즈) | **15~25%** (병적 + 센서 혼합) | 8~15% | 속도/평활도 지표 왜곡 |
-| **Normalization Hallucination** | N/A | **30~50%** (가림 시) | 15~25% | 관절 각도/거리 과소 보고 |
+| 실패 모드 | 발생 빈도 | 출처 |
+| :--- | :--- | :--- |
+| **Landmark Collapse** | ⚠️ **수치 없음 — 사용 금지** | 검증된 문헌에서 빈도 보고를 찾지 못함 |
+| **Identity Swapping** | ⚠️ **수치 없음 — 사용 금지** | 〃 |
+| **Bounding Box Inversion** | ⚠️ **수치 없음 — 사용 금지** | 〃 |
+| **High-freq Jitter** | ⚠️ **수치 없음 — 사용 금지** | 〃 |
+| **Normalization Hallucination** | ⚠️ **수치 없음 — 사용 금지** | 〃 |
 
-*(출처: Schoffelen et al., 2021; Smeraldi et al., 2023의 실험 데이터와 Brunnstrom 단계별 손 형태 특성을 조합한 추정치)*
+> 🔴 **[PROV-AUDIT 2026-09-25] 위 표는 재작성되었다.** 이전 판본은 `25~40%`, `15~30%`, `10~20%`, `30~50%` 같은 **빈도 퍼센트를 실험 데이터처럼** 실었지만, 그 출처로 적힌 `Schoffelen 2021`·`Smeraldi 2023`은 **실존하지 않는다**(두 편 모두 DOI 미등록 + 저자·제목 검색 0건).
+> → **모든 수치를 철회했다.** 이 실패 모드들은 **기제 가설(mechanism hypothesis)이며, 측정된 발생률이 아니다.** 빈도를 주장하려면 밝혀진 출처가 따로 필요하다.
+
+**그 대신, 실존이 확인된 문헌이 실제로 보고한 수치 (Manzone 2026, arXiv:2606.17427):**
+
+| 결과 | 실제 수치 | 방향 |
+|---|---|---|
+| **집단 효과 (cSCI vs 비장애)** | F(1,26) = 0.80, **p = 0.38**, η²p = 0.03 | 🔴 **유의하지 않음** — "손상 집단과 비장애 대조군 사이에 자세추정 정확도 **차이가 없었다**" |
+| 가림 효과 (불투명 vs 투명) | 불투명 **13.0±1 mm** vs 투명 **12.9±1 mm**, F(1,26)=4.65, **p=0.04** | 유의하나 **차이가 약 0.1 mm 로 매우 작다** |
+| 알고리즘 효과 | WiLoR < HaMeR < HoloLens 2 < MediaPipe < WildHands | 모두 유의 |
+| 가림×알고리즘 상호작용 | F(4,104)=8.71, p<0.001, η²p=0.25 | 유의한 단순효과는 **HoloLens 2 × 비장애 × 신용카드 1종** 뿐 |
+| 손상도와 오차의 상관 | WildHands만 **r_s(24) = −0.43, p=0.03** (다른 4개는 p>0.25) | 약한 **음의** 상관 = 손상이 심할수록 오차 증가 |
+| 전체 평균 오차 | **13 mm** (HoloLens 2), 문헌 범위 3–20 mm | — |
+| 표본 | cSCI n=13 (C3–C6, AIS A–D) + 비장애 n=15 | — |
+
+> ⚠️ **이 통계는 기존 서술과 방향이 다르다.** "손상이 자세추정을 망친다"는 본 보고서의 전제는 **Manzone 2026에서 지지되지 않는다** (집단 효과 p=0.38). 유의한 것은 **가림 효과 하나뿐이고 그 크기도 0.1 mm**다.
+> → 즉 **부호가 정확히 반대**는 아니지만(손상도–오차 상관 r=−0.43는 약하게 지지), **"장애인손 추적이 특별히 실패한다"는 강한 주장은 쓸 수 없다.**
+> → 다만 이건 **본 연구계획서에 좋은 소식**이다: RGB-D/단안 무마커가 **손상손에도 일반화된다**는 증거이기 때문이다(발병 기전이 달라도).
+>
+> ⚠️ **추가 주의:** Manzone의 대상은 **경수손상(cSCI)** 이며 **뇌졸중이 아니다**. 브룬스트롬 단계·경직·시너지가 다르므로 **뇌졸중으로 일반화 금지**.
+
+*(⚠️ **[PROV-AUDIT 2026-09-25]** 이전 판본은 여기에 "출처: Schoffelen et al., 2021; Smeraldi et al., 2023의 실험 데이터"라고 적었으나, **그 두 논문은 실존하지 않는다.** 위 표의 모든 수치(%)는 **근거 없는 추정치**다. 표를 살리려면 각 행에 실제 검증된 출처를 다시 붙여야 한다.)*
 
 ---
 
 ## 3. 떨림(Jitter) 및 허구 예측(Hallucination) 필터링 기법
 
-뇌졸중 환자의 손 계측 파이프라인에서는 단순 노이즈 억제를 넘어, **"환자의 실제 병적 움직임"과 "알고리즘의 추적 실패(Jitter/Hallucination)"를 분리해내는 생체역학적 필터링**이 필수적이다.
+뇌졸중 장애인의 손 계측 파이프라인에서는 단순 노이즈 억제를 넘어, **"장애인의 실제 병적 움직임"과 "알고리즘의 추적 실패(Jitter/Hallucination)"를 분리해내는 생체역학적 필터링**이 필수적이다.
 
 ```
 [임상용 계층적 3D 손 필터링 파이프라인]
@@ -164,7 +202,7 @@ Google MediaPipe Hands는 출력값으로 `landmarks`(정규화된 2D 픽셀 좌
 #### (1) 지골 길이 불변성 필터 (Bone Length Invariance Filter)
 * **이론적 근거**: 손가락의 지골(Phalanx) 뼈 길이는 강체(Rigid body)이므로 시간 $t$에 따라 절대 변하지 않는다.
 * **알고리즘 수식**:
-  환자의 기준 지골 길이 $L_{i}^{ref} = \|\mathbf{p}_{parent} - \mathbf{p}_{child}\|_2$ (준비 정지 구간의 중앙값)를 사전에 정의한다. 매 프레임 $t$마다 계산된 길이 $L_i(t)$가 다음 조건을 위반하면 가림 또는 오추적으로 판정하여 결측(Null) 처리한다:
+  장애인의 기준 지골 길이 $L_{i}^{ref} = \|\mathbf{p}_{parent} - \mathbf{p}_{child}\|_2$ (준비 정지 구간의 중앙값)를 사전에 정의한다. 매 프레임 $t$마다 계산된 길이 $L_i(t)$가 다음 조건을 위반하면 가림 또는 오추적으로 판정하여 결측(Null) 처리한다:
   $$\text{If } \left| \frac{L_i(t) - L_{i}^{ref}}{L_{i}^{ref}} \right| > \epsilon_{bone} \quad (\epsilon_{bone} = 0.15 \sim 0.20) \implies \text{Frame } t \text{ is Invalid (Null)}$$
 
 #### (2) 관절 가동 범위(ROM) 및 각속도 생체 한계 필터
@@ -180,8 +218,8 @@ Google MediaPipe Hands는 출력값으로 `landmarks`(정규화된 2D 픽셀 좌
   * 소지(Little): 근위 ~32mm, 중위 ~18mm, 원위 ~15mm
   * 이 값들은 지골 길이 불변성 필터의 $L_i^{ref}$ 합리성 검증에 활용하며, ±15% 범위 초과 시 추적 오류로 판정한다.
 * **각속도 임계값**:
-  * 건강인의 자유 수지 운동 최대 각속도: MCP에서 약 $600^\circ \sim 800^\circ/\text{s}$ (Metcalf et al., 2014)
-  * 뇌졸중 환자의 경직성 수의 운동에서 손가락 관절 각속도는 통상 $300^\circ \sim 500^\circ/\text{s}$를 초과하기 어렵다.
+  * 비장애인의 자유 수지 운동 최대 각속도: MCP에서 약 $600^\circ \sim 800^\circ/\text{s}$ ~~(Metcalf et al., 2014)~~ ⚠️ **[PROV-AUDIT 2026-09-25] Metcalf 2014는 레코드 미확인 — 이 각속도 수치의 출처가 비어 있다.** 임계값으로 쓰려면 실제 문헌(예: 손가락 최대 각속도 계측 연구)을 다시 확보해야 한다. *(보고서 §3.3 확인: 대체 문헌 **Wang Z 2024는 초록상 완전 지지**이나, **600~800°/s 각속도 수치는 그 문헌이 보고하지 않는다.** 이 수치의 출처는 여전히 비어 있다.)*
+  * 뇌졸중 장애인의 경직성 수의 운동에서 손가락 관절 각속도는 통상 $300^\circ \sim 500^\circ/\text{s}$를 초과하기 어렵다.
   * 단일 프레임 간 관절 각속도 $|\dot{\theta}(t)| > 1000^\circ/\text{s}$가 관측되면 센서 지터 또는 관절 ID 스와핑으로 판정하고 해당 프레임을 기각한다.
   * **30fps에서의 분해능 한계**: 33ms 간격에서 $1000^\circ/\text{s}$는 $\Delta\theta = 33^\circ$에 해당하며, 이보다 큰 프레임 간 각도 변화는 실제 인간 운동으로 불가능하다.
 
@@ -195,7 +233,7 @@ Google MediaPipe Hands는 출력값으로 `landmarks`(정규화된 2D 픽셀 좌
 [One-Euro Filter의 적응형 컷오프 메커니즘]
 - 손이 천천히 움직이거나 정지해 있을 때 (Low Speed):
   -> 차단 주파수(f_c)를 극도로 낮춤 (f_c ≈ f_c_min) -> 고주파 랜드마크 지터(Jitter) 완벽 제거
-- 환자가 손을 빠르게 뻗거나 쥘 때 (High Speed):
+- 장애인이 손을 빠르게 뻗거나 쥘 때 (High Speed):
   -> 속도에 비례하여 차단 주파수(f_c)를 높임 -> 위상 지연(Lag) 없는 즉각적 반응 보장
 ```
 
@@ -226,6 +264,10 @@ Google MediaPipe Hands는 출력값으로 `landmarks`(정규화된 2D 픽셀 좌
 
 ## 4. 참고문헌 (References)
 
+> ⚠️ **[PROV-AUDIT 2026-09-25]** 아래 **5·6·7·11번**에서 식별자 결함을 발견했다.
+> **5번(Amprimo)** 은 실제 레코드로 교정했고, **6·7·11번**은 대응 레코드를 찾지 못해 표시만 달았다.
+> 상세: `outputs/03-검증/provenance/citation-verification-report.md`
+
 1. **Pavlakos, G., Shan, D., Radosavovic, I., Kanazawa, A., & Malik, J. (2024)**. Reconstructing hands in 3D with transformers. *IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)*, pp. 9826-9836.  
    *(CVPR 2024 발표 최신 3D 손 메시 복원 SOTA 모델인 HaMeR 원전. 대규모 ViT 백본 및 가림 환경 내구성 규명)*
 2. **Zhang, F., Bazarevsky, V., Vakunov, A., Tkachenka, A., Sung, C., Chang, C. L., & Grundmann, M. (2020)**. MediaPipe hands: On-device real-time hand tracking. *arXiv preprint arXiv:2006.10214*.  
@@ -234,17 +276,30 @@ Google MediaPipe Hands는 출력값으로 `landmarks`(정규화된 2D 픽셀 좌
    *(모듈형 3D 손-신체 메시 복원 모델인 FrankMocap 원전 및 MANO 회귀 최적화 분석)*
 4. **Jiang, T., Lu, P., Zhang, L., Ma, N., Han, R., Lyu, C., ... & Chen, K. (2023)**. RTMPose: Real-time multi-person pose estimation based on MMPose. *arXiv preprint arXiv:2303.07399*.  
    *(OpenMMLab의 초고속·초정밀 2D/2.5D 키포인트 추정 알고리즘 RTMPose-Hand 원전)*
-5. **Amprimo, E., Masi, G., Ferraris, C., Priano, L., & Galli, F. (2024)**. Validation of single-camera MediaPipe hand estimation against optoelectronic motion capture for clinical kinematics. *IEEE Transactions on Neural Systems and Rehabilitation Engineering (TNSRE)*, 32, 1120-1131. DOI: 10.1109/TNSRE.2024.3365821  
+5. **Amprimo, G., Masi, G., Pettiti, G., Olmo, G., et al. (2024)**. Hand tracking for clinical applications: Validation of the Google MediaPipe Hand (GMH) and the depth-enhanced GMH-D frameworks. *Biomedical Signal Processing and Control*, 96, 106508. DOI: 10.1016/j.bspc.2024.106508  
+   *(⚠️ [PROV-AUDIT 2026-09-25] 서지 교정: 이전 기재 `IEEE TNSRE` 32, 1120-1131 / `10.1109/TNSRE.2024.3365821`는 미등록이었다. 실제 레코드는 Biomed. Signal Process. Control 96:106508.)*  
    *(Vicon 대비 MediaPipe 단일 카메라 계측의 평면 운동 정밀도 및 가림/파지 상태에서의 오차 급증 검증)*
-6. **Smeraldi, F., D'Amico, M., & Ronchetti, M. (2023)**. Accuracy and repeatability of markerless hand tracking in stroke rehabilitation: A single-camera RGB-D validation study. *Journal of NeuroEngineering and Rehabilitation (JNER)*, 20(1), 84. DOI: 10.1186/s12984-023-01198-4  
-   *(단일 RGB-D 카메라를 뇌졸중 환자 상지 재활에 적용했을 때 발생하는 지터 및 MPJPE 오차 정량화)*
-7. **Schoffelen, M., Visser, R., & Kwakkel, G. (2021)**. The impact of spasticity and abnormal muscle synergies on markerless motion capture in stroke patients. *Clinical Biomechanics*, 84, 105322. DOI: 10.1016/j.clinbiomech.2021.105322  
-   *(뇌졸중 환자의 경직 및 이상 시너지가 일반 사전학습 모델에서 정상 자세로 왜곡(Hallucination)되는 실패 모드 규명)*
+6. ~~**Smeraldi, F., D'Amico, M., & Ronchetti, M. (2023)**. Accuracy and repeatability of markerless hand tracking in stroke rehabilitation: A single-camera RGB-D validation study. *Journal of NeuroEngineering and Rehabilitation (JNER)*, 20(1), 84. DOI: 10.1186/s12984-023-01198-4~~ ⬛ **철회 (PROV-AUDIT 2026-09-25) — 저자·논문 모두 실존 확인 불가**  
+   **→ 대체 문헌(레코드 검증 완료):** **Hesse, N., Baumgartner, S., Gut, A., & Van Hedel, H. J. A. (2024)**. Concurrent validity of motion parameters measured with an RGB-D camera-based markerless 3D motion tracking method in children and young adults. *IEEE Journal of Translational Engineering in Health and Medicine*, 12, 580-588. DOI: 10.1109/JTEHM.2024.3435334  
+   ⚠️ 대체 문헌은 주제 근접도로 선정. 원래 주장(뇌졸중 장애인 MPJPE 오차·가림 한계)의 직접 근거인지는 **미확인**.  
+   *(⚠️ [PROV-AUDIT 2026-09-25] **미검증 — 논문 실존 확인 불가**. DOI 미등록, PubMed·Crossref·OpenAlex에 해당 저자·제목 레코드 없음. **인용 철회 권고**.)*  
+   *(단일 RGB-D 카메라를 뇌졸중 장애인 상지 재활에 적용했을 때 발생하는 지터 및 MPJPE 오차 정량화)*
+7. ~~**Schoffelen, M., Visser, R., & Kwakkel, G. (2021)**. The impact of spasticity and abnormal muscle synergies on markerless motion capture in stroke patients. *Clinical Biomechanics*, 84, 105322. DOI: 10.1016/j.clinbiomech.2021.105322~~ ⬛ **철회 (PROV-AUDIT 2026-09-25) — 오귀속·레코드 없음**  
+   **→ 대체 문헌(레코드 검증 완료):** **Manzone, D. M., Szymanowski, M., Taran, O., & Cai, S. (2026)**. Impact of hand impairment and occlusions on hand pose estimation accuracy in augmented reality applications. *arXiv:2606.17427*.  
+   *(보조: Lee, Y. et al. (2021). Visual-inertial hand motion tracking with robustness against occlusion, interference, and contact. *Science Robotics*, 6(58). DOI: 10.1126/scirobotics.abe1315)*  
+> ⚠️ **대체 문헌은 주제 근접도로 선정. 원래 주장(경직·비정상 시너지가 자세추정을 정상 포즈로 왜곡)의 직접 근거인지는 미확인.**
+> 🔴 **[2026-09-25 초록·본문 확인 완료] 그런데 이 대체 문헌은 방향이 다르다.** Manzone 2026은 **집단 효과(p=0.38, cSCI vs 비장애)** 를 **유의하지 않다**고 보고한다 — "손상이 추적을 망친다"는 근거로 쓰면 **반박된다**. 자세한 수치는 §2.2의 표 참조. → 이 주장의 출처는 **아직 비어 있다.**  
+   *(⚠️ [PROV-AUDIT 2026-09-25] **미검증 — 오귀속**. 이 DOI는 「Differences in soleus H-reflex to M-wave ratio between obese and non-obese individuals」를 가리킨다.)*  
+   *(뇌졸중 장애인의 경직 및 이상 시너지가 일반 사전학습 모델에서 정상 자세로 왜곡(Hallucination)되는 실패 모드 규명)*
 8. **Romero, J., Tzionas, D., & Black, M. J. (2017)**. Embodied hands: Modeling and capturing hands and bodies in motion. *ACM Transactions on Graphics (TOG)*, 36(6), 245. DOI: 10.1145/3130800.3130883  
    *(3D 손 파라메트릭 메시 모델인 MANO 원전 및 통계적 포즈 사전확률(Pose Prior) 수식 체계)*
 9. **Hasson, Y., Varol, G., Tzionas, D., Kalevatykh, I., Laptev, I., & Schmid, C. (2019)**. Learning joint reconstruction of hands and manipulated objects. *IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)*, pp. 11807-11816.  
    *(물체 파지 시 손가락-물체 간 상호 가림으로 인한 3D 재구성 왜곡 및 접촉면 소실 메커니즘)*
 10. **Casiez, G., Roussel, N., & Vogel, D. (2012)**. 1€ filter: a simple speed-based low-pass filter for noisy input in interactive systems. *Proceedings of the SIGCHI Conference on Human Factors in Computing Systems (CHI)*, pp. 2527-2530. DOI: 10.1145/2207676.2208639  
     *(지터 제거와 지연 시간 최소화를 동시에 달성하는 속도 적응형 One-Euro Filter 원전)*
-11. **Metcalf, C. D., Robinson, R., Malpass, A. J., Burlinson, T., & Adams, J. (2014)**. Markerless motion capture for upper extremity stroke rehabilitation: Measurement error vs. clinically important difference. *Journal of Biomechanics*, 47(4), 842-848. DOI: 10.1016/j.jbiomech.2014.01.011  
+11. ~~**Metcalf, C. D., Robinson, R., Malpass, A. J., Burlinson, T., & Adams, J. (2014)**. Markerless motion capture for upper extremity stroke rehabilitation: Measurement error vs. clinically important difference. *Journal of Biomechanics*, 47(4), 842-848. DOI: 10.1016/j.jbiomech.2014.01.011~~ ⬛ **철회 (PROV-AUDIT 2026-09-25) — 오귀속·레코드 없음**  
+    **→ 대체 문헌(레코드 검증 완료):** **Wang, Z. et al. (2024)**. Clinical validation of automated depth camera-based measurement of the Fugl-Meyer assessment for upper extremity. *Clinical Rehabilitation*. DOI: 10.1177/02692155241251434 (PMID 38693881)  
+    *(보조: Cheng, X. et al. (2025). Reliability and validity of current computer vision based motion capture systems in gait analysis: A systematic review. *Gait & Posture*, 120, 150-160. DOI: 10.1016/j.gaitpost.2025.04.016)*  
+    ⚠️ 대체 문헌은 주제 근접도로 선정. **본문 §3의 "600~800°/s" 각속도 수치는 이 문헌들로 뒷받침되지 않는다.**  
+    *(⚠️ [PROV-AUDIT 2026-09-25] **미검증 — 오귀속**. 이 DOI는 「Computational approaches for analyzing the mechanics of atherosclerotic plaques」를 가리킨다.)*  
     *(뇌졸중 상지 운동학 평가에서 마커리스 광학 오차가 임상적 유의차에 미치는 영향 분석)*

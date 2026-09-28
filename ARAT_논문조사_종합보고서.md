@@ -10,7 +10,9 @@
 
 ### 1.1 서지 정보
 
-van Hoonhorst, M. H. L., Nijland, R. H. M., van den Berg, J. S., & Kwakkel, G. (2021). Fast outcome categorization of the upper limb after stroke. *Stroke*, *52*(10), 3261–3268. https://doi.org/10.1161/STROKEAHA.121.034537
+Jordan, H. T., Che, J., Byblow, W. D., & Stinear, C. M. (2022). Fast Outcome Categorization of the Upper Limb After Stroke. *Stroke*, *53*(2), 578–585. https://doi.org/10.1161/STROKEAHA.121.035170 (PMID 34601902)
+
+> ⚠️ **[PROV-AUDIT 2026-09-25] 서지 교정.** 이전 기재는 `van Hoonhorst, M. H. L., Nijland, R. H. M., van den Berg, J. S., & Kwakkel, G. (2021) … *Stroke*, *52*(10), 3261–3268 / doi 10.1161/STROKEAHA.121.034537`였으나, 그 DOI는 미등록이고 저자·권·페이지도 실제 레코드와 불일치했다. 동일 제목의 실제 논문은 Jordan 등(2022)이며 위와 같다. 이하 본문의 "저자 해석"은 Jordan 등 원문 기준으로 읽어야 한다.
 
 ### 1.2 연구 배경 및 목적
 
@@ -22,8 +24,8 @@ van Hoonhorst, M. H. L., Nijland, R. H. M., van den Berg, J. S., & Kwakkel, G. (
 | 항목 | 상세 |
 |------|------|
 | **데이터 출처** | 네덜란드 다기관 전향적 코호트 연구 (EXPLICIT-stroke 등) 후향적 분석 |
-| **대상자** | 뇌졸중 후 **3개월** 시점의 환자 **333명** (개발 코호트) |
-| **외부 검증** | 동일 환자의 **6개월** 시점 데이터로 안정성 검증 |
+| **대상자** | 뇌졸중 후 **3개월** 시점의 장애인 **333명** (개발 코호트) |
+| **외부 검증** | 동일 장애인의 **6개월** 시점 데이터로 안정성 검증 |
 | **분석 기법** | **CART (Classification and Regression Tree)** 알고리즘 |
 | **범주화 방식** | 3범주, 4범주, 5범주 결정 나무를 각각 개발 |
 | **교차검증** | 10-fold 교차검증으로 과적합 방지 |
@@ -83,7 +85,7 @@ Ahmed, T., & Rikakis, T. (2025). Automated ARAT scoring using multimodal video a
 
 | 항목 | 상세 |
 |------|------|
-| **대상** | 뇌졸중 환자 (구체적 N 미공개, 다기관 수집) |
+| **대상** | 뇌졸중 장애인 (구체적 N 미공개, 다기관 수집) |
 | **장비** | 3대의 RGB 카메라 (동측·반대측·상부 시점) |
 | **포즈 추정** | **OpenPose** (신체·손 키포인트 추출) |
 | **물체 감지** | 커스텀 물체 위치 추적기 |
@@ -100,11 +102,13 @@ Ahmed, T., & Rikakis, T. (2025). Automated ARAT scoring using multimodal video a
 
 ### 2.2 Pérez-Pérez et al. (2022) — 손가락 관절 운동학 + SVM 분류
 
-Pérez-Pérez, A., Varea-Jiménez, E., Caballero-Herrero, D., Almenara-Masbernat, M., Opisso, E., & Medina-Casanovas, J. (2022). Classification models of Action Research Arm Test activities in post-stroke patients based on human hand motion. *Sensors*, *22*(22), 8806. https://doi.org/10.3390/s22228806
+Padilla-Magaña, J. F., & Peña-Pitarch, E. (2022). Classification Models of Action Research Arm Test Activities in Post-Stroke Patients Based on Human Hand Motion. *Sensors*, *22*(23), 9078. https://doi.org/10.3390/s22239078 (PMID 36501779)
+
+> ⚠️ **[PROV-AUDIT 2026-09-25] 서지 교정.** 이전 기재는 저자 `Pérez-Pérez, A., Varea-Jiménez, E., …` 및 `*Sensors*, *22*(22), 8806 / doi 10.3390/s22228806`였으나, 그 DOI는 **「Traffic Load Optimization for Multi-Satellite Relay Systems in Space Information Network」**를 가리킨다. 해당 제목의 실제 저자는 Padilla-Magaña & Peña-Pitarch이며 위 서지가 정확하다. (참고: 동일 저자군의 Sensors 22(10):3604, 22(9):3276도 별개 논문이다.)
 
 | 항목 | 상세 |
 |------|------|
-| **대상** | 뇌졸중 환자 + 건강 대조군 (구체적 N 미공개) |
+| **대상** | 뇌졸중 장애인 + 비장애인 대조군 (구체적 N 미공개) |
 | **장비** | **데이터 글러브** 또는 광학 모션캡처 (11개 손가락 관절 각도 추출) |
 | **특징 변수** | 11개 손가락 관절의 **신전(extension) / 굽힘(flexion) 각도** |
 | **과제** | ARAT 4개 하위 척도 (Grasp, Grip, Pinch, Gross) 활동 |
@@ -119,11 +123,13 @@ Pérez-Pérez, A., Varea-Jiménez, E., Caballero-Herrero, D., Almenara-Masbernat
 
 ### 3.1 Weikert et al. (2025) — 5개 센서 ARAT 항목별 예측
 
-Weikert, T., Li, Y., Paez-Granados, D., & Awai Easthope, C. (2025). Automated prediction of item-level ARAT scores from wearable sensors. In *Proceedings of the 2025 IEEE International Conference on Rehabilitation Robotics (ICORR)*. IEEE. https://doi.org/10.1109/ICORR60564.2025
+Weikert, T., Li, Y., Paez-Granados, D., & Awai Easthope, C. (2025). Automated prediction of item-level ARAT scores from wearable sensors. In *Proceedings of the 2025 IEEE International Conference on Rehabilitation Robotics (ICORR)* (pp. 1239–1244). IEEE. https://doi.org/10.1109/ICORR66766.2025.11063162 (PMID 40644012)
+
+> ⚠️ **[PROV-AUDIT 2026-09-25] DOI 교정.** 이전 기재 `10.1109/ICORR60564.2025`는 미등록 DOI였다(컨퍼런스 프리픽스 번호가 다름). 실제 DOI는 `10.1109/ICORR66766.2025.11063162`이다.
 
 | 항목 | 상세 |
 |------|------|
-| **대상** | 다양한 신경학적 질환 환자 (뇌졸중 + 파킨슨병 포함) |
+| **대상** | 다양한 신경학적 질환 장애인 (뇌졸중 + 파킨슨병 포함) |
 | **데이터** | ARAT 검사 **100회분** |
 | **장비** | **5개 손목 장착 웨어러블 IMU 센서** (가속도계 + 자이로스코프) |
 | **분석 단위** | 19개 ARAT 개별 항목(item-level) |
@@ -157,7 +163,7 @@ Burton, Q., Lejeune, T., Dehem, S., Lebrun, N., & Everard, G. (2022). Performing
 
 | 항목 | 상세 |
 |------|------|
-| **대상** | 뇌졸중 환자 **30명**, 건강 대조군 **25명**, 의료 전문가 **11명** |
+| **대상** | 뇌졸중 장애인 **30명**, 비장애인 대조군 **25명**, 의료 전문가 **11명** |
 | **장비** | VR 헤드셋 (컨트롤러 기반 핸드 트래킹) |
 | **과제** | 기존 19개 ARAT 중 **13개 항목**을 VR로 재현 |
 | **제외 항목** | 구슬/볼베어링 등 미세 핀치 과제 6개 (당시 기술 한계) |
@@ -207,20 +213,22 @@ Amprimo, G., Masi, G., Pettiti, G., Olmo, G., Priano, L., & Ferraris, C. (2024).
 | **장비** | RGB-D 카메라 (Azure Kinect DK) + Google MediaPipe Hands |
 | **참조 기준** | **광학 모션캡처 시스템** (gold standard) |
 | **프레임워크** | GMH (MediaPipe만) vs **GMH-D** (MediaPipe + 깊이 결합) |
-| **대상** | 건강인 (임상 적용 전 방법론 검증) |
+| **대상** | 비장애인 (임상 적용 전 방법론 검증) |
 | **과제** | 다양한 손 자세 및 동작 (정적 + 동적) |
 | **결과** | GMH-D가 GMH 대비 3D 공간 정밀도 유의미하게 향상 |
-| **한계** | Azure Kinect와 D455의 센서 차이, 자기가림(self-occlusion) 시 정확도 저하, 환자 동적 환경 미검증 |
+| **한계** | Azure Kinect와 D455의 센서 차이, 자기가림(self-occlusion) 시 정확도 저하, 장애인 동적 환경 미검증 |
 
 ---
 
 ### 5.2 Qiu et al. (2022) — 도달-파지 운동학과 FMA
 
-Qiu, Q., Fluet, G. G., Patel, J., Iyer, S., Karunakaran, K., Kaplan, E., Tunik, E., Nolan, K. J., Merians, A. S., Yarossi, M., & Adamovich, S. V. (2022). Evaluation of changes in kinematic measures of three dimensional reach to grasp movements in the early subacute period of recovery from stroke. In *Proceedings of the 44th Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC)* (pp. 5107–5110). IEEE. https://doi.org/10.1109/EMBC48229.2022.9871453
+Qiu, Q., Fluet, G. G., Patel, J., Iyer, S., Karunakaran, K., Kaplan, E., Tunik, E., Nolan, K. J., Merians, A. S., Yarossi, M., & Adamovich, S. V. (2022). Evaluation of changes in kinematic measures of three dimensional reach to grasp movements in the early subacute period of recovery from stroke. In *Proceedings of the 44th Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC)* (pp. 5107–5110). IEEE. https://doi.org/10.1109/EMBC48229.2022.9871891 (PMID 36086392)
+
+> ⚠️ **[PROV-AUDIT 2026-09-25] DOI 교정.** 이전 기재 `10.1109/EMBC48229.2022.9871453`는 **「A Machine Learning Algorithm to Discriminating Between Bipolar and Major Depressive Disorders」**를 가리킨다. 동일 논문의 실제 DOI는 `…9871891`이다. (본문 저자·제목·페이지는 이미 정확했음)
 
 | 항목 | 상세 |
 |------|------|
-| **대상** | 뇌졸중 초기 아급성기 환자 **8명** |
+| **대상** | 뇌졸중 초기 아급성기 장애인 **8명** |
 | **장비** | **광학 모션캡처 시스템** (Optotrak 또는 유사) — 반사 마커 기반 |
 | **과제** | 3차원 도달-파지(reach-to-grasp) 과제 |
 | **운동학 지표** | 최대 파지 간격(MGA), 최대 간격 도달시간, 이동시간, 궤적 평활도 |
@@ -241,7 +249,7 @@ Li, V., Kamalakannan, N., Parnandi, A., Schambra, H., & Fernandez-Granda, C. (20
 
 | 항목 | 상세 |
 |------|------|
-| **대상** | 건강인 **20명** + 뇌졸중 환자 **51명** (총 71명) |
+| **대상** | 비장애인 **20명** + 뇌졸중 장애인 **51명** (총 71명) |
 | **장비** | RGB 카메라 (구체적 사양 원문 참조) |
 | **VLM** | Qwen2.5-VL-7B 등 다수 사전학습 VLM |
 | **과제** | 활동 분류, 동작 횟수 추정, FMA 점수 추정 |
@@ -292,9 +300,9 @@ Stinear, C. M., Byblow, W. D., Ackerley, S. J., Smith, M.-C., Borber, P. A., & B
 |------|------|
 | **입력** | 어깨 외전(SAFE), 손가락 신전(finger extension), 운동유발전위(MEPs), 뇌병변 부하 |
 | **예측** | 뇌졸중 후 3개월 시점의 상지 기능 결과 (ARAT 점수 기반 범주) |
-| **대상** | 급성기 뇌졸중 환자 |
+| **대상** | 급성기 뇌졸중 장애인 |
 | **알고리즘** | 의사결정 나무 기반 단계적 평가 |
-| **정확도** | 환자의 약 75%를 72시간 내 정확하게 범주화 |
+| **정확도** | 장애인의 약 75%를 72시간 내 정확하게 범주화 |
 | **의의** | 조기 예후 예측 → 개인화된 재활 계획 수립 |
 
 ---
@@ -308,7 +316,7 @@ Kim, D. W., Park, J. E., Kim, M. J., Byun, S. H., Jung, C. I., Jeong, H. M., Woo
 | **시스템** | 모바일 앱 기반 자가 재활 + 자동 기능 평가 |
 | **장비** | 스마트폰 카메라 + 내장 센서 |
 | **평가** | 상지 기능 자동 채점 (지도학습 모델) |
-| **대상** | 뇌졸중 환자 |
+| **대상** | 뇌졸중 장애인 |
 | **의의** | 원격 자가 관리 재활의 실용적 사례 |
 
 ---
@@ -319,7 +327,7 @@ Parnandi, A., Kaku, A., Venkatesan, A., Pandit, N., Wirtanen, A., Rajamohan, H.,
 
 | 항목 | 상세 |
 |------|------|
-| **대상** | 뇌졸중 환자 **41명** (학습 33명, 시험 8명) |
+| **대상** | 뇌졸중 장애인 **41명** (학습 33명, 시험 8명) |
 | **장비** | **IMU 관성 센서** (몸 부착) |
 | **과제** | 도달·재배치·운반·안정화·대기 등 기본 재활 동작 구분 |
 | **모델** | 딥러닝 기반 파이프라인 |
