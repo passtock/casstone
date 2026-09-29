@@ -1,0 +1,115 @@
+================================================================================================
+단일 세션 정밀 검증 — 20260915_비장애인 26세 남 · Task1 맨손 쥐기/펴기 · 8시행 × 양손
+================================================================================================
+원자료: capstone/호진파일/outputs/데이터_저장/20260915_비장애인_test_26세_남\Session_20260915_213947_950555_8a398dea_trials_summary.csv
+행 수: 16 (Right 8 · Left 8)
+Trial_Mode: manual  ·  Interrupted: 1
+
+### A. 지표별 기술통계 · MDC95 (양손 통합) ###
+지표                      n   결측         mean          SD       MDC95  MDC/mean%     물리위반%
+SPARC                  16    0       -8.898       3.174       8.797       98.9         0
+TAM_total_deg          16    0        980.7       38.13       105.7       10.8         0
+Index_ROM_deg          16    0        92.13        7.47        20.7       22.5         0
+Index_ROM_3D_deg       16    0        86.78       4.682       12.98       15.0         0
+ROM_Index_MCP_deg      16    0        71.61       12.59       34.89       48.7         0
+ROM_Index_PIP_deg      16    0        92.13        7.47        20.7       22.5         0
+ROM_Middle_MCP_deg     16    0         66.3       6.034       16.73       25.2         0
+MP_MGA_raw_mm          16    0        94.19       7.583       21.02       22.3         0
+MGA_cm                 16    0        8.864      0.5519        1.53       17.3         0
+MGA_mm_3D              16    0        83.97       7.958       22.06       26.3         0
+MGA_mm_3D_cal           0   16            -           -           -          -         -
+Flex_Speed_deg_s       16    0    2.529e+09   3.589e+09   9.948e+09      393.4       100
+Ext_Speed_deg_s        16    0      1.3e+09    1.58e+09   4.379e+09      336.9       100
+Thumb_CMC_ROM_deg      16    0        34.82       9.294       25.76       74.0         0
+Samples                16    0        120.6       12.52       34.69       28.8         0
+RS_Valid_Samples       16    0        36.25       25.86       71.68      197.7         0
+Paired_Samples         16    0        36.25       25.86       71.68      197.7         0
+Duration_s             16    0        7.611      0.7352       2.038       26.8         0
+
+### B. 좌우 대칭 점검 (계획 §4.6-②) — 양손 ICC(2,1) + 대응차 ###
+지표                      Right mean   Left mean     차이%  ICC(2,1)  판정
+SPARC                       -9.076      -8.721     4.0     0.245  낮음
+TAM_total_deg                978.6       982.8     0.4    -0.066  낮음
+Index_ROM_deg                96.27       87.99     9.0     0.093  낮음
+Index_ROM_3D_deg             89.84       83.73     7.0    -0.199  낮음
+ROM_Index_MCP_deg            76.69       66.53    14.2     0.068  낮음
+ROM_Index_PIP_deg            96.27       87.99     9.0     0.093  낮음
+ROM_Middle_MCP_deg           68.57       64.02     6.9     0.051  낮음
+MP_MGA_raw_mm                94.71       93.68     1.1     0.062  낮음
+MGA_cm                       8.942       8.785     1.8     0.231  낮음
+MGA_mm_3D                    84.39       83.55     1.0     0.615  보통
+Flex_Speed_deg_s         2.831e+09   2.226e+09    23.9     0.895  양호
+Ext_Speed_deg_s          1.886e+09   7.129e+08    90.3    -0.094  낮음
+Thumb_CMC_ROM_deg            40.77       28.88    34.1     0.063  낮음
+Samples                      120.2       120.9     0.5     0.980  양호
+RS_Valid_Samples             26.62       45.88    53.1     0.603  보통
+Paired_Samples               26.62       45.88    53.1     0.603  보통
+Duration_s                   7.611       7.611     0.0     1.000  양호
+
+### C. 시행 순서 추세 (Spearman rho vs 시행번호) ###
+지표                      Right rho   Left rho  해석(|rho|>0.7 = 추세 있음)
+SPARC                      +0.619     +0.262  추세 없음
+TAM_total_deg              -0.214     -0.619  추세 없음
+Index_ROM_deg              +0.429     +0.714  추세 주의
+Index_ROM_3D_deg           -0.381     +0.214  추세 없음
+ROM_Index_MCP_deg          +0.714     +0.286  추세 주의
+ROM_Index_PIP_deg          +0.429     +0.714  추세 주의
+ROM_Middle_MCP_deg         -0.548     -0.333  추세 없음
+MP_MGA_raw_mm              +0.119     +0.095  추세 없음
+MGA_cm                     -0.214     -0.476  추세 없음
+MGA_mm_3D                  -0.762     -0.452  추세 주의
+MGA_mm_3D_cal                   -          -  
+Flex_Speed_deg_s           -0.333     +0.071  추세 없음
+Ext_Speed_deg_s            +0.286     -0.119  추세 없음
+Thumb_CMC_ROM_deg          +0.190     -0.071  추세 없음
+Samples                    -0.476     -0.571  추세 없음
+RS_Valid_Samples           -0.333     -0.643  추세 없음
+Paired_Samples             -0.333     -0.643  추세 없음
+Duration_s                 -0.452     -0.452  추세 없음
+
+### D. 누적 안정화: 첫 k시행 누적평균이 전체평균 ±5% 이내가 되는 최소 k ###
+지표                      Right k   Left k  비고
+SPARC                         7        4
+TAM_total_deg                 2        2
+Index_ROM_deg                 3        2
+Index_ROM_3D_deg              2        2
+ROM_Index_MCP_deg             7        2
+ROM_Index_PIP_deg             3        2
+ROM_Middle_MCP_deg            3        2
+MP_MGA_raw_mm                 2        2
+MGA_cm                        3        3
+MGA_mm_3D                     5        3
+MGA_mm_3D_cal                >0       >0
+Flex_Speed_deg_s              7        7
+Ext_Speed_deg_s               7        7
+Thumb_CMC_ROM_deg             2        2
+Samples                       2        2
+RS_Valid_Samples              3        8
+Paired_Samples                3        8
+Duration_s                    2        2
+
+### E. Q 규칙 실측 진단 (Samples / Paired_Samples / depth 유효율) ###
+시행        Hand     Samples  RS_Valid  Paired    depth유효율%  Q3(<50)
+Trial #1  Right        131        34      34           26       보류
+Trial #1  Left         133        59      59           44       통과
+Trial #2  Right        121        25      25           21       보류
+Trial #2  Left         116        73      73           63       통과
+Trial #3  Right        124        20      20           16       보류
+Trial #3  Left         125        38      38           30       보류
+Trial #4  Right        130        29      29           22       보류
+Trial #4  Left         129        67      67           52       통과
+Trial #5  Right        131        54      54           41       통과
+Trial #5  Left         132        67      67           51       통과
+Trial #6  Right        124        51      51           41       통과
+Trial #6  Left         128        57      57           45       통과
+Trial #7  Right         96         0       0            0       보류
+Trial #7  Left          98         6       6            6       보류
+Trial #8  Right        105         0       0            0       보류
+Trial #8  Left         106         0       0            0       보류
+
+→ Q3(<50 유효쌍)로 보류되는 시행: 9/16  (56%)
+
+### 요약 ###
+· 이 세션은 1인 · 1과제(맨손 쥐기/펴기) · 8시행 × 양손이다. 병변 대조가 아니므로 '좌우 대칭'은 파이프라인 편향 점검이다.
+· Trial_Mode=manual / Interrupted=1 → 시행 경계를 사람이 잘랐다. 계획서 §4.3은 '성공·접촉 순간을 사람이 골라 입력'을 금지한다.
+· MGA_mm_3D_cal 은 이 세션에서 전부 결측이다(코드가 쓰는 K1 대리값).

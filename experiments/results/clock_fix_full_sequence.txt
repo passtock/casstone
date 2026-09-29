@@ -1,0 +1,33 @@
+====================================================================================================
+시계 복구 5단계 완주 — 20260915 (26세 남) · Task1 · 8시행 × 양손 · PIP 정의 유지
+====================================================================================================
+
+### ① Frame_ID 대응 무결성 ###
+  continuous_raw 행 1931 · 고유 Frame_ID 983 · distance_comparison 행 3203 (Frame_ID 중복 1497)
+  distance_comparison 에 없는 Frame_ID: 0
+  Frame_ID 비증가 쌍(행 순서): 948
+
+### ② 시계별 시간 간격 점검 (8시행×양손) ###
+시계                           n   dt<=0  dt<0.01  dt>0.5s   중앙dt(s)
+원래(PC time.time-t_session)  1915     242      328        1    0.0636
+PC perf_counter           1915       0        0        1    0.0534
+PC time.time              1915       0        0        1    0.0525
+RealSense get_timestamp   1915       0        0        1    0.0666
+RealSense depth get_timestamp  1915       2        2        1    0.0666
+
+### ③④ 시계별 재계산 (PIP 각속도 · SPARC) ###
+시계                       peak 중앙            peak범위    P95 중앙             P95범위    SPARC 중앙             SPARC범위
+원래(PC time.time-t_se  1235007094.7[87499676,12720044003]150249672.3   [356,670002317]            -8.72 [-14.23,-4.26]
+PC perf_counter            288.0         [227,324]      79.2          [36,132]            -8.64 [-10.39,-5.69]
+PC time.time               287.7         [232,327]      78.2          [39,133]            -8.53 [-10.43,-5.53]
+RealSense get_timest       267.7         [187,468]      96.3          [44,164]            -8.76 [-12.15,-5.70]
+RealSense depth get_         nan         [190,462]       nan          [44,167]              nan [-12.15,-5.70]
+
+### ⑤ C1·C2·C3 — 시계 선택 민감도 ###
+지표            원래(PC time.tim  PC perf_counte    PC time.time  RealSense get_  RealSense dept
+Flex_P95               253.9           106.6           106.1           104.2             nan
+Flex_Peak              399.8            21.6            17.9            81.1             nan
+Ext_P95                189.9            66.6            67.7            79.1             nan
+SPARC                  101.2            43.1            42.1            48.6             nan
+
+판정(≤50·수동아님): 위 값이 시계 선택에 따라 50을 넘나들면 판정이 뒤집힌다.
