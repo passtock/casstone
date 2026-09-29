@@ -1,0 +1,12 @@
+  meta.json 생성                                         PASS 
+  meta 최상위 fx/cx 존재                                    PASS {'fx': 600.0, 'cx': 320.0}
+  depth_scale=1.0 (PNG가 mm)                            PASS 1.0
+  L1_track 랜드마크 파일 생성                                  PASS ['T1_R_t01_landmarks.csv']
+  가로형 헤더                                               PASS ['frame', 't_s', 'thumb_u', 'thumb_v', 'index_u', 'index_v', 'wrist_u', 'wrist_v', 'occlusion_state', 'edge_mixing_suspect']
+  행 수 = 프레임 수                                          PASS 20
+  깊이 PNG 생성                                            PASS 20
+  PNG 값 = 500 mm (u16)                                 PASS 500
+  L1이 변환본을 읽고 K1 계산                                    PASS 1
+  K1 ≈ 83.3 mm (합성 기대값)                                PASS 83.3333
+
+자체 시험 종합: ALL PASS

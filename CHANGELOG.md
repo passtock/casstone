@@ -2008,3 +2008,24 @@ Balasubramanian 2015, *On the analysis of movement smoothness*, J NeuroEng Rehab
 
 ### E. 다음 우선순위 (미해결)
 - **D-16** 원시 depth 부재 결정(재촬영 vs 어댑터) · **D-18** 보조 모델 확정 · **D-17** A1+ 교란통제 · 컴퓨트 경로 · 프로토콜 해시·사전등록.
+
+---
+
+## 2026-09-29 (2차): 형식 변환 어댑터 작성·검증 + 바이위클리 #3 초안(docx)
+
+### A. 수집↔계산 형식 변환 어댑터 (남은 병목 해소)
+- 신규: `experiments/l1_pipeline/ingest_clock_v3.py` (312행)
+  - 입력(clock_v3 rev 3.2): `<pre>_metadata.json` + `<pre>_landmarks.csv`(세로형) + `<pre>_trials_summary.csv` + `raw_rgbd/*.npz`
+  - 출력(L1 규격): `meta.json`(최상위 fx/fy/cx/cy, **depth_scale=1.0**) + `L1_track/<trial>_landmarks.csv`(가로형) + `L0_raw/<trial>_depth/<frame>.png`(16-bit **mm**)
+  - `occlusion_state`는 앱 출력이 아니라 **사람 주석** → 빈 값. `edge_mixing_suspect`는 `RS_Status=='depth_edge'`에서 유도.
+- 검증: `python experiments/l1_pipeline/ingest_clock_v3.py --selftest` → **ALL PASS**
+  - 합성 세션 → 변환 → **L1 CLI 실행까지** 확인: `L1=K1 83.3333mm, usable=True/True`
+  - Q3 게이트(≥50표본) 정상 작동 확인(20프레임→보류, 80프레임→통과)
+  - 로그: `experiments/results/ingest_clock_v3_oracle.txt`
+- 남은 것: **실제 카메라 촬영본으로 적용**(촬영 후). 합성 검증만 완료.
+
+### B. Biweekly Report #3 초안 (개조식 + docx)
+- 산출물: `capstone/바이위클리/Biweekly Report#3_draft_개조식_20260929.md`, `Biweekly Report#3_22000561.docx`
+- 레이아웃: `Biweekly Report#2_22000561_최신개정.docx` 모사(굴림 폰트, 표 8개).
+- 개정 이력: ① 최초 개조식 → ② 미완·검증필요 항목을 Next Biweek로 이관 → ③ 용어 통일(내부 개발용어 제거, 용어표 신설) → ④ **가독성 개선**(요약 섹션·표 중심·짧은 불릿·여백/줄간격).
+- 내용: 실험 재설계(ARAT 2과제·5조건·PR-1~3), 수집 프로그램 rev 3.2(원시 RGB-D), 정확성 점검 7항목, 오류 정정 4건(구슬 ⌀1.5cm 등), 다음기간 7항목, 참고문헌 10편.
