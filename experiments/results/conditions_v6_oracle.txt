@@ -3,6 +3,9 @@
 K1 프롬프트 키 == thumb_index_surface_p95_mm (§5) PASS thumb_index_surface_p95_mm
 K2 프롬프트 키 == wrist_surface_speed_p95_mm_s (§5) PASS wrist_surface_speed_p95_mm_s
 과제 == T1(ARAT 3, 5cm 블록)·T2(ARAT 12, 구슬) PASS 
+T2 물성 == 구슬 1.5 cm (§4.2, Lyle 원본 채점지) PASS 구슬 지름 1.5 cm 5.4 g
+T1 물성 == 5 cm 목재 블록 55 g (§4.2) PASS 5 cm 목재 블록 55 g
+프롬프트 라벨에 구슬 규격이 1.5 cm로 들어간다 PASS ARAT 12번 — 구슬 지름 1.5 cm 5.4 g
 R seed 3개 (§6) PASS [20260922, 20260923, 20260924]
 지표는 2개(K1·K2) — MGA/PV/SPARC/TAM 아님 PASS {'k1': 'thumb_index_surface_p95_mm', 'k2': 'wrist_surface_speed_p95_mm_s'}
 역할 문장 포함(뇌졸중 장애인) PASS 

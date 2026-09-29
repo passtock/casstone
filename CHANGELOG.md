@@ -1978,3 +1978,33 @@ Balasubramanian 2015, *On the analysis of movement smoothness*, J NeuroEng Rehab
 - **정상범위 비교 불가**: 문헌의 −1.2~−1.8은 **'단순 도달-파지'** 값. 우리 과제는 **반복 개폐**라 같은 과제의 비장애인 참조가 필요하다
 - **장치 시계(`Color_Timestamp_ms`)는 채택하지 않았다** — 도메인 미확인(장치 미연결). 코드는 `mono` 사용
 - **재처리 스크립트 없음**: 이 앱은 실시간 계산만 한다. 기존 녹화로 C1·C2·C3를 재산출하려면 배치 재처리기가 따로 필요하다
+
+---
+
+## 2026-09-29: 트랙 A 코드 비교·수정 · 교수면담 준비 · D-15 검증
+
+### A. `Mirror_therapy_fixed.py` vs `Mirror_therapy_clock_v3.py` 비교 (트랙 A)
+- 산출물: `capstone/호진파일/outputs/Mirror_therapy_fixed_vs_clock_v3_비교평가.md`
+- **결론: clock_v3 우위** — ① SPARC가 원저자 참조구현(`siva82kb/SPARC`)과 수치 일치(≤4e-16), fixed는 +2.0~2.6% 편차 ② 시계가 `perf_counter`로 일관(fixed는 CSV=벽시계/분석=mono 혼용) ③ 갭·결측 블록 처리.
+- 실험 근거: `run_kinematics_ab.py`, `run_sparc_parity.py` (오라클: docstring `-1.41403` 재현).
+
+### B. `clock_v3` rev 3.0 → **3.1** (per-cycle SPARC 추가)
+- 실데이터 확인: trial 하나 = **1~2 사이클**(Cycles 1–2, period 1.9–5.6 s) → whole-trial SPARC는 2사이클 trial에서 섞임.
+- 추가: `cycle_bounds_idx()`, `sparc_per_cycle()`; trials_summary에 `SPARC_PerCycle_Mean_v2`·`_N`·`_Status` 3열. **기존 whole-trial SPARC는 유지.** `Metric_Version="3.1"`.
+- 검증: CSV **header 73 == data 73**, 오라클, SPARC 참조 일치 유지. 변경 기록: `outputs/_compare/v3.0_to_v3.1_patch_record.md`.
+
+### C. 교수면담 준비 · 상태 점검
+- 산출물: `outputs/교수면담_예상질문_및_실험상태_점검.md`
+- 정직 상태: **실증 검증 0건**(계획서 §15.3). 코드·설계만 완료. 신규성 주장 3개 반박 → "처음 측정"으로 프레이밍. `capstone/` 보고서 가짜 인용 주의.
+
+### D. D-15 상태 검증 + 구슬 규격 정정 (verifier)
+- 산출물: `outputs/03-검증/d15-status-verification.md`
+- **D-15 코드 정합 5건은 후속 생성기 `make_conditions_v6.py`에서 모두 해소**(오라클 **43 PASS / 0 FAIL**).
+- **신규 결함 발견**: 생성기 프롬프트가 구슬 **⌀1.6 cm**(정본 1.5 cm)를 넣고 있었음 → **1.5 cm로 정정** + 회귀 검사 3건 추가. `protocol-v6-frozen.md` §2도 정정.
+  - 근거: ARAT 표준 채점지 "Marble, 1.5 cm" / 정본 v6.4 / 증거맵·아틀라스.
+- **남은 것**: 실제 세션 end-to-end 실행은 **D-16(원시 depth 부재)** 에 막힘 → D-15는 **부분 해소**.
+- ⚠️ 함정 기록: 오라클은 `PYTHONIOENCODING=utf-8` 없이 실행하면 cp949 em-dash 오류로 크래시한다(코드 결함 아님).
+- 백업: `outputs/03-검증/provenance/_backup_marble_fix_20260929/`
+
+### E. 다음 우선순위 (미해결)
+- **D-16** 원시 depth 부재 결정(재촬영 vs 어댑터) · **D-18** 보조 모델 확정 · **D-17** A1+ 교란통제 · 컴퓨트 경로 · 프로토콜 해시·사전등록.

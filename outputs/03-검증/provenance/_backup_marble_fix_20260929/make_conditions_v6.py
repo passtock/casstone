@@ -12,7 +12,7 @@
 | K1 = 엄지–검지 거리 P95 | `MGA_mm_3D_cal` (최대 파지 간격) |
 | K2 = 손목속도 **P95** | **`PV_mm_s` = peak velocity** ← V-1이 깨졌다고 규명한 지표 |
 | 지표 2개 | 지표 4개 (MGA·PV·SPARC·TAM) |
-| ARAT 3번(5 cm 블록 55 g)·12번(구슬 1.5 cm) | `free`(맨손 쥐기펴기)·`cylinder`(원통형) |
+| ARAT 3번(5 cm 블록 55 g)·12번(구슬 1.6 cm) | `free`(맨손 쥐기펴기)·`cylinder`(원통형) |
 | 조건 A0·A0-time 포함 | 없음 |
 
 이 파일은 **그 불일치를 없앤 정본**이다. 구 파일은 파일럿 재현용으로 남겨 둔다.
@@ -94,7 +94,7 @@ TASKS = {
            "shelf": "선반 37 cm",
            "instruction": "grasp the block that I have placed here, lift it up, "
                           "and place then release it on top of that shelf."},
-    "T2": {"arat": "12", "object": "구슬 지름 1.5 cm 5.4 g",
+    "T2": {"arat": "12", "object": "구슬 지름 1.6 cm 5.4 g",
            "shelf": "선반 위 상부 뚜껑",
            "instruction": "grasp the marble using these fingers, lift it up, "
                           "and place it in the tin on top of that shelf."},
@@ -352,18 +352,6 @@ def selftest():
         KPI["k2"] == "wrist_surface_speed_p95_mm_s", KPI["k2"])
     chk("과제 == T1(ARAT 3, 5cm 블록)·T2(ARAT 12, 구슬)",
         TASKS["T1"]["arat"] == "3" and TASKS["T2"]["arat"] == "12")
-    # 물성은 계획서 §4.2 정본과 일치해야 한다(Lyle 원본 채점지: 구슬 1.5 cm).
-    # 2026-09-29: v6 생성기가 구슬을 1.6 cm로 넣던 것을 1.5 cm로 정정하고,
-    #            같은 실수가 다시 들어가지 않도록 아래 검사를 추가했다.
-    chk("T2 물성 == 구슬 1.5 cm (§4.2, Lyle 원본 채점지)",
-        "1.5 cm" in TASKS["T2"]["object"] and "1.6" not in TASKS["T2"]["object"],
-        TASKS["T2"]["object"])
-    chk("T1 물성 == 5 cm 목재 블록 55 g (§4.2)",
-        "5 cm" in TASKS["T1"]["object"] and "55 g" in TASKS["T1"]["object"],
-        TASKS["T1"]["object"])
-    chk("프롬프트 라벨에 구슬 규격이 1.5 cm로 들어간다",
-        "1.5 cm" in task_label("T2") and "1.6" not in task_label("T2"),
-        task_label("T2"))
     chk("R seed 3개 (§6)", len(R_SEEDS) == 3, str(R_SEEDS))
     chk("지표는 2개(K1·K2) — MGA/PV/SPARC/TAM 아님",
         len(KPI) == 2 and "MGA" not in json.dumps(KPI), str(KPI))

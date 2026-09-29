@@ -1,4 +1,7 @@
-# Clock/kinematics revision 3.2, 2026-09-29. See accompanying CHANGELOG.
+# Clock/kinematics revision 3.1, 2026-09-29. See accompanying CHANGELOG.
+#   3.1: added per-cycle SPARC (SPARC_PerCycle_Mean_v2) alongside whole-trial
+#        SPARC_PIP_Speed_v2. Balasubramanian 2015 recommends computing smoothness
+#        per cycle for rhythmic movements; trials with 1-2 cycles now report both.
 import os
 os.environ.update({'TF_ENABLE_ONEDNN_OPTS': '0', 'TF_CPP_MIN_LOG_LEVEL': '2',
                    'QT_ENABLE_HIGHDPI_SCALING': '1', 'QT_AUTO_SCREEN_SCALE_FACTOR': '1'})
@@ -294,62 +297,6 @@ def thumb_abduction(canon):
         return palmar, None
     radial = float(np.degrees(np.arccos(np.clip(np.dot(vp, ref) / (nv * nr), -1.0, 1.0))))
     return palmar, radial
-
-
-
-def wrist_k2(records, dt_min=0.005, dt_max=0.1, min_pairs=50):
-    """RS camera-space wrist surface speed; adjacent acquired frames only.
-
-    Candidate and sample-count gate are separate; full protocol Q gating is external.
-    Thresholds are engineering settings, not clinically validated cutoffs.
-    """
-    speeds = []
-    rejected = 0
-    for left, right in zip(records, records[1:]):
-        try:
-            dt = float(right['mono']) - float(left['mono'])
-            if not np.isfinite(dt) or not dt_min <= dt <= dt_max:
-                raise ValueError('time')
-            if int(right['frame_id']) != int(left['frame_id']) + 1:
-                raise ValueError('missing_frame')
-            if left['hand'] != right['hand']:
-                raise ValueError('hand')
-            a, b = left['rs'], right['rs']
-            if not a or not b or a['status'][0] != 'ok' or b['status'][0] != 'ok':
-                raise ValueError('invalid_wrist')
-            pa, pb = np.asarray(a['points'][0], float), np.asarray(b['points'][0], float)
-            if pa.shape != (3,) or pb.shape != (3,) or not np.isfinite([pa, pb]).all():
-                raise ValueError('invalid_point')
-            speeds.append(float(np.linalg.norm(pb-pa)*1000.0/dt))
-        except (KeyError, TypeError, ValueError, IndexError):
-            rejected += 1
-    candidate = float(np.percentile(speeds, 95)) if speeds else None
-    return dict(candidate=candidate, value=candidate if len(speeds)>=min_pairs else None,
-                valid_pairs=len(speeds), rejected_pairs=rejected,
-                status='candidate_requires_Q_review' if len(speeds)>=min_pairs else 'insufficient_valid_pairs')
-
-
-def frame_calibration(frame):
-    intr = frame.profile.as_video_stream_profile().get_intrinsics()
-    return dict(width=intr.width, height=intr.height, fx=intr.fx, fy=intr.fy,
-                ppx=intr.ppx, ppy=intr.ppy, model=str(intr.model), coeffs=list(intr.coeffs))
-
-
-def save_depth_packet(folder, frame_id, color_bgr, native_depth, aligned_depth, metadata):
-    """One lossless NPZ per processed RGB frame, atomic replacement, no pickle.
-
-    Native sensor depth and SDK-aligned depth remain distinct uint16 arrays.
-    RGB is saved losslessly too so offline landmark/depth matching is reproducible.
-    """
-    root = os.path.join(folder, 'raw_rgbd')
-    os.makedirs(root, exist_ok=True)
-    path = os.path.join(root, f'{frame_id:09d}.npz')
-    tmp = path + '.tmp'
-    with open(tmp, 'wb') as fp:
-        np.savez(fp, color_bgr=color_bgr, depth_native_u16=native_depth,
-                 depth_aligned_u16=aligned_depth,
-                 metadata_json=np.asarray(json.dumps(metadata, ensure_ascii=False)))
-    os.replace(tmp, path)
 
 
 def _mono(t):
@@ -1162,8 +1109,6 @@ class VideoWorker(QThread):
         """세션 시작 시 호출. 실제 파일 생성은 다음 캡처 프레임에서 일어난다."""
         self._rec_folder = folder
         self.last_recording = None
-        self.depth_saved = 0
-        self.depth_save_errors = 0
         self._rec_done.clear()
         self._rec_request = True
 
@@ -1231,8 +1176,6 @@ class VideoWorker(QThread):
         mts = list(self.rec_mono)
         n = len(ts)
         info = {'folder': folder, 'frames': n,
-                'raw_depth_saved': getattr(self, 'depth_saved', 0),
-                'raw_depth_errors': getattr(self, 'depth_save_errors', 0),
                 'nominal_fps': VIDEO_NOMINAL_FPS, 'actual_fps': None,
                 'duration_s': None, 'speed_ratio': None,
                 'timestamps_csv': None, 'patched': []}
@@ -1415,23 +1358,10 @@ class VideoWorker(QThread):
             vis_depth = None
             color_num = color_ts = depth_num = depth_ts = None
             color_domain = depth_domain = 'unavailable'
-            depth_packet = None
             if pipe is not None:
                 try:
                     frames = pipe.wait_for_frames(timeout_ms=2000)
                     cap_mono, cap_unix = time.perf_counter(), time.time()
-                    native_df, native_cf = frames.get_depth_frame(), frames.get_color_frame()
-                    if native_df and native_cf:
-                        extr = native_df.profile.get_extrinsics_to(native_cf.profile)
-                        depth_packet = (np.asanyarray(native_df.get_data()).copy(), {
-                            'native_depth_intrinsics': frame_calibration(native_df),
-                            'color_intrinsics': frame_calibration(native_cf),
-                            'depth_to_color_rotation': list(extr.rotation),
-                            'depth_to_color_translation_m': list(extr.translation),
-                            'native_depth_frame_number': int(native_df.get_frame_number()),
-                            'native_depth_timestamp_ms': float(native_df.get_timestamp()),
-                            'native_depth_timestamp_domain': str(native_df.get_frame_timestamp_domain()),
-                        })
                     frames = align.process(frames)
                 except Exception:
                     time.sleep(0.01)
@@ -1495,29 +1425,6 @@ class VideoWorker(QThread):
                 self._open_writers(frame)
             if self.rec_raw is not None:
                 self.rec_raw.write(frame)
-                try:
-                    if pipe is None or depth_packet is None or not df:
-                        raise ValueError('raw_depth_unavailable')
-                    native_depth, depth_meta = depth_packet
-                    depth_meta.update(frame_id=self.frame_id, capture_monotonic_s=cap_mono,
-                        capture_unix_s=cap_unix, depth_scale_m=self.depth_scale,
-                        color_frame_number=color_num, color_timestamp_ms=color_ts,
-                        color_timestamp_domain=color_domain,
-                        aligned_depth_intrinsics=frame_calibration(df),
-                        camera_info=self.camera_info, format_version='3.1',
-                        color_order='BGR', depth_unit='uint16 * depth_scale_m = metres')
-                    save_depth_packet(self._rec_folder, self.frame_id, frame,
-                        native_depth, np.asanyarray(df.get_data()).copy(), depth_meta)
-                    self.depth_saved += 1
-                except Exception as exc:
-                    self.depth_save_errors += 1
-                    print(f'[RAW DEPTH ERROR] Frame {self.frame_id}: {exc}')
-                    try:
-                        with open(os.path.join(self._rec_folder, 'raw_depth_errors.jsonl'), 'a', encoding='utf-8') as err:
-                            err.write(json.dumps(dict(frame_id=self.frame_id, error=str(exc),
-                                capture_monotonic_s=cap_mono))+'\n')
-                    except OSError:
-                        pass
 
             rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             rgb.flags.writeable = False
@@ -2591,7 +2498,6 @@ class ClinicalApp(QMainWindow):
                         all(v is not None and np.isfinite(v) for v in vs) else np.nan)
         cycles, period = count_cycles(times, flex)
         kinetics = pip_kinematics(times, flex)
-        k2 = wrist_k2(seg)
         kinetics_pc = sparc_per_cycle(times, flex)
         fs, es = kinetics['flex_peak'], kinetics['ext_peak']
         sp = kinetics['sparc_v2']
@@ -2649,7 +2555,8 @@ class ClinicalApp(QMainWindow):
                     cmc_rom=tam_j.get('Thumb_CMC'),
                     pab_max=pab_max, pab_rom=pab_rom, rab_max=rab_max, rab_rom=rab_rom,
                     cycles=cycles, period=period,
-                    flex_speed=fs, ext_speed=es, sparc=sp, kinematics_qc=kinetics, k2=k2, sparc_pc=kinetics_pc,
+                    flex_speed=fs, ext_speed=es, sparc=sp, kinematics_qc=kinetics,
+                    sparc_pc=kinetics_pc,
                     mga3d=m3('aperture_mm'), mga3d_cal=m3('aperture_mm_cal'),
                     rom3d=(max(p3) - min(p3)) if len(p3) >= 2 else None,
                     samples=len(seg), valid_duration=valid_dur,
@@ -2694,9 +2601,7 @@ class ClinicalApp(QMainWindow):
         self.save_session(dur)
 
         rec = self.rec_info
-        if getattr(self.worker, 'depth_save_errors', 0) or not getattr(self.worker, 'depth_saved', 0):
-            self.toast(f"⚠ 원시 깊이 저장 확인 필요: 성공 {getattr(self.worker, 'depth_saved', 0)} / 오류 {getattr(self.worker, 'depth_save_errors', 0)}. raw_depth_errors.jsonl 확인")
-        elif rec and rec.get('actual_fps'):
+        if rec and rec.get('actual_fps'):
             self.toast(f"✅ 저장 완료! {n}개 회차 ({dur:.1f}초) · 영상 {rec['frames']}프레임 "
                        f"@ 실측 {rec['actual_fps']:.2f}fps (재생 {rec['duration_s']:.1f}초)", ok=True)
         else:
@@ -2846,8 +2751,6 @@ class ClinicalApp(QMainWindow):
                           "SPARC_PIP_Speed_v2", "SPARC_Status", "SPARC_Grid_Hz", "SPARC_Fc_Hz",
                           "Flex_P95_deg_s", "Ext_P95_deg_s", "Velocity_Status",
                           "Velocity_Valid_Samples", "Bad_Time_Pairs", "Gap_Count",
-                          "K2_Wrist_Speed_P95_mm_s", "K2_Candidate_P95_mm_s",
-                          "K2_Valid_Pairs", "K2_Rejected_Pairs", "K2_Status",
                           "SPARC_PerCycle_Mean_v2", "SPARC_PerCycle_N", "SPARC_PerCycle_Status"])
             for tr in self.trials:
                 w.writerow([f"Trial #{tr['trial']}", tr['hand'], tr['task_short'],
@@ -2868,16 +2771,15 @@ class ClinicalApp(QMainWindow):
                               f(tr['rs_valid_rate'], "{:.3f}"), f(tr['rs_mga_p95'], "{:.1f}"),
                               f(tr['rs_rom']), f(tr['rs_landmarks_mean'], "{:.1f}"),
                               f(tr['rs_dist_median'], "{:.3f}"),
-                              f(tr.get('requested')), int(bool(tr.get('interrupted'))), "3.2", "pc_acquisition_perf_counter",
+                              f(tr.get('requested')), int(bool(tr.get('interrupted'))), "3.1", "pc_acquisition_perf_counter",
                               f(tr['sparc'], "{:.6f}"), tr['kinematics_qc']['sparc_status'],
                               f(tr['kinematics_qc']['resample_hz'], "{:.6f}"),
                               f(tr['kinematics_qc']['sparc_fc_hz'], "{:.6f}"),
                               f(tr['kinematics_qc']['flex_p95']), f(tr['kinematics_qc']['ext_p95']),
                               tr['kinematics_qc']['velocity_status'], tr['kinematics_qc']['velocity_samples'],
                               tr['kinematics_qc']['bad_time_pairs'], tr['kinematics_qc']['gap_count'],
-                              f(tr['k2']['value'], '{:.6f}'), f(tr['k2']['candidate'], '{:.6f}'),
-                              tr['k2']['valid_pairs'], tr['k2']['rejected_pairs'], tr['k2']['status'],
-                              f(tr['sparc_pc']['mean'], '{:.6f}'), tr['sparc_pc']['n_used'], tr['sparc_pc']['status']])
+                              f(tr['sparc_pc']['mean'], "{:.6f}"), tr['sparc_pc']['n_used'],
+                              tr['sparc_pc']['status']])
 
     def _save_frame_quality(self, path):
         """프레임 단위 취득 품질. 손이 잡히지 않은 프레임도 남겨야
@@ -2961,7 +2863,7 @@ class ClinicalApp(QMainWindow):
                 "working_distance_m": [WORK_MIN_M, WORK_MAX_M],
             },
             "processing": {
-                "version": "3.2", "clock": "pc_acquisition_perf_counter",
+                "version": "3.1", "clock": "pc_acquisition_perf_counter",
                 "rejected_clock_frames": self.rejected_clock_frames,
                 "session_start_monotonic_s": self.t_session,
                 "session_start_unix_s": self.session_unix_start,
@@ -2970,14 +2872,12 @@ class ClinicalApp(QMainWindow):
                 "velocity": "mean of four PIP angles; nonuniform derivative within valid blocks",
                 "legacy_SPARC": "retired: blank column",
                 "SPARC_PIP_Speed_v2": "exploratory whole-trial absolute angular speed; uniform angle interpolation; adaptive spectral cutoff; not reach SPARC",
+                "SPARC_PerCycle_Mean_v2": "mean of the same v2 SPARC computed per open->closed->open cycle within the longest gap-free run (Balasubramanian 2015 rhythmic recommendation); blank when no usable cycle segment",
                 "sparc_grid": "spacing >= longest source interval; no recovered high-frequency information",
                 "sparc_amplitude_threshold": 0.05, "sparc_padlevel": 4,
                 "sparc_max_fc_hz": 10.0,
                 "P95": "supplementary sample percentile across signed directional velocity; not peak replacement",
-                "K2": "RS wrist surface camera-space 3D forward interval speed P95; dt 0.005..0.1 s; consecutive Frame_ID only; >=50 valid pairs; full Q gate external",
-                "raw_rgbd": "lossless per-frame NPZ: native uint16 depth, aligned uint16 depth, BGR, calibration and timestamps; processed frames only",
-                "raw_depth_saved": getattr(self.worker, 'depth_saved', 0),
-                "raw_depth_errors": getattr(self.worker, 'depth_save_errors', 0),
+                "K2": "not implemented or inferred from MediaPipe relative coordinates",
             },
             "conventions": {
                 "angle": "angle3() 관절 사이각. 180도 = 완전 신전. 굴곡으로 보고할 때는 (180 - theta).",
@@ -3128,7 +3028,7 @@ class ClinicalApp(QMainWindow):
         nv = [m['n_valid'] for m in measures.values()] if measures else []
         rs_txt = f" | RS: {'/'.join(str(x) for x in nv)}/21" if nv else ""
         self.lbl_fps.setText(f"{cam} | FPS: {fps:.1f} | Hands: {n_hands} | "
-                             f"MP3D: {len(hands3d)}{rs_txt} | RAW 저장 {getattr(self.worker, 'depth_saved', 0)} / 오류 {getattr(self.worker, 'depth_save_errors', 0)}")
+                             f"MP3D: {len(hands3d)}{rs_txt}")
         if measures:
             self._update_qc(measures)
 
