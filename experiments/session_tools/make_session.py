@@ -40,11 +40,17 @@ GROUPS = {
                      "note": "장애인 본평가 — 과제당 본 1–3회를 모델 평가에 사용"},
 }
 
-# 채점 시트 필드 (프로토콜 §4)
+# 채점 시트 필드 (ARAT 원형 + 최소 분석용 부가 기록)
+# 2026-09-30: 낙하·최선수행 규칙 추적을 위해 3열 추가(dropped_then_relifted·release_failed·reattempts).
+# 근거: outputs/채점자_룰북_ARAT_기준.md (Yozbatiran 2008, "best performance")
 SCORE_FIELDS = [
-    "participant_id", "side", "task", "phase", "trial_index", "score", "time_s",
-    "finger_used", "pad_used", "voluntary_lift", "reached_target", "released",
-    "abnormal_arm", "posture_loss", "not_assessable", "rater", "blinded", "note",
+    # --- ARAT 원형: 점수는 `score` 열만 본다 (0/1/2/3) ---
+    "participant_id", "side", "task", "phase", "trial_index", "time_s", "score",
+    "rater", "blinded",
+    # --- 분석용 부가 기록 (ARAT 채점 자체에는 영향 없음) ---
+    "finger_used", "pad_used", "released", "dropped_then_relifted",
+    "release_failed", "reattempts", "voluntary_lift", "reached_target",
+    "abnormal_arm", "posture_loss", "not_assessable", "note",
 ]
 
 DIRS = [

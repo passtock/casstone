@@ -18,6 +18,7 @@
     "q3_valid_samples_k2": 89,
     "q4_edge_mixing_frac": 0.0,
     "q5_not_assessable_frac": 0.0,
+    "q5_blank_frac": 0.0,
     "dt_min_used_s": 0.016667,
     "n_pairs_excluded_dt_small": 30,
     "n_pairs_excluded_dt_large": 0
@@ -31,6 +32,7 @@
     "cy": 240.0,
     "fps": 30.0,
     "q1_min": 0.0,
+    "use_q5": false,
     "dt_min_cli": null,
     "dt_rule": "V-1: dt < dt_min 쌍 제외 · dt > 0.10s 제외 · dt <= 0 제외",
     "units": {
@@ -40,6 +42,7 @@
     },
     "pipeline": "l1_pipeline/k1k2_from_files.py"
   },
+  "q5_verdict": "assessable",
   "usable": {
     "k1": true,
     "k2": true,

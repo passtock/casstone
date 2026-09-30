@@ -1,9 +1,13 @@
-7초/30fps → 54프레임 PASS got 54
+7초/30fps → 상한 64 (50 + 꼬리 14) PASS got 64
 첫 프레임 0 · 간격 3 PASS [0, 3, 6, 9]
 50번째 = 147 PASS got 147
-꼬리 간격 15 PASS [150, 165, 180, 195]
+마지막 프레임 = T_end 포함 PASS got 209
 긴 영상도 상한 64 PASS got 64
+60초에서도 마지막 프레임 포함 PASS got 1799
+꼬리가 뒤쪽까지 분산(>30초 지점 존재) PASS max=1799
+오름차순·중복 없음 PASS 
 빈 영상 → 0 PASS 
+1프레임 영상 → [0] PASS 
 한글 경로에 저장됨 PASS size=86
 '2' → 2 PASS 
 '3\n정상 수행' → 3 PASS 
@@ -23,26 +27,26 @@ T2 → T2 PASS
 Trial #3 → t3 PASS 
 조합 PASS S01__Right__T2__t1
 합성 영상 생성 PASS size=147646
-프레임 54장 저장 PASS {'video': 'C:\\Users\\passp\\AppData\\Local\\Temp\\vlm_selftest_ip86qqpk\\vid\\합성_테스트.avi', 'fps': 30.0, 'total_frames_read': 210, 'expected_n': 54, 'saved_n': 54, 'frame_cap': 64}
+프레임 64장 저장(수정 규칙) PASS {'video': 'C:\\Users\\passp\\AppData\\Local\\Temp\\vlm_selftest_k41gt4p7\\vid\\합성_테스트.avi', 'fps': 30.0, 'total_frames_read': 210, 'expected_n': 64, 'saved_n': 64, 'frame_cap': 64}
 640×480 로 축소 PASS (480, 640)
 파일 크기 > 0 PASS 
 행 5개 생성 PASS got 5
 trial_id 규칙 적용 PASS S01__Right__T1__t1
-A2 는 K1·K2 모두 제공 PASS 
+A2 는 M1·M2·M4 모두 제공 PASS {'m1_provided': 1, 'm2_provided': 1, 'm4_provided': 1}
 A1 은 수치 없음 PASS 
-A3 은 K1만 제공 PASS 
-R 은 K2만 제공 PASS 
+A3 은 M2만 미제공(Q 보류) PASS 
+R 은 M1만 제거 PASS 
 mock 점수 0..3 PASS [1, 3, 1, 2, 0]
 mock 표시가 rationale 에 있음 PASS 
 output_status == ok PASS 
 predictions.csv 저장 PASS 
 dry 는 점수 없음(parse_failed) PASS 
 dry 는 실패로 계수 PASS n_fail=2
-manifest 에 프레임 수 기록 PASS 54
+manifest 에 프레임 수 기록 PASS 64
 연습 1건 제외 → 2행 PASS n=2
 trial_id 가 conditions 규칙과 일치 PASS S01__Right__T1__t1
 점수 보존 PASS 
 analysis_harness 가 오류 없이 실행 PASS 
-보고서에 PR-1 포함 PASS stdout 3507자
+보고서에 PR-1 포함 PASS stdout 3576자
 보류율 표가 계산됨 PASS 
 PR-1 배선 표기 확인 PASS 

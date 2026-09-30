@@ -16,3 +16,10 @@ auto 하한 → K2 폭발하지 않음 (보류(None) 또는 <300 mm/s) PASS on=N
 긴 시행(n=120)에서는 K2가 보고되고 폭발 안 함 (<300) PASS long=135.0014
 제외된 dt<min 쌍 수 기록 (>5) PASS got 15
 dt_min_used 기록 PASS 0.016667
+Q1 동결값 == 0.3 (§7.3) PASS 0.3
+Q2=0.3s · Q3=50 · Q4=0.5s PASS 
+기본(use_q5=False): 90% 못 봄이어도 게이트 통과(자동) PASS []
+q5_verdict = not_assessable 로 별도 기록 PASS 
+use_q5=True 이면 Q5로 보류(옵션) PASS 
+주석이 비면 q5_verdict = no_annotation PASS 
+일부만 못 봄이면 assessable PASS 

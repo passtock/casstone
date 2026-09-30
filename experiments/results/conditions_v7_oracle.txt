@@ -1,0 +1,43 @@
+조건 A1·A2·A3·A4·R PASS 
+주입 3수준+none PASS 
+지표 = M1·M2·M4 (M3 제외) PASS ('m1', 'm2', 'm4')
+프롬프트 키 = mga_mm·tam_total_deg·sparc PASS 
+M1 단위 mm · M2 deg · M4 무차원 PASS 
+T2 물성 = 구슬 1.6 cm PASS 
+T1 물성 = 5 cm·55 g PASS 
+M1 키·값 포함 PASS 
+M2 키·값 포함 PASS 
+M4 키·값 포함 PASS 
+null 지침 포함 PASS 
+낙하 규칙 포함 PASS 
+T2 맞섬·패드 조건 PASS 
+A1엔 수치 블록 없음 PASS 
+A4 라벨 = 제공되지 않음 PASS 
+A1 = 수치 없음 PASS 
+A2 = 원값(M1·M2·M4) PASS 
+A3 = Q-gated(M1만 null) PASS [('m1', None), ('m2', 740.0), ('m4', -3.6)]
+A4 = A3와 동일 PASS 
+bias_1u = 나빠지는 방향(M4는 감소) PASS 
+bias_3u = 3u PASS 
+burst 대상 아님 → 원값 PASS 
+burst 대상 → 3u PASS 
+u 없는 지표는 원값 유지 PASS 
+u 는 비음수(M4도 크기) PASS 
+null은 주입해도 null PASS 
+M1 보류 2 · M2 보류 0 · M4 보류 1 PASS {'m1': 2, 'm2': 0, 'm4': 1}
+지표별 정확히 n건 제거 PASS 
+R 제거집합 ⊆ P PASS 
+R이 Q-보류도 제거 대상에 포함(품질 독립) PASS [('S_T1_t1', 'T1'), ('S_T1_t2', 'T1'), ('S_T1_t3', 'T1'), ('S_T2_t1', 'T2'), ('S_T2_t2', 'T2')]
+하드 결측은 제외 PASS 
+R 행 = 시행수×seed3 PASS R=18 (N=6)
+bias 행 = A2·A3 × 2수준 × 시행수 PASS bias=24
+burst 행 = A2·A3 × 시행수 PASS burst=12
+모든 행에 prompt PASS 
+CSV 필드 고정 PASS 
+M3는 필드에 없다(mga_ 미포함) PASS 
+m1/m2/m4 provided 플래그 3개 PASS 
+u 가 지표별로 따로 기록됨 PASS 
+세 지표 모두 산출 PASS {'m1': 1.9500000000000002, 'm2': 19.5, 'm4': 0.21000000000000002}
+B안 = 기저 P95×0.10 PASS {'m1': 1.9500000000000002, 'm2': 19.5, 'm4': 0.21000000000000002}
+B안 = 기저 P95×0.10 (최소 비율) PASS {'m1': 10.0, 'm2': 100.0, 'm4': 0.4}
+A안 = 절대값 지정 PASS 

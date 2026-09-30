@@ -21,12 +21,13 @@ VLM 실행 하네스 (v6.1 프로토콜 §7) — 조건 → 프레임 → 프롬
 
 ⚠️ **`mock`은 절대 결과가 아니다.** 파일명·rationale·경고문에 표시된다. 논문 인용 금지.
 
-프레임 규칙 (프로토콜 §7, 동결)
-------------------------------
+프레임 규칙 (프로토콜 §7, 2026-09-30 수정)
+-----------------------------------------
 - 앞 **5.0초 = 10 Hz → 50프레임**
-- 5초 초과분 = **2 Hz**
+- **남은 상한(≤14프레임)을 [5초, T_end]에 균등 분산하고 T_end 프레임을 반드시 포함**
+  (⚠️ 앞에서부터 64를 채우면 60초 시행의 완료 장면을 놓친다)
 - **총 상한 64**
-- **640×480** 축소, 원본은 30 fps로 별도 보존
+- **640×480** 축소, 원본은 그대로 보존
 
 출력 (predictions.csv)
 ----------------------
@@ -70,8 +71,7 @@ FRAME_W, FRAME_H = 640, 480
 DEFAULT_FPS = 30.0
 
 # K1/K2 로 쓰는 지표 이름 (make_conditions.py 의 metric 이름과 일치해야 함)
-K1_METRIC = "MGA_mm_3D_cal"
-K2_METRIC = "PV_mm_s"
+METRIC_KEYS = ("m1", "m2", "m4")   # 계획서 §7.6 · make_conditions_v6.py( v7)와 동일
 
 CONDITIONS = ["A1", "A2", "A3", "A4", "R"]
 MOCK_MARK = "[MOCK — 모델 출력 아님]"
@@ -104,28 +104,35 @@ def safe_imwrite(path, img, ext=".png"):
 # ===========================================================================
 def frame_indices(total_frames, fps, head_sec=HEAD_SEC, head_hz=HEAD_HZ,
                   tail_hz=TAIL_HZ, cap=FRAME_CAP):
-    """프로토콜 §7 규칙으로 뽑을 프레임 인덱스 목록 (오름차순, 중복 없음)."""
+    """프로토콜 §7 규칙(2026-09-30 수정)으로 뽑을 프레임 인덱스 목록(오름차순, 중복 없음).
+
+    앞 5초는 10 Hz(=50프레임), **남은 상한은 [5초, T_end]에 균등 분산하고 마지막 프레임을
+    반드시 포함**한다.  앞에서부터 64를 채우면 60초 시행의 완료 장면을 놓친다.
+    (tail_hz 는 하위호환용 인자로만 남긴다 — 꼬리는 이제 균등 분산으로 뽑는다.)
+    """
     if total_frames <= 0 or fps <= 0:
         return []
+    last = total_frames - 1
     idx = []
     head_n = int(round(head_sec * head_hz))
     step_h = max(1, int(round(fps / head_hz)))
     for i in range(head_n):
         j = i * step_h
-        if j >= total_frames:
+        if j > last:
             break
         idx.append(j)
     n_head = len(idx)
     remain = cap - n_head
     if remain > 0:
-        step_t = max(1, int(round(fps / tail_hz)))
-        start = int(round(head_sec * fps))
-        j = start
-        while len(idx) < cap:
-            if j >= total_frames:
-                break
-            idx.append(j)
-            j += step_t
+        start = min(int(round(head_sec * fps)), last)
+        if remain == 1:
+            tail = [last]
+        else:
+            span = last - start
+            tail = sorted(set(
+                start + int(round(span * k / float(remain - 1)))
+                for k in range(remain)))
+        idx.extend(tail)
     # 중복 제거 + 정렬 + 상한
     idx = sorted(set(idx))[:cap]
     return idx
@@ -266,10 +273,16 @@ def load_conditions(path):
     return rows
 
 
-def provided_flag(row, metric):
-    """그 지표가 프롬프트에 실제로 들어갔는가 (값 열이 비어 있지 않으면 1)."""
-    v = (row.get("v_" + metric) or "").strip()
-    return 1 if v else 0
+def provided_flag(row, metric_key):
+    """그 지표가 프롬프트에 실제로 들어갔는가.
+
+    v7 스키마: conditions.csv 의 `<m1|m2|m4>_provided` 열(1/0)을 읽는다.
+    (구 스키마 `v_<metric>` 열도 하위호환으로 지원)
+    """
+    v = (row.get(metric_key + "_provided") or "").strip()
+    if v != "":
+        return 1 if v in ("1", "1.0", "true", "True") else 0
+    return 1 if (row.get("v_" + metric_key) or "").strip() else 0
 
 
 def read_prompt(row, cond_dir):
@@ -423,9 +436,9 @@ def run_all(cond_csv, out_dir, backend="dry", limit=None, run_idx=1,
             "predicted_score": "" if score is None else score,
             "rationale": cap_sentences(rationale, 2),
             "output_status": status,
-            "k1_provided": provided_flag(r, K1_METRIC),
-            "k2_provided": provided_flag(r, K2_METRIC),
         })
+        for _k in METRIC_KEYS:
+            out_rows[-1][_k + "_provided"] = provided_flag(r, _k)
         manifest.append({
             "key": key, "trial_id": tid, "condition": cond, "injection": inj,
             "backend": backend, "prompt_source": prompt_src,
@@ -440,9 +453,9 @@ def run_all(cond_csv, out_dir, backend="dry", limit=None, run_idx=1,
 
 
 def write_predictions(rows, path):
-    cols = ["participant_id", "trial_id", "task", "condition", "injection", "run",
-            "predicted_score", "rationale", "output_status",
-            "k1_provided", "k2_provided"]
+    cols = (["participant_id", "trial_id", "task", "condition", "injection", "run",
+             "predicted_score", "rationale", "output_status"]
+            + [k + "_provided" for k in METRIC_KEYS])
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
     with io.open(path, "w", encoding="utf-8-sig", newline="") as f:
         w = csv.DictWriter(f, fieldnames=cols)
@@ -510,14 +523,18 @@ def selftest():
 
     print("[V1] 프레임 인덱스 규칙 (프로토콜 §7)")
     idx = frame_indices(210, 30.0)          # 30fps, 7초
-    # 앞 5초 = 10Hz → 50프레임 (0,3,...,147) ; 초과 2초 = 2Hz → 150,165,180,195
-    chk("7초/30fps → 54프레임", len(idx) == 54, "got %d" % len(idx))
+    chk("7초/30fps → 상한 64 (50 + 꼬리 14)", len(idx) == 64, "got %d" % len(idx))
     chk("첫 프레임 0 · 간격 3", idx[0] == 0 and idx[1] == 3, str(idx[:4]))
     chk("50번째 = 147", idx[49] == 147, "got %d" % idx[49])
-    chk("꼬리 간격 15", idx[50] == 150 and idx[51] == 165, str(idx[50:54]))
+    chk("마지막 프레임 = T_end 포함", idx[-1] == 209, "got %d" % idx[-1])
     idx_long = frame_indices(30 * 60, 30.0)  # 60초
     chk("긴 영상도 상한 64", len(idx_long) == 64, "got %d" % len(idx_long))
+    chk("60초에서도 마지막 프레임 포함", idx_long[-1] == 30 * 60 - 1, "got %d" % idx_long[-1])
+    chk("꼬리가 뒤쪽까지 분산(>30초 지점 존재)", any(i > 30 * 30 for i in idx_long),
+        "max=%d" % max(idx_long))
+    chk("오름차순·중복 없음", idx_long == sorted(set(idx_long)))
     chk("빈 영상 → 0", frame_indices(0, 30.0) == [])
+    chk("1프레임 영상 → [0]", frame_indices(1, 30.0) == [0])
 
     print("[V2] 비ASCII 경로 저장 (결함 D-7 재발 방지)")
     import numpy as np
@@ -564,7 +581,7 @@ def selftest():
         vw.release()
         chk("합성 영상 생성", os.path.isfile(vpath), "size=%d" % os.path.getsize(vpath))
         paths, meta = extract_frames(vpath, os.path.join(tmp, "fr"))
-        chk("프레임 54장 저장", meta["saved_n"] == 54, str(meta))
+        chk("프레임 64장 저장(수정 규칙)", meta["saved_n"] == 64, str(meta))
         chk("640×480 로 축소", cv2.imread(paths[0], cv2.IMREAD_COLOR).shape[:2] == (480, 640),
             str(cv2.imread(paths[0], cv2.IMREAD_COLOR).shape[:2]))
         chk("파일 크기 > 0", all(os.path.getsize(p) > 0 for p in paths))
@@ -575,22 +592,31 @@ def selftest():
         w = csv.writer(f)
         w.writerow(["key", "pid", "session", "trial", "hand", "task", "condition",
                     "injection", "r_seed", "video", "n_numbers", "held", "q_pass",
-                    "q_reasons", "T_s", "v_" + K1_METRIC, "v_" + K2_METRIC,
+                    "q_reasons", "T_s", "m1_provided", "m2_provided", "m4_provided",
                     "inject_notes", "prompt_path"])
-        for cond_name, k1v, k2v in (("A1", "", ""), ("A2", "97.8", "7947"),
-                                    ("A3", "97.8", ""), ("A4", "97.8", ""), ("R", "", "7947")):
+        for cond_name, m1p, m2p, m4p in (("A1", "0", "0", "0"), ("A2", "1", "1", "1"),
+                                        ("A3", "1", "0", "1"), ("A4", "1", "1", "1"),
+                                        ("R", "0", "1", "1")):
             w.writerow(["k_%s" % cond_name, "S01", "sess", "Trial #1", "Right",
                         "Task 1: 맨손", cond_name, "none", "20260922", vpath,
-                        "2", "", "1", "", "7.89", k1v, k2v, "", "prompts/x.txt"])
+                        "2", "", "1", "", "7.89", m1p, m2p, m4p, "", "prompts/x.txt"])
     rows, manifest, n_fail = run_all(cond, os.path.join(tmp, "out"), backend="mock")
     chk("행 5개 생성", len(rows) == 5, "got %d" % len(rows))
     by = {r["condition"]: r for r in rows}
     chk("trial_id 규칙 적용", by["A2"]["trial_id"] == "S01__Right__T1__t1",
         by["A2"]["trial_id"])
-    chk("A2 는 K1·K2 모두 제공", by["A2"]["k1_provided"] == 1 and by["A2"]["k2_provided"] == 1)
-    chk("A1 은 수치 없음", by["A1"]["k1_provided"] == 0 and by["A1"]["k2_provided"] == 0)
-    chk("A3 은 K1만 제공", by["A3"]["k1_provided"] == 1 and by["A3"]["k2_provided"] == 0)
-    chk("R 은 K2만 제공", by["R"]["k1_provided"] == 0 and by["R"]["k2_provided"] == 1)
+    chk("A2 는 M1·M2·M4 모두 제공",
+        by["A2"].get("m1_provided") == 1 and by["A2"].get("m2_provided") == 1
+        and by["A2"].get("m4_provided") == 1, str({k: by["A2"].get(k) for k in ("m1_provided", "m2_provided", "m4_provided")}))
+    chk("A1 은 수치 없음",
+        by["A1"].get("m1_provided") == 0 and by["A1"].get("m2_provided") == 0
+        and by["A1"].get("m4_provided") == 0)
+    chk("A3 은 M2만 미제공(Q 보류)",
+        by["A3"].get("m1_provided") == 1 and by["A3"].get("m2_provided") == 0
+        and by["A3"].get("m4_provided") == 1)
+    chk("R 은 M1만 제거",
+        by["R"].get("m1_provided") == 0 and by["R"].get("m2_provided") == 1
+        and by["R"].get("m4_provided") == 1)
     chk("mock 점수 0..3", all(r["predicted_score"] in (0, 1, 2, 3) for r in rows),
         str([r["predicted_score"] for r in rows]))
     chk("mock 표시가 rationale 에 있음",
@@ -604,7 +630,7 @@ def selftest():
     rows_d, man_d, nf_d = run_all(cond, os.path.join(tmp, "out_dry"), backend="dry", limit=2)
     chk("dry 는 점수 없음(parse_failed)", all(r["predicted_score"] == "" for r in rows_d))
     chk("dry 는 실패로 계수", nf_d == 2, "n_fail=%d" % nf_d)
-    chk("manifest 에 프레임 수 기록", man_d[0]["n_frames"] == 54, str(man_d[0]["n_frames"]))
+    chk("manifest 에 프레임 수 기록", man_d[0]["n_frames"] == 64, str(man_d[0]["n_frames"]))
 
     print("[V8] 채점시트 → reference.csv")
     sheet = os.path.join(tmp, "score_sheet.csv")

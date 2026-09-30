@@ -125,6 +125,49 @@ def bootstrap_ci_mean(xs, n_boot=BOOT_N, seed=BOOT_SEED, alpha=0.05):
     return (lo, hi, p)
 
 
+def _norm_cdf(z):
+    return 0.5 * (1.0 + math.erf(z / math.sqrt(2.0)))
+
+
+def wilcoxon_signed_rank(diffs):
+    """양측 Wilcoxon signed-rank (정규근사 + 연속성보정 + tie 보정). 반환 (W, p).
+
+    scipy 불필요. |d|=0 쌍은 제외(Wilcoxon 규약). n<6이면 (None, None) — 검정 불가.
+    주 검정법: 계획서 §11.1 (양측 Wilcoxon, 장애인 단위 대응, Holm k=3).
+    """
+    d = [x for x in diffs if x is not None
+         and not (isinstance(x, float) and math.isnan(x)) and x != 0.0]
+    n = len(d)
+    if n < 6:
+        return (None, None)
+    order = sorted(range(n), key=lambda i: abs(d[i]))
+    avg = [0.0] * n
+    i = 0
+    while i < n:
+        j = i
+        while j + 1 < n and abs(d[order[j + 1]]) == abs(d[order[i]]):
+            j += 1
+        r = (i + j) / 2.0 + 1.0
+        for k in range(i, j + 1):
+            avg[order[k]] = r
+        i = j + 1
+    Wp = sum(avg[k] for k in range(n) if d[k] > 0)
+    Wm = sum(avg[k] for k in range(n) if d[k] < 0)
+    W = min(Wp, Wm)
+    mu = n * (n + 1) / 4.0
+    cnt = {}
+    for x in d:
+        a = abs(x)
+        cnt[a] = cnt.get(a, 0) + 1
+    tie = sum(t ** 3 - t for t in cnt.values())
+    var = n * (n + 1) * (2 * n + 1) / 24.0 - tie / 48.0
+    if var <= 0:
+        return (W, None)
+    z = (W - mu + 0.5) / math.sqrt(var)
+    p = 2.0 * _norm_cdf(z)
+    return (W, min(1.0, p))
+
+
 def holm(pvals):
     """Holm 보정. 원래 순서대로 adjusted p를 반환."""
     m = len(pvals)
@@ -198,7 +241,7 @@ def load_predictions(path):
                 score = int(float(ps))
             except ValueError:
                 score = None
-            out.append({
+            rec = {
                 "pid": row["participant_id"].strip(),
                 "trial": row["trial_id"].strip(),
                 "task": row.get("task", "").strip(),
@@ -208,9 +251,12 @@ def load_predictions(path):
                 "score": score if (score is not None and SCORE_MIN <= score <= SCORE_MAX) else None,
                 "status": st,
                 "rationale": (row.get("rationale") or "").strip(),
-                "k1_provided": _flag(row.get("k1_provided")),
-                "k2_provided": _flag(row.get("k2_provided")),
-            })
+            }
+            # `*_provided` 열을 **동적으로** 전부 보존 (m1/m2/m4 또는 구 k1/k2)
+            for k, v in row.items():
+                if k and k.endswith("_provided"):
+                    rec[k] = _flag(v)
+            out.append(rec)
     return out
 
 
@@ -236,10 +282,14 @@ def load_references(path):
 # 핵심 집계
 # ===========================================================================
 def _iter_trials(preds, condition, injection="none", run=1, refs=None,
-                 reference="therapist"):
-    """조건에 맞는 (pred_row, ref_score) 를 순회. refs=None이면 ref_score=None."""
+                 reference="therapist", task=None):
+    """조건에 맞는 (pred_row, ref_score) 를 순회. refs=None이면 ref_score=None.
+
+    `task`(예 "T2")가 주어지면 그 과제만 통과시킨다 — **주 분석은 T2 단독**(§11.1)."""
     for pr in preds:
         if pr["condition"] != condition or pr["injection"] != injection or pr["run"] != run:
+            continue
+        if task is not None and pr.get("task") != task:
             continue
         if refs is None:
             yield pr, None
@@ -251,10 +301,10 @@ def _iter_trials(preds, condition, injection="none", run=1, refs=None,
 
 
 def per_patient_mae(preds, refs, condition, injection="none", run=1,
-                    reference="therapist", only_ok=True):
+                    reference="therapist", only_ok=True, task=None):
     """{pid: {'mae':.., 'n':.., 'n_fail':.., 'loss_with_fail':..}}"""
     bucket = {}
-    for pr, ref_score in _iter_trials(preds, condition, injection, run, refs, reference):
+    for pr, ref_score in _iter_trials(preds, condition, injection, run, refs, reference, task):
         b = bucket.setdefault(pr["pid"], {"errs": [], "n_fail": 0, "n_total": 0})
         b["n_total"] += 1
         if pr["status"] in FAIL_STATUSES or pr["score"] is None:
@@ -272,14 +322,14 @@ def per_patient_mae(preds, refs, condition, injection="none", run=1,
 
 
 def per_patient_big_error(preds, refs, condition, injection="none", run=1,
-                          reference="therapist", threshold=BIG_ERROR):
+                          reference="therapist", threshold=BIG_ERROR, task=None):
     """{pid: {'rate': 큰오차비율, 'n_big':.., 'n':..}}
 
     ⚠️ 평균 MAE는 위험을 숨긴다. 이 지표는 **평균이 아니라 위험**을 본다 (RQ-B3).
        실패 출력(parse/api/timeout)은 분모에서 제외하고 별도로 센다.
     """
     bucket = {}
-    for pr, ref_score in _iter_trials(preds, condition, injection, run, refs, reference):
+    for pr, ref_score in _iter_trials(preds, condition, injection, run, refs, reference, task):
         b = bucket.setdefault(pr["pid"], {"n": 0, "n_big": 0, "n_fail": 0})
         if pr["status"] in FAIL_STATUSES or pr["score"] is None:
             b["n_fail"] += 1
@@ -293,33 +343,43 @@ def per_patient_big_error(preds, refs, condition, injection="none", run=1,
 
 
 def abstention_stats(preds, condition, injection="none", run=1):
-    """조건의 **수치 제공/보류** 통계. `k1_provided`/`k2_provided` 열이 있어야 계산된다.
+    """조건의 **수치 제공/보류** 통계. `<m*|k*>_provided` 열을 **자동 인식**한다.
 
-    반환 {'n':시행수, 'k1_rate':K1 제공률, 'k2_rate':K2 제공률, 'any_withheld':≥1개 보류율,
-          'available':bool}
+    반환 {'n','rates':{key:rate},'keys':[...],'k1_rate','k2_rate','any_withheld','available'}
+    (k1_rate/k2_rate는 구 스키마·구 보고서 호환용: m1→k1_rate, m2→k2_rate 로 매핑한다.)
     """
+    keys = None
     n = 0
-    s1 = s2 = 0
-    n1 = n2 = 0
+    sums = {}
     any_withheld = 0
     for pr, _ in _iter_trials(preds, condition, injection, run, None, None):
+        if keys is None:
+            keys = sorted({k[:-len("_provided")] for k in pr if k.endswith("_provided")})
+            if not keys:
+                keys = ["k1", "k2"]
         n += 1
-        a, b = pr["k1_provided"], pr["k2_provided"]
-        if a is not None:
-            n1 += 1
-            s1 += a
-        if b is not None:
-            n2 += 1
-            s2 += b
-        if (a == 0) or (b == 0):
+        vals = {}
+        for k in keys:
+            v = pr.get(k + "_provided")
+            if v is None or v == "":
+                continue
+            v = int(v)
+            vals[k] = v
+            d = sums.setdefault(k, [0, 0])
+            d[0] += v
+            d[1] += 1
+        if any(v == 0 for v in vals.values()):
             any_withheld += 1
-    available = (n1 > 0) or (n2 > 0)
+    rates = {k: (sums[k][0] / sums[k][1]) if sums.get(k, [0, 0])[1] else float("nan")
+             for k in (keys or [])}
     return {
         "n": n,
-        "k1_rate": (s1 / n1) if n1 else float("nan"),
-        "k2_rate": (s2 / n2) if n2 else float("nan"),
+        "rates": rates,
+        "keys": list(keys or []),
+        "k1_rate": rates.get("m1", rates.get("k1", float("nan"))),
+        "k2_rate": rates.get("m2", rates.get("k2", float("nan"))),
         "any_withheld": (any_withheld / n) if n else float("nan"),
-        "available": available,
+        "available": bool(sums),
     }
 
 
@@ -427,7 +487,8 @@ def load_sweep(path):
 # ===========================================================================
 # 보고서
 # ===========================================================================
-def analyze(preds, refs, reference="therapist", run=1, out_csv=None, sweep_rows=None):
+def analyze(preds, refs, reference="therapist", run=1, out_csv=None, sweep_rows=None,
+            task="T2"):
     L = []
     pids = sorted({p["pid"] for p in preds})
     L.append("# 분석 결과 (v6.1 계획서 §9)")
@@ -439,13 +500,18 @@ def analyze(preds, refs, reference="therapist", run=1, out_csv=None, sweep_rows=
     L.append("- **PR-1 = 수치 주입 효과** `MAE(A2) − MAE(A1)` (양수 = 주입이 해로움)")
     L.append("- **PR-2 = 게이팅 효과** `MAE(A2) − MAE(A3)` (양수 = A3가 더 정확)")
     L.append("- **PR-3 = 게이팅의 고유 가치** `MAE(R) − MAE(A3)` (양수 = 품질 규칙이 기여)")
+    L.append("- **주 분석 대상: %s 단독** — 두 과제를 풀링하지 않는다(§11.1). "
+             "T1은 2차(참고)로만 보고." % (task if task else "전체"))
+    L.append("- **주 검정: 양측 Wilcoxon signed-rank**(장애인 단위 대응, Holm k=3). "
+             "n<6이면 bootstrap p로 대체. paired t는 민감도.")
+    L.append("- **주 기준 평가자: therapist**(현장 치료사). independent 는 라벨 민감도 분석.")
     L.append("- 오염 전파(bias_3u)는 **H5 기전, 탐색적**으로 보고")
     L.append("")
 
     # 장애인×조건 MAE 표
     per_cond = {}
     for c in CONDITIONS:
-        per_cond[c] = per_patient_mae(preds, refs, c, "none", run, reference)
+        per_cond[c] = per_patient_mae(preds, refs, c, "none", run, reference, task=task)
     L.append("## 조건별 장애인평균 MAE (주입 없음)")
     L.append("")
     L.append("> ⚠️ 이 표의 MAE는 **장애인별 MAE의 평균(장애인 동등 가중)** 이다. "
@@ -473,15 +539,18 @@ def analyze(preds, refs, reference="therapist", run=1, out_csv=None, sweep_rows=
         L.append("⚠️ **`k1_provided`/`k2_provided` 열이 없어 보류율을 계산할 수 없다.** "
                  "VLM 하네스가 이 두 열을 채워야 한다.")
     else:
-        L.append("| 조건 | 시행수 | K1 제공률 | K2 제공률 | ≥1개 보류율 |")
-        L.append("|---|---:|---:|---:|---:|")
+        L.append("| 조건 | 시행수 | " + " | ".join(
+            ("M%d 제공률" % (i + 1)) for i in range(max(1, len(abst["A2"]["keys"]))))
+            + " | ≥1개 보류율 |")
+        L.append("|---|---:|" + "---:|" * (max(1, len(abst["A2"]["keys"])) + 1))
         for c in NUMERIC_CONDITIONS:
             a = abst[c]
             if not a["available"]:
-                L.append("| %s | %d | — (자료 없음) | — | — |" % (c, a["n"]))
+                L.append("| %s | %d | " % (c, a["n"])
+                         + "— | " * (max(1, len(abst["A2"]["keys"])) + 1))
                 continue
-            L.append("| %s | %d | %.3f | %.3f | **%.3f** |"
-                     % (c, a["n"], a["k1_rate"], a["k2_rate"], a["any_withheld"]))
+            cells = " | ".join("%.3f" % a["rates"].get(k, float("nan")) for k in a["keys"])
+            L.append("| %s | %d | %s | **%.3f** |" % (c, a["n"], cells, a["any_withheld"]))
         L.append("")
         L.append("> ⚠️ **수치를 담지 않는 조건(A0·A0time·A1)은 표에서 제외했다.** "
                  "그 조건에서 '보류'는 의미가 없다(애초에 수치가 없다).")
@@ -500,7 +569,7 @@ def analyze(preds, refs, reference="therapist", run=1, out_csv=None, sweep_rows=
     L.append("| 조건 | 장애인수 | 평균 큰오차 비율 | SD | 전체 큰오차/유효시행 |")
     L.append("|---|---:|---:|---:|---:|")
     for c in CONDITIONS:
-        be = per_patient_big_error(preds, refs, c, "none", run, reference)
+        be = per_patient_big_error(preds, refs, c, "none", run, reference, task=task)
         vals = [v["rate"] for v in be.values()
                 if v["rate"] is not None and not math.isnan(v["rate"])]
         if not vals:
@@ -511,8 +580,8 @@ def analyze(preds, refs, reference="therapist", run=1, out_csv=None, sweep_rows=
         L.append("| %s | %d | **%.3f** | %.3f | %d/%d |"
                  % (c, len(vals), mean(vals), stdev(vals), nb, nn))
     L.append("")
-    d_big = paired_diff(per_patient_big_error(preds, refs, "A2", "none", run, reference),
-                        per_patient_big_error(preds, refs, "A3", "none", run, reference),
+    d_big = paired_diff(per_patient_big_error(preds, refs, "A2", "none", run, reference, task=task),
+                        per_patient_big_error(preds, refs, "A3", "none", run, reference, task=task),
                         key="rate")
     if len(d_big) >= 2:
         ci = bootstrap_ci_mean(d_big)
@@ -526,7 +595,7 @@ def analyze(preds, refs, reference="therapist", run=1, out_csv=None, sweep_rows=
     a2 = per_cond["A2"]
     a3 = per_cond["A3"]
     r_cond = per_cond["R"]
-    a3_b3 = per_patient_mae(preds, refs, "A3", "bias_3u", run, reference)
+    a3_b3 = per_patient_mae(preds, refs, "A3", "bias_3u", run, reference, task=task)
 
     pr1 = paired_diff(a2, a1)          # MAE(A2) − MAE(A1)  수치 주입 효과
     pr2 = paired_diff(a2, a3)          # MAE(A2) − MAE(A3)  게이팅 효과
@@ -535,7 +604,10 @@ def analyze(preds, refs, reference="therapist", run=1, out_csv=None, sweep_rows=
     ci1 = bootstrap_ci_mean(pr1)
     ci2 = bootstrap_ci_mean(pr2)
     ci3 = bootstrap_ci_mean(pr3)
-    raw_p = [ci1[2], ci2[2], ci3[2]]
+    w1, w2, w3 = (wilcoxon_signed_rank(x) for x in (pr1, pr2, pr3))
+    # 주 검정 = 양측 Wilcoxon(§11.1). n<6 등 p 불가면 bootstrap p로 대체.
+    raw_p = [(w[1] if w[1] is not None else ci[2])
+             for w, ci in ((w1, ci1), (w2, ci2), (w3, ci3))]
     adj_p = holm(raw_p)
 
     L.append("## 확증적 결과 (Holm 보정 **k=3**, α=0.05)")
@@ -559,6 +631,26 @@ def analyze(preds, refs, reference="therapist", run=1, out_csv=None, sweep_rows=
              "PR-2 양수 = A3(게이팅)가 A2(전체)보다 정확. "
              "PR-3 양수 = A3가 R(같은 양 무작위 제거)보다 정확.")
     L.append("")
+
+    if task == "T2":
+        pc1 = {c: per_patient_mae(preds, refs, c, "none", run, reference, task="T1")
+               for c in CONDITIONS}
+        d1 = paired_diff(pc1["A2"], pc1["A1"])
+        d2 = paired_diff(pc1["A2"], pc1["A3"])
+        d3 = paired_diff(pc1["R"], pc1["A3"])
+        if any(len(x) >= 2 for x in (d1, d2, d3)):
+            L.append("### 2차(참고) — T1(ARAT 3번, 블록). **주 분석 아님, 풀링하지 않음**")
+            L.append("")
+            L.append("| 비교 | n | 평균 차이 | 95% CI |")
+            L.append("|---|---:|---:|---|")
+            for lbl, d in (("PR-1 (A2-A1)", d1), ("PR-2 (A2-A3)", d2), ("PR-3 (R-A3)", d3)):
+                if len(d) < 2:
+                    L.append("| %s | %d | - | - |" % (lbl, len(d)))
+                    continue
+                ci = bootstrap_ci_mean(d)
+                L.append("| %s | %d | %+.3f | [%+.3f, %+.3f] |"
+                         % (lbl, len(d), mean(d), ci[0], ci[1]))
+            L.append("")
     L.append("**판정표 연결(계획서 §10):**")
     L.append("")
     L.append("| 관측 | 허용되는 결론 |")
@@ -597,7 +689,7 @@ def analyze(preds, refs, reference="therapist", run=1, out_csv=None, sweep_rows=
     L.append("| 비교 | n | 평균 차이 | 95% CI | p(원) |")
     L.append("|---|---:|---:|---|---:|")
     for inj in ("bias_1u", "bias_3u", "burst_3u"):
-        d = paired_diff(per_patient_mae(preds, refs, "A3", inj, run, reference), a3)
+        d = paired_diff(per_patient_mae(preds, refs, "A3", inj, run, reference, task=task), a3)
         if len(d) < 2:
             continue
         ci = bootstrap_ci_mean(d)
@@ -837,6 +929,24 @@ def selftest():
         and abs(curve[2]["mae"] - 1) < 1e-9,
         str([c["mae"] for c in curve]))
 
+    print("[A11] Wilcoxon signed-rank (주 검정, §11.1)")
+    w, p = wilcoxon_signed_rank([1.0, 1.2, 0.8, 1.5, 0.9, 1.1, 1.3, 0.7])
+    chk("8쌍 모두 양수 → p < 0.05", w is not None and p is not None and p < 0.05,
+        "W=%s p=%s" % (w, ("%.5f" % p) if p is not None else p))
+    wb, pb = wilcoxon_signed_rank([1, -1, 1, -1, 1, -1, 1, -1])
+    chk("부호 섮이면 p 큼(>0.5)", pb is not None and pb > 0.5, "p=%s" % pb)
+    chk("n<6 → (None, None) 검정 불가", wilcoxon_signed_rank([1.0, 2.0, 3.0]) == (None, None))
+    chk("0 차이는 제외", wilcoxon_signed_rank([0.0, 0.0, 0.0]) == (None, None))
+
+    print("[A12] 주 분석 T2 단독(과제 필터, §11.1)")
+    preds_t = [{"condition": "A1", "injection": "none", "run": 1, "pid": "P1",
+                "trial": "t1", "task": "T2", "score": 1, "status": "ok"},
+               {"condition": "A1", "injection": "none", "run": 1, "pid": "P1",
+                "trial": "t2", "task": "T1", "score": 3, "status": "ok"}]
+    n_all = len(list(_iter_trials(preds_t, "A1", "none", 1, None, None, None)))
+    n_t2 = len(list(_iter_trials(preds_t, "A1", "none", 1, None, None, "T2")))
+    chk("과제 필터: 전체 2건 vs T2 1건", n_all == 2 and n_t2 == 1, "%d/%d" % (n_all, n_t2))
+
     print("")
     print("오라클 종합: %s" % ("ALL PASS" if ok_all else "FAIL 있음"))
     out = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -974,6 +1084,8 @@ def main():
     ap.add_argument("--predictions")
     ap.add_argument("--reference")
     ap.add_argument("--sweep", help="Pareto 곡선용 sweep.csv")
+    ap.add_argument("--task", default="T2",
+                    help="주 분석 과제 (기본 T2; 전체는 all)")
     ap.add_argument("--reference-rater", default="therapist",
                     choices=["therapist", "independent"])
     ap.add_argument("--out")
@@ -1003,7 +1115,8 @@ def main():
     out_csv = a.out or os.path.join(
         os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
         "results", "per_patient_mae.csv")
-    rep = analyze(preds, refs, a.reference_rater, 1, out_csv, sweep_rows)
+    rep = analyze(preds, refs, a.reference_rater, 1, out_csv, sweep_rows,
+                  task=(None if a.task == "all" else a.task))
     print(rep)
     rp_out = os.path.join(os.path.dirname(out_csv),
                           "analysis_report_demo.txt" if a.demo else "analysis_report.txt")

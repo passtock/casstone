@@ -71,10 +71,17 @@ DT_MIN_AUTO_DIVISOR = 2.0
 HAND_DIST_LO_MM = 60.0
 HAND_DIST_HI_MM = 230.0
 
+# ✅ Q1 = 유효 depth 비율 **하한**. 2026-09-30 확정: **0.3** (사용자 결정).
+#    근거: 파일럿(20260915) 유효 depth 비율 **0–63%, 중앙값 ≈0.30** → 0.7은 전부 탈락시킴.
+#    ⚠️ 이 파일럿 값은 원시 depth 미저장(D-16) 상태의 파생값이라 과소추정일 수 있다.
+#    → 새 파이프라인 치구·개발군 분포가 크게 다르면 **본평가 전 동결 회의에서 1회 조정**, 이후 변경 금지.
+Q1_MIN_DEFAULT = 0.3
+
 Q2_MAX_GAP_S = 0.3         # 초과 시 보류
 Q3_MIN_SAMPLES = 50        # 미만 시 보류
 Q4_MAX_EDGE_FRAC = 0.5     # 초과 시 보류
-Q5_MAX_NA_FRAC = 0.5       # 초과 시 보류
+Q5_MAX_NA_FRAC = 0.5       # 못 봄 비율. ⚠️ 2026-09-30: 기본은 **게이트에 넣지 않음**
+                           #    (사람 프레임별 주석 = 현장 비현실적). 별도 검증 지표로 기록.
 
 
 # ===========================================================================
@@ -320,6 +327,7 @@ def process_trial(session_dir, meta, trial_id, depth_scale=1.0, dt_min=None):
     max_gap = _max_gap_s(pts, k1_mask)
     n_edge = sum(p["edge"] for p in pts)
     n_na = sum(1 for p in pts if p["occ"] == "not_assessable")
+    n_blank = sum(1 for p in pts if p["occ"] == "")
     q = {
         "q1_pair_valid_ratio": round(q1_pair, 4),
         "q1_point_valid_ratio": round(q1_pt, 4),
@@ -328,6 +336,7 @@ def process_trial(session_dir, meta, trial_id, depth_scale=1.0, dt_min=None):
         "q3_valid_samples_k2": k2_pairs,
         "q4_edge_mixing_frac": round(n_edge / float(n), 4) if n else 0.0,
         "q5_not_assessable_frac": round(n_na / float(n), 4) if n else 0.0,
+        "q5_blank_frac": round(n_blank / float(n), 4) if n else 0.0,
         "dt_min_used_s": round(dt_min_used, 6),
         "n_pairs_excluded_dt_small": n_excl_small,
         "n_pairs_excluded_dt_large": n_excl_large,
@@ -355,8 +364,15 @@ def _max_gap_s(pts, mask):
     return best
 
 
-def apply_q_rules(rec, q1_min=0.0):
-    """프로토콜 §8의 Q 규칙으로 사용가능/보류를 판정한다."""
+def apply_q_rules(rec, q1_min=0.0, use_q5=False):
+    """프로토콜 §8의 Q 규칙으로 사용가능/보류를 판정한다.
+
+    ⚠️ 2026-09-30 재설계: **A3의 주 게이트는 자동 검사만**(Q1~Q4 + 손-일관성).
+    **Q5는 사람 주석(프레임별 '못 봄')**이므로 **기본적으로 게이트에 넣지 않는다**(`use_q5=False`).
+    대신 Q5는 **시행 단위 검증 지표**로 별도 기록한다(`q5_verdict`).
+    근거: 사람이 프레임별로 일일이 체크하는 것은 현장에서 비현실적이며,
+    A3를 자동으로 유지해야 "자동 선별"로 주장할 수 있다(계획서 §7.3).
+    """
     q = rec["q"]
     reasons = []
     if q["q1_pair_valid_ratio"] < q1_min:
@@ -365,8 +381,16 @@ def apply_q_rules(rec, q1_min=0.0):
         reasons.append("Q2(gap %.2fs>%.1fs)" % (q["q2_max_gap_s"], Q2_MAX_GAP_S))
     if q["q4_edge_mixing_frac"] > Q4_MAX_EDGE_FRAC:
         reasons.append("Q4(edge %.2f)" % q["q4_edge_mixing_frac"])
-    if q["q5_not_assessable_frac"] > Q5_MAX_NA_FRAC:
+    if use_q5 and q["q5_not_assessable_frac"] > Q5_MAX_NA_FRAC:
         reasons.append("Q5(NA %.2f)" % q["q5_not_assessable_frac"])
+    # Q5는 게이트와 무관하게 **항상 기록** — 사람 주석 기반 검증 지표.
+    _blank = q.get("q5_blank_frac", 0.0)
+    if _blank >= 1.0:
+        rec["q5_verdict"] = "no_annotation"          # 사람 주석이 아예 없음
+    elif q["q5_not_assessable_frac"] > Q5_MAX_NA_FRAC:
+        rec["q5_verdict"] = "not_assessable"
+    else:
+        rec["q5_verdict"] = "assessable"
     k1_ok = not reasons and q["q3_valid_samples_k1"] >= Q3_MIN_SAMPLES
     k2_ok = (not reasons) and q["q3_valid_samples_k2"] >= Q3_MIN_SAMPLES
     r_k1 = list(reasons)
@@ -394,7 +418,7 @@ def apply_q_rules(rec, q1_min=0.0):
     return rec
 
 
-def process_session(session_dir, q1_min=0.0, write=True, dt_min=None):
+def process_session(session_dir, q1_min=Q1_MIN_DEFAULT, write=True, dt_min=None, use_q5=False):
     meta = load_meta(session_dir)
     lm_files = sorted(glob.glob(os.path.join(session_dir, "L1_track", "*_landmarks.csv")))
     out = []
@@ -407,13 +431,13 @@ def process_session(session_dir, q1_min=0.0, write=True, dt_min=None):
             "camera_model": meta.get("camera_model", ""),
             "fx": meta.get("fx"), "fy": meta.get("fy"),
             "cx": meta.get("cx"), "cy": meta.get("cy"),
-            "fps": meta.get("fps"), "q1_min": q1_min,
+            "fps": meta.get("fps"), "q1_min": q1_min, "use_q5": use_q5,
             "dt_min_cli": dt_min,  # None 이면 시행별 auto (중앙 dt / 2)
             "dt_rule": "V-1: dt < dt_min 쌍 제외 · dt > %.2fs 제외 · dt <= 0 제외" % MAX_GAP_S,
             "units": {"k1": "mm", "k2": "mm/s", "t": "s"},
             "pipeline": "l1_pipeline/k1k2_from_files.py",
         }
-        rec = apply_q_rules(rec, q1_min)
+        rec = apply_q_rules(rec, q1_min, use_q5=use_q5)
         out.append(rec)
         if write:
             d = os.path.join(session_dir, "L2_metric")
@@ -617,6 +641,29 @@ def selftest():
         str(r6["q"].get("dt_min_used_s")))
 
     print("")
+    print("[S7] 동결값 확인")
+    chk("Q1 동결값 == 0.3 (§7.3)", Q1_MIN_DEFAULT == 0.3, str(Q1_MIN_DEFAULT))
+    chk("Q2=0.3s · Q3=50 · Q4=0.5s", (Q2_MAX_GAP_S, Q3_MIN_SAMPLES, Q4_MAX_EDGE_FRAC) == (0.3, 50, 0.5))
+
+    print("[S7b] Q5 재설계: 기본은 자동 게이트(Q1~Q4), Q5는 별도 검증 지표")
+
+    def _rq(na, blank):
+        return {"q": {"q1_pair_valid_ratio": 1.0, "q2_max_gap_s": 0.0,
+                      "q3_valid_samples_k1": 100, "q3_valid_samples_k2": 100,
+                      "q4_edge_mixing_frac": 0.0,
+                      "q5_not_assessable_frac": na, "q5_blank_frac": blank}}
+
+    r5a = apply_q_rules(_rq(0.9, 0.0))
+    chk("기본(use_q5=False): 90% 못 봄이어도 게이트 통과(자동)",
+        r5a["usable"]["k1"] is True, str(r5a["usable"]["reasons_k1"]))
+    chk("q5_verdict = not_assessable 로 별도 기록", r5a["q5_verdict"] == "not_assessable")
+    r5b = apply_q_rules(_rq(0.9, 0.0), use_q5=True)
+    chk("use_q5=True 이면 Q5로 보류(옵션)", r5b["usable"]["k1"] is False)
+    r5c = apply_q_rules(_rq(0.0, 1.0))
+    chk("주석이 비면 q5_verdict = no_annotation", r5c["q5_verdict"] == "no_annotation")
+    r5d = apply_q_rules(_rq(0.1, 0.0))
+    chk("일부만 못 봄이면 assessable", r5d["q5_verdict"] == "assessable")
+
     print("오라클 종합: %s" % ("ALL PASS" if ok_all else "FAIL 있음"))
     print("※ 합성 데이터다. 실제 카메라·손 성능이 아니다.")
     out = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -632,7 +679,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--selftest", action="store_true")
     ap.add_argument("--session")
-    ap.add_argument("--q1-min", type=float, default=0.0)
+    ap.add_argument("--q1-min", type=float, default=Q1_MIN_DEFAULT,
+                    help="Q1 유효 depth 비율 하한 (동결값 %.2f)" % Q1_MIN_DEFAULT)
+    ap.add_argument("--use-q5", action="store_true",
+                    help="Q5(사람 주석)를 게이트에 포함(기본 False = 자동 게이트만)")
     ap.add_argument("--dt-min", type=float, default=None,
                     help="K2 dt 하한(s). 미지정 시 시행별 중앙 dt/2 자동 (V-1)")
     a = ap.parse_args()
@@ -640,7 +690,8 @@ def main():
         sys.exit(0 if selftest() else 1)
     if not a.session:
         print(__doc__); return
-    recs, meta = process_session(a.session, q1_min=a.q1_min, write=True, dt_min=a.dt_min)
+    recs, meta = process_session(a.session, q1_min=a.q1_min, write=True,
+                                 dt_min=a.dt_min, use_q5=a.use_q5)
     for r in recs:
         q = r.get("q", {})
         print("%-16s K1=%s  K2=%s  usable=%s/%s  dt_min=%ss  제외(dt<min)=%s" % (

@@ -1,51 +1,24 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""조건 생성기 v6 — **연구계획서 v6.2 §6·§7에 맞춘 정본 생성기**
+"""VLM 조건·프롬프트 생성기 v7 — 지표 세트 M1·M2·M4 (2026-09-30 전면 재작성).
 
-배경 (결함 D-15)
-----------------
-구 `make_conditions.py`는 **파일럿 파이프라인**(`trials_summary.csv` + `qiu_kinematics_summary.csv`)에
-맞춰 만들어졌고, 계획서와 다음이 달랐다:
+지표(계획서 §7.6):
+  M1 = K1_mp       엄지끝·검지끝 MediaPipe world landmark 거리 P95 (mm)
+  M2 = TAM_total   5지 총굴곡 (deg, 앱 산출)
+  M4 = SPARC       clock_v3 정의 (무차원)
+  (M3 = MGA 는 보조·기록용 → **프롬프트에 넣지 않는다**)
 
-| 계획서 v6.2 | 구 코드 |
-|---|---|
-| K1 = 엄지–검지 거리 P95 | `MGA_mm_3D_cal` (최대 파지 간격) |
-| K2 = 손목속도 **P95** | **`PV_mm_s` = peak velocity** ← V-1이 깨졌다고 규명한 지표 |
-| 지표 2개 | 지표 4개 (MGA·PV·SPARC·TAM) |
-| ARAT 3번(5 cm 블록 55 g)·12번(구슬 1.5 cm) | `free`(맨손 쥐기펴기)·`cylinder`(원통형) |
-| 조건 A0·A0-time 포함 | 없음 |
+입력: L2_metric/*.json (experiments/metrics/l2_from_app.py 산출)
+출력: conditions.csv (+ provenance)
 
-이 파일은 **그 불일치를 없앤 정본**이다. 구 파일은 파일럿 재현용으로 남겨 둔다.
+규칙:
+  · A1=영상만 / A2=M1·M2·M4 전부 / A3=A2에서 Q 미통과 지표만 null / A4=A3에서 영상 제거 / R=A2에서 A3와 같은 수를 무작위 제거
+  · 주입(bias_1u/bias_3u/burst_3u)은 **A2·A3만**, **지표별 u**
+  · 조건명은 프롬프트에 쓰지 않는다. 과제·지시문·채점기준·파지조건·낙하규칙은 모든 조건 동일
 
-입력
-----
-`<session>/L2_metric/<trial_id>.json` — `k1k2_from_files.py`가 쓴 것.
-필요 키:
-  - `k1_raw_mm`, `k2_raw_mm`            : Q 판정 **이전** 계산값  → **A2**가 쓴다
-  - `k1_thumb_index_surface_p95_mm` …   : Q-gated 값(None 가능)   → **A3**가 쓴다
-  - `q_held_k1`, `q_held_k2`            : 값은 있었지만 Q가 보류했는지
-  - `observation_window_s`              : 프롬프트의 T
-
-출력
-----
-`conditions.csv` — 한 행 = VLM 1회 호출
-  `condition, injection, r_seed, participant, task, trial_index, trial_id,
-   video, k1, k2, n_numbers, video_provided, prompt`
-
-사용
-----
-    python experiments/vlm_conditions/make_conditions_v6.py --selftest
-    python experiments/vlm_conditions/make_conditions_v6.py --session <세션폴더> --out conditions.csv
-    python experiments/vlm_conditions/make_conditions_v6.py --sessions A B C --out all.csv \\
-        --u-mode ratio --u-ratios 0.10 0.30
-
-설계 근거 (계획서 조항)
-----------------------
-  §6  조건 A1~A4 + R  ·  §6.1 주입  ·  §7 입력 프레임  ·  §7.1 프롬프트
-  §5.1 dt 하한은 **L1(`k1k2_from_files.py`)** 에서 처리한다(이 파일은 소비자).
+사용:
+  python experiments/vlm_conditions/make_conditions_v6.py --selftest
+  python experiments/vlm_conditions/make_conditions_v6.py --sessions <S1> <S2> --out conditions.csv
 """
-from __future__ import annotations
-
 import argparse
 import csv
 import glob
@@ -55,136 +28,148 @@ import os
 import random
 import sys
 
-# ===========================================================================
-# 계획서 §6 / §7 — 동결된 상수
-# ===========================================================================
-CONDITIONS = ["A1", "A2", "A3", "A4", "R"]           # §6 표의 VLM 조건
-# A0 / A0-time 은 로지스틱 회귀 대조군이라 VLM 출력이 아니다 → experiments/analysis/baseline_models.py
-INJECTIONS = ["none", "bias_1u", "bias_3u", "burst_3u"]   # §6.1 (4수준; none = 원래)
-KPI = {
-    "k1": "thumb_index_surface_p95_mm",              # §5 정의 (프롬프트 키 이름)
-    "k2": "wrist_surface_speed_p95_mm_s",
+CONDITIONS = ["A1", "A2", "A3", "A4", "R"]
+INJECTIONS = ["none", "bias_1u", "bias_3u", "burst_3u"]
+
+# 지표 슬롯 → (L2 필드, 프롬프트 키, 단위, 가용 플래그)
+METRICS = {
+    "m1": ("m1_mga_mm", "mga_mm", "mm"),
+    "m2": ("m2_tam_total_deg", "tam_total_deg", "deg"),
+    "m4": ("m4_sparc", "sparc", "1"),
 }
-R_SEEDS = [20260922, 20260923, 20260924]             # §6 R 배정 알고리즘
-PROMPT_NULL_NOTE = ("[지침]  null은 신뢰 가능한 추정이 없다는 뜻이며, "
-                    "기능 저하나 0값을 뜻하지 않습니다.")
+METRIC_ORDER = ("m1", "m2", "m4")
+R_SEEDS = [20260922, 20260923, 20260924]
 
+# 주입 부호: "나빠지는 방향". M4(SPARC)는 ≤0이고 더 음수일수록 거칠다 → -1.
+SIGN = {"m1": +1.0, "m2": +1.0, "m4": -1.0}
 
-# ===========================================================================
-# 프롬프트 — 계획서 §7.1 과 **문자 단위로 동일**해야 한다
-# ===========================================================================
+# ---- 프롬프트 (계획서 §9.1 과 문자 단위 동일) ----
 PROMPT_HEAD = """당신은 뇌졸중 장애인의 상지 기능을 영상으로 평가하는 임상 평가자입니다.
 
 [과제]  {task_label}
 [지시문]  {instruction}
+[파지 조건]  {grasp_condition}
 [채점 기준]
-  3 = 5초 이내 정상 수행 (올바른 손·팔 움직임, 자세 유지)
-  2 = 완료했으나 5–60초 또는 큰 어려움
-  1 = 60초 내 부분 수행
-  0 = 60초 내 어떤 부분도 못함
+  3 = 5초 이내 정상 수행 + 정상 손·팔 움직임 + 자세 유지 (+T2: 손가락 패드로 맞섬)
+  2 = 완료했으나 5–60초 또는 큰 어려움 (잘못된 손·팔 움직임, 해제 실패, +T2: 패드 미사용)
+  1 = 60초 내 부분 수행 (들어올렸으나 목표 높이/놓기 미완)
+  0 = 60초 내 어떤 부분도 못함 (+T2: 잘못된 손가락 맞섬)
+[낙하 규칙]  물체를 떨어뜨렸더라도 다시 집어 수행하면 최선 수행으로 평가합니다(낙하 자체는 감점이 아님).
+             다만 60초 안에 완료되지 못하면 부분 수행입니다. 과제를 성공적으로 끝낸 뒤 물체가 떨어지면 감점하지 않습니다.
 [관찰 구간]  T = {T} 초
 """
-PROMPT_NUMBERS_HEAD = "\n[운동학 수치]\n"
-PROMPT_NULL = PROMPT_NULL_NOTE + "\n"
-PROMPT_TAIL = "\n[출력]  먼저 점수(0/1/2/3) 한 줄, 그 다음 최대 2문장의 근거.\n"
 
-# ARAT 물성 (§4.2, Yozbatiran 2008 정본)
+GRASP_COND = {
+    "T1": "손가락 사용 제한 없음. 단 엄지와 다른 손가락의 맞섬(opposition)이 포함된 파지여야 함.",
+    "T2": "반드시 엄지와 검지의 맞섬이어야 함. 잘못된 맞섬이면 점수는 0. "
+          "3점은 손가락 패드로 맞섬한 경우에만 가능.",
+}
+
 TASKS = {
     "T1": {"arat": "3", "object": "5 cm 목재 블록 55 g",
-           "shelf": "선반 37 cm",
            "instruction": "grasp the block that I have placed here, lift it up, "
                           "and place then release it on top of that shelf."},
-    "T2": {"arat": "12", "object": "구슬 지름 1.5 cm 5.4 g",
-           "shelf": "선반 위 상부 뚜껑",
+    "T2": {"arat": "12", "object": "구슬 지름 1.6 cm 5.4 g",   # Yozbatiran Table A2 (D-19)
            "instruction": "grasp the marble using these fingers, lift it up, "
                           "and place it in the tin on top of that shelf."},
 }
 
+NULL_NOTE = ("[지침]  null은 신뢰 가능한 추정이 없다는 뜻이며, "
+             "기능 저하나 0값을 뜻하지 않습니다.")
 
-def task_label(task: str) -> str:
+
+def task_label(task):
     t = TASKS[task]
     return "ARAT %s번 — %s" % (t["arat"], t["object"])
 
 
-def build_prompt(task: str, T, numbers, video_provided: bool) -> str:
-    """계획서 §7.1. numbers = [('k1',값|None), ('k2',값|None)] 또는 []."""
+def build_prompt(task, T, numbers, video_provided):
+    """numbers = [('m1', 값|None), ...] (A1은 [])."""
     lines = [PROMPT_HEAD.format(task_label=task_label(task),
                                 instruction=TASKS[task]["instruction"],
+                                grasp_condition=GRASP_COND[task],
                                 T=("%.2f" % T) if T is not None else "미상")]
     if numbers:
-        lines.append(PROMPT_NUMBERS_HEAD)
+        lines.append("\n[운동학 수치]\n")
         for key, val in numbers:
-            lines.append("  %s = %s\n" % (KPI[key], "null" if val is None else "%.4g" % val))
-        lines.append(PROMPT_NULL)
+            lines.append("  %s = %s\n" % (METRICS[key][1],
+                                          "null" if val is None else "%.4g" % val))
+        lines.append(NULL_NOTE + "\n")
     lines.append("\n[영상]  %s\n" % ("제공됨" if video_provided
                                      else "제공되지 않음 (수치만으로 판단)"))
-    lines.append(PROMPT_TAIL)
+    lines.append("\n[출력]  먼저 점수(0/1/2/3) 한 줄, 그 다음 최대 2문장의 근거.\n")
     return "".join(lines)
 
 
-# ===========================================================================
-# 값 선택 — A1/A2/A3/A4 (§6)
-# ===========================================================================
-def values_for(condition: str, rec: dict, has_video: bool, numbers_provided: bool):
-    """조건별로 프롬프트에 들어갈 수치 목록을 만든다.
+# ---------------------------------------------------------------- 값 선택
+def raw_values(rec):
+    return [(k, rec.get(METRICS[k][0])) for k in METRIC_ORDER]
 
-    - A1 : 수치 없음
-    - A2 : **Q 판정 이전 원값**(k1_raw/k2_raw) — 하드 결측만 null
-    - A3 : **Q-gated 값** — Q가 보류하면 null
-    - A4 : A3와 같은 수치, 영상 없음
-    """
-    if condition == "A1" or not numbers_provided:
+
+def gated_values(rec):
+    avail = rec.get("available") or {}
+    return [(k, rec.get(METRICS[k][0]) if avail.get(k) else None) for k in METRIC_ORDER]
+
+
+def values_for(condition, rec):
+    if condition == "A1":
         return []
     if condition == "A2":
-        return [("k1", rec.get("k1_raw_mm")), ("k2", rec.get("k2_raw_mm"))]
-    return [("k1", rec.get("k1_thumb_index_surface_p95_mm")),
-            ("k2", rec.get("k2_wrist_surface_speed_p95_mm_s"))]
+        return raw_values(rec)
+    return gated_values(rec)          # A3·A4는 Q-gated
 
 
-# ===========================================================================
-# 오류 주입 (§6.1) — A2·A3 에만
-# ===========================================================================
-# ⚠️ 해석 명시: bias = 그 시행의 **전 값**에 +k·u (체계적 편향)
-#              burst = **지정 시행 하나만** +3u (고립 급등). 나머지 시행은 원래값.
-#    → 이 구분은 집계 수준에서만 드러난다(전체가 밀리느냐, 하나만 튀느냐).
-def inject(values, injection: str, u: float, is_burst_target: bool):
-    if not values or injection == "none" or u is None:
+# ---------------------------------------------------------------- 주입
+def _u_for(u_map, key):
+    return u_map.get(key) if isinstance(u_map, dict) else u_map
+
+
+def inject(values, injection, u_map, is_burst_target):
+    """지표별 u. 주입 불가(u 없음)면 **원값 유지**(결측으로 바꾸지 않음)."""
+    if not values or injection == "none":
         return values
-    if injection == "bias_1u":
-        return [(k, None if v is None else v + 1.0 * u) for k, v in values]
-    if injection == "bias_3u":
-        return [(k, None if v is None else v + 3.0 * u) for k, v in values]
-    if injection == "burst_3u":
-        if not is_burst_target:
-            return values                       # 지정 시행만 급등
-        return [(k, None if v is None else v + 3.0 * u) for k, v in values]
-    raise ValueError("unknown injection: %s" % injection)
+    factor = {"bias_1u": 1.0, "bias_3u": 3.0, "burst_3u": 3.0}.get(injection)
+    if factor is None:
+        raise ValueError("unknown injection: %s" % injection)
+    if injection == "burst_3u" and not is_burst_target:
+        return values
+    out = []
+    for k, v in values:
+        u = _u_for(u_map, k)
+        out.append((k, v if (v is None or u is None)
+                    else v + factor * u * SIGN.get(k, 1.0)))
+    return out
 
 
-def estimate_u(recs, mode: str, ratios=(0.10, 0.30), abs_u=None):
-    """u 추정 (§6.1 A안/B안).
-
-    A안(absolute): 치구·3D 기준 실측 P95 절대오차를 `abs_u` 로 받는다.
-    B안(ratio)   : 기저값 대비 비율. 양의 u 로 표현하기 위해 **기저값 평균 × 비율**을 쓴다.
-    """
-    if abs_u is not None:
-        return float(abs_u)
-    base = [r.get("k1_raw_mm") for r in recs if r.get("k1_raw_mm") is not None]
-    base += [r.get("k2_raw_mm") for r in recs if r.get("k2_raw_mm") is not None]
-    if not base:
+def _p95(vals):
+    v = sorted(x for x in vals if x is not None)
+    if not v:
         return None
-    mean_base = sum(base) / float(len(base))
-    return mean_base * max(ratios)
+    if len(v) == 1:
+        return v[0]
+    pos = 0.95 * (len(v) - 1)
+    lo, hi = int(pos), min(int(pos) + 1, len(v) - 1)
+    return v[lo] * (1 - (pos - lo)) + v[hi] * (pos - lo)
 
 
-# ===========================================================================
-# 파일 입력
-# ===========================================================================
-def load_session(session_dir: str):
-    """L2_metric/*.json 을 읽어 시행 레코드 목록을 돌려준다."""
+def estimate_u(recs, mode, ratios=(0.10, 0.30), abs_u=None):
+    """지표별 dict. A안=실측 절대오차(abs_u), B안=기저 P95 × 비율."""
+    if abs_u is not None:
+        return {k: float(abs_u[k]) for k in METRIC_ORDER}
+    ratio = min(ratios)   # B안: u = 기저 P95의 10% → bias_1u=+10% · bias_3u=+30%(계획서 §5-17)
+    out = {}
+    for k in METRIC_ORDER:
+        field = METRICS[k][0]
+        base = _p95([r.get(field) for r in recs])
+        out[k] = None if base is None else abs(base) * ratio   # u 는 크기(비음수)
+    return out
+
+
+# ---------------------------------------------------------------- 입력
+def load_session(session_dir):
     out = []
     for p in sorted(glob.glob(os.path.join(session_dir, "L2_metric", "*.json"))):
-        with io.open(p, "r", encoding="utf-8") as f:
+        with io.open(p, encoding="utf-8") as f:
             rec = json.load(f)
         rec.setdefault("trial_id", os.path.basename(p)[:-5])
         rec["_session"] = os.path.basename(os.path.abspath(session_dir.rstrip("/\\")))
@@ -193,22 +178,17 @@ def load_session(session_dir: str):
     return out
 
 
-def participant_of(rec: dict) -> str:
-    """참여자 식별자 = 세션 폴더명.
-
-    폴더 1개 = 참여자 1명 (예: `20260915_비장애인_test_26세_남`).
-    ⚠️ `split('_')[1]` 로 집단명('비장애인')을 돌려주면 **모든 참여자가 한 사람으로 취급**된다.
-    """
+def participant_of(rec):
     return rec.get("_session", "")
 
 
-def task_of(rec: dict) -> str:
+def task_of(rec):
     tid = rec.get("trial_id", "")
     m = [s for s in tid.split("_") if s in TASKS]
     return m[0] if m else "T1"
 
 
-def trial_index_of(rec: dict) -> int:
+def trial_index_of(rec):
     tid = rec.get("trial_id", "")
     for s in tid.split("_"):
         if s.lower().startswith("t") and s[1:].isdigit():
@@ -216,90 +196,84 @@ def trial_index_of(rec: dict) -> int:
     return 1
 
 
-# ===========================================================================
-# R 조건 배정 (§6 알고리즘)
-# ===========================================================================
-def r_withheld_map(session_recs, seeds=R_SEEDS):
-    """A3가 보류한 개수와 **같은 개수**를, A2에서 무작위로 제거하는 R 배정.
+def _video_name(rec):
+    return os.path.splitext(os.path.basename(rec.get("_path", "")))[0] + ".mp4"
 
-    반환 {seed: set(trial_id)} — 각 seed에서 '제거할' 시행.
-    """
-    a3_held = set()
-    a2_avail = []
-    for r in session_recs:
-        k1g = r.get("k1_thumb_index_surface_p95_mm") is not None
-        k2g = r.get("k2_wrist_surface_speed_p95_mm_s") is not None
-        if not (k1g and k2g):
-            a3_held.add((r["trial_id"], task_of(r)))
-        else:
-            a2_avail.append((r["trial_id"], task_of(r)))
+
+# ---------------------------------------------------------------- R 배정
+def r_withheld_map(recs, seeds=R_SEEDS):
+    """M1·M2·M4 각각: **원값이 있는 전체 후보 P**에서, A3가 버린 수와 같은 수를 무작위 제거."""
+    P = {k: [] for k in METRIC_ORDER}
+    n_held = {k: 0 for k in METRIC_ORDER}
+    for r in recs:
+        key = (r["trial_id"], task_of(r))
+        avail = r.get("available") or {}
+        for k in METRIC_ORDER:
+            if r.get(METRICS[k][0]) is None:
+                continue                       # 하드 결측은 P에서 제외
+            P[k].append(key)
+            if not avail.get(k):
+                n_held[k] += 1                 # Q가 보류
     out = {}
     for sd in seeds:
         rnd = random.Random(sd)
-        n = len(a3_held)
-        pool = list(a2_avail)
-        rnd.shuffle(pool)
-        out[sd] = set(pool[:n])
-    return out, a3_held
+        out[sd] = {}
+        for k in METRIC_ORDER:
+            pool = list(P[k])
+            rnd.shuffle(pool)
+            out[sd][k] = set(pool[:n_held[k]])
+    return out, n_held
 
 
-# ===========================================================================
-# 생성
-# ===========================================================================
-def make_rows(session_recs, u, burst_trial_index=2, u_mode="ratio"):
+def make_rows(recs, u, burst_trial_index=2, u_mode="ratio"):
     rows = []
-    rmap, a3_held = r_withheld_map(session_recs)
-
-    for rec in session_recs:
+    rmap, n_held = r_withheld_map(recs)
+    for rec in recs:
         pid, task, ti = participant_of(rec), task_of(rec), trial_index_of(rec)
         T = rec.get("observation_window_s")
         video = _video_name(rec)
         is_burst = (ti == burst_trial_index)
-
         for cond in CONDITIONS:
-            prov = (cond != "A1")
             if cond == "R":
-                for sd, removed in rmap.items():
-                    suppressed = (rec["trial_id"], task) in removed
-                    vals = [] if suppressed else values_for("A2", rec, True, True)
+                key = (rec["trial_id"], task)
+                for sd, rm in rmap.items():
+                    vals = [(k, None if key in rm[k] else rec.get(METRICS[k][0]))
+                            for k in METRIC_ORDER]
                     rows.append(_row(cond, "none", sd, pid, task, ti, rec, vals, T,
-                                     video_provided=(cond != "A4"), u=u,
-                                     u_mode=u_mode, video=video))
+                                     cond != "A4", u, u_mode, video))
                 continue
-
-            inj_list = INJECTIONS if cond in ("A2", "A3") else ["none"]
-            for inj in inj_list:
-                base = values_for(cond, rec, True, prov)
-                vals = inject(base, inj, u, is_burst)
-                rows.append(_row(cond, inj, "", pid, task, ti, rec, vals, T,
-                                 video_provided=(cond != "A4"), u=u,
-                                 u_mode=u_mode, video=video))
+            injs = INJECTIONS if cond in ("A2", "A3") else ["none"]
+            for inj in injs:
+                base = values_for(cond, rec)
+                rows.append(_row(cond, inj, "", pid, task, ti, rec,
+                                 inject(base, inj, u, is_burst), T,
+                                 cond != "A4", u, u_mode, video))
     return rows
 
 
-def _video_name(rec):
-    stem = os.path.splitext(os.path.basename(rec.get("_path", "")))[0]
-    return stem + ".mp4"
-
-
 def _row(cond, inj, seed, pid, task, ti, rec, vals, T, video_provided, u, u_mode, video):
-    prompt = build_prompt(task, T, vals, video_provided)
-    return {
+    got = dict(vals)
+    row = {
         "condition": cond, "injection": inj, "r_seed": seed,
-        "participant": pid, "task": task, "trial_index": ti,
-        "trial_id": rec["trial_id"], "video": video,
-        "k1": "" if not vals else ("" if vals[0][1] is None else vals[0][1]),
-        "k2": "" if len(vals) < 2 or vals[1][1] is None else vals[1][1],
-        "n_numbers": len(vals),
+        "participant": pid, "task": task, "trial_index": ti, "trial_id": rec["trial_id"],
+        "video": video, "n_numbers": len(vals),
         "video_provided": int(video_provided),
-        "u_used": "" if u is None else round(u, 6), "u_mode": u_mode,
-        "prompt": prompt,
+        "prompt": build_prompt(task, T, vals, video_provided),
     }
+    for k in METRIC_ORDER:
+        v = got.get(k) if vals else None
+        row[k] = "" if v is None else v
+        row[k + "_provided"] = int(k in got and got[k] is not None)
+        uk = _u_for(u, k)
+        row["u_%s_used" % k] = "" if uk is None else round(uk, 6)
+    row["u_mode"] = u_mode
+    return row
 
 
-FIELDS = ["condition", "injection", "r_seed", "participant", "task", "trial_index",
-          "trial_id", "video", "k1", "k2", "n_numbers", "video_provided",
-          "u_used", "u_mode", "prompt"]
+FIELDS = (["condition", "injection", "r_seed", "participant", "task", "trial_index",
+           "trial_id", "video", "n_numbers", "video_provided"]
+          + sum([[k, k + "_provided", "u_%s_used" % k] for k in METRIC_ORDER], [])
+          + ["u_mode", "prompt"])
 
 
 def write_csv(rows, path):
@@ -309,185 +283,150 @@ def write_csv(rows, path):
     with io.open(path, "w", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=FIELDS)
         w.writeheader()
-        for r in rows:
-            w.writerow(r)
+        w.writerows(rows)
 
 
-# ===========================================================================
-# 오라클 — **계획서 준수 검증** (D-15 해소 증거)
-# ===========================================================================
-_UNSET = object()
-
-
-def _synth_rec(trial_id, session, k1, k2, k1_gated=_UNSET, k2_gated=_UNSET,
-               q_held_k1=False, q_held_k2=False, T=3.5):
-    """⚠️ _UNSET 센티넬: k1_gated=None 은 "Q가 보류해서 null" 을 뜻하므로
-    기본값 None 을 쓰면 충돌한다(초기 오라클이 이걸로 오탐했다)."""
-    return {"trial_id": trial_id, "_session": session, "_path": "/x/" + trial_id + ".json",
-            "k1_raw_mm": k1, "k2_raw_mm": k2,
-            "k1_thumb_index_surface_p95_mm": (k1 if k1_gated is _UNSET else k1_gated),
-            "k2_wrist_surface_speed_p95_mm_s": (k2 if k2_gated is _UNSET else k2_gated),
-            "q_held_k1": q_held_k1, "q_held_k2": q_held_k2,
-            "observation_window_s": T}
+# ---------------------------------------------------------------- 오라클
+def _rec(tid, sess, m1, m2, m4, a1=True, a2=True, a4=True, T=3.5):
+    return {"trial_id": tid, "_session": sess, "_path": "/x/%s.json" % tid,
+            "m1_mga_mm": m1, "m2_tam_total_deg": m2, "m4_sparc": m4,
+            "observation_window_s": T,
+            "available": {"m1": a1, "m2": a2, "m4": a4}}
 
 
 def selftest():
-    ok_all = True
-    log = []
+    ok_all, log = True, []
 
     def chk(name, cond, detail=""):
         nonlocal ok_all
-        print("  %-58s %s  %s" % (name, "PASS" if cond else "FAIL", detail))
+        print("  %-56s %s  %s" % (name, "PASS" if cond else "FAIL", detail))
         log.append("%s %s %s" % (name, "PASS" if cond else "FAIL", detail))
         ok_all = ok_all and bool(cond)
 
-    print("[C1] 계획서 준수: 상수·지표·과제")
-    chk("조건 == A1,A2,A3,A4,R (A0/A0-time 없음 — 로지스틱은 별도)",
-        CONDITIONS == ["A1", "A2", "A3", "A4", "R"], str(CONDITIONS))
-    chk("주입 4수준 == none,bias_1u,bias_3u,burst_3u",
-        INJECTIONS == ["none", "bias_1u", "bias_3u", "burst_3u"], str(INJECTIONS))
-    chk("K1 프롬프트 키 == thumb_index_surface_p95_mm (§5)",
-        KPI["k1"] == "thumb_index_surface_p95_mm", KPI["k1"])
-    chk("K2 프롬프트 키 == wrist_surface_speed_p95_mm_s (§5)",
-        KPI["k2"] == "wrist_surface_speed_p95_mm_s", KPI["k2"])
-    chk("과제 == T1(ARAT 3, 5cm 블록)·T2(ARAT 12, 구슬)",
-        TASKS["T1"]["arat"] == "3" and TASKS["T2"]["arat"] == "12")
-    # 물성은 계획서 §4.2 정본과 일치해야 한다(Lyle 원본 채점지: 구슬 1.5 cm).
-    # 2026-09-29: v6 생성기가 구슬을 1.6 cm로 넣던 것을 1.5 cm로 정정하고,
-    #            같은 실수가 다시 들어가지 않도록 아래 검사를 추가했다.
-    chk("T2 물성 == 구슬 1.5 cm (§4.2, Lyle 원본 채점지)",
-        "1.5 cm" in TASKS["T2"]["object"] and "1.6" not in TASKS["T2"]["object"],
-        TASKS["T2"]["object"])
-    chk("T1 물성 == 5 cm 목재 블록 55 g (§4.2)",
-        "5 cm" in TASKS["T1"]["object"] and "55 g" in TASKS["T1"]["object"],
-        TASKS["T1"]["object"])
-    chk("프롬프트 라벨에 구슬 규격이 1.5 cm로 들어간다",
-        "1.5 cm" in task_label("T2") and "1.6" not in task_label("T2"),
-        task_label("T2"))
-    chk("R seed 3개 (§6)", len(R_SEEDS) == 3, str(R_SEEDS))
-    chk("지표는 2개(K1·K2) — MGA/PV/SPARC/TAM 아님",
-        len(KPI) == 2 and "MGA" not in json.dumps(KPI), str(KPI))
+    print("[C1] 상수·지표·과제")
+    chk("조건 A1·A2·A3·A4·R", CONDITIONS == ["A1", "A2", "A3", "A4", "R"])
+    chk("주입 3수준+none", INJECTIONS == ["none", "bias_1u", "bias_3u", "burst_3u"])
+    chk("지표 = M1·M2·M4 (M3 제외)", METRIC_ORDER == ("m1", "m2", "m4"), str(METRIC_ORDER))
+    chk("프롬프트 키 = mga_mm·tam_total_deg·sparc",
+        [METRICS[k][1] for k in METRIC_ORDER] == ["mga_mm", "tam_total_deg", "sparc"])
+    chk("M1 단위 mm · M2 deg · M4 무차원",
+        (METRICS["m1"][2], METRICS["m2"][2], METRICS["m4"][2]) == ("mm", "deg", "1"))
+    chk("T2 물성 = 구슬 1.6 cm", "1.6 cm" in TASKS["T2"]["object"] and "1.5" not in TASKS["T2"]["object"])
+    chk("T1 물성 = 5 cm·55 g", "5 cm" in TASKS["T1"]["object"] and "55 g" in TASKS["T1"]["object"])
 
-    print("[C2] 프롬프트가 §7.1과 일치")
-    n = [("k1", 41.0), ("k2", 312.0)]
-    p_full = build_prompt("T2", 3.5, n, True)
-    p_a4 = build_prompt("T2", 3.5, n, False)
-    p_a1 = build_prompt("T1", 3.5, [], True)
-    chk("역할 문장 포함(뇌졸중 장애인)", "당신은 뇌졸중 장애인의 상지 기능을" in p_full)
-    chk("K1 키 문자열 포함", "thumb_index_surface_p95_mm = 41" in p_full)
-    chk("K2 키 문자열 포함", "wrist_surface_speed_p95_mm_s = 312" in p_full)
-    chk("null 지침('기능 저하') 포함", "기능 저하나 0값을 뜻하지 않습니다" in p_full)
-    chk("'장애나 0값' 옛 문구 없음", "장애나 0값" not in p_full)
-    chk("[영상] 제공됨/제공되지 않음 라벨", "[영상]  제공됨" in p_full
-        and "[영상]  제공되지 않음" in p_a4)
-    chk("A1엔 수치 블록 없음", "[운동학 수치]" not in p_a1)
-    chk("출력 지시 포함", "먼저 점수(0/1/2/3) 한 줄" in p_full)
+    print("[C2] 프롬프트")
+    n3 = [("m1", 95.2), ("m2", 742.0), ("m4", -3.51)]
+    p = build_prompt("T2", 3.5, n3, True)
+    chk("M1 키·값 포함", "mga_mm = 95.2" in p)
+    chk("M2 키·값 포함", "tam_total_deg = 742" in p)
+    chk("M4 키·값 포함", "sparc = -3.51" in p)
+    chk("null 지침 포함", "기능 저하나 0값을 뜻하지 않습니다" in p)
+    chk("낙하 규칙 포함", "[낙하 규칙]" in p and "최선 수행" in p)
+    chk("T2 맞섬·패드 조건", "엄지와 검지의 맞섬" in p and "패드로 맞섬" in p)
+    chk("A1엔 수치 블록 없음", "[운동학 수치]" not in build_prompt("T1", 3.5, [], True))
+    chk("A4 라벨 = 제공되지 않음", "제공되지 않음" in build_prompt("T2", 3.5, n3, False))
 
-    print("[C3] 조건별 수치 선택 (A2=원값, A3=Q-gated)")
-    held = _synth_rec("S01_T2_t01", "S01_세션", 41.0, 312.0,
-                      k1_gated=None, k2_gated=None, q_held_k1=True, q_held_k2=False)
-    ok = _synth_rec("S01_T2_t02", "S01_세션", 38.0, 280.0)
-    chk("A2는 Q-보류 시행에도 원값 제공",
-        values_for("A2", held, True, True) == [("k1", 41.0), ("k2", 312.0)],
-        str(values_for("A2", held, True, True)))
-    chk("A3는 Q-보류 시행을 null 처리",
-        values_for("A3", held, True, True) == [("k1", None), ("k2", None)],
-        str(values_for("A3", held, True, True)))
-    half = _synth_rec("S01_T2_t03", "S01_세션", 35.0, 260.0,
-                      k1_gated=None, q_held_k1=True)   # k1만 보류
-    chk("일부만 보류되면 그 지표만 null (k2는 값 유지)",
-        values_for("A3", half, True, True) == [("k1", None), ("k2", 260.0)],
-        str(values_for("A3", half, True, True)))
-    chk("A1은 수치 없음", values_for("A1", ok, True, False) == [])
-    chk("A4는 A3와 같은 수치", values_for("A4", ok, True, True) == values_for("A3", ok, True, True))
+    print("[C3] 조건별 값 선택")
+    ok = _rec("S_T1_t1", "S", 95.0, 740.0, -3.4)
+    held_m1 = _rec("S_T1_t2", "S", 95.0, 740.0, -3.6, a1=False)
+    chk("A1 = 수치 없음", values_for("A1", ok) == [])
+    chk("A2 = 원값(M1·M2·M4)", values_for("A2", held_m1) == [("m1", 95.0), ("m2", 740.0), ("m4", -3.6)])
+    chk("A3 = Q-gated(M1만 null)", values_for("A3", held_m1) == [("m1", None), ("m2", 740.0), ("m4", -3.6)],
+        str(values_for("A3", held_m1)))
+    chk("A4 = A3와 동일", values_for("A4", ok) == values_for("A3", ok))
 
-    print("[C4] 오류 주입 (§6.1)")
-    v = [("k1", 10.0), ("k2", 100.0)]
-    chk("bias_1u = +u", inject(v, "bias_1u", 5.0, False) == [("k1", 15.0), ("k2", 105.0)])
-    chk("bias_3u = +3u", inject(v, "bias_3u", 5.0, False) == [("k1", 25.0), ("k2", 115.0)])
-    chk("burst_3u 대상 아님 → 원래값",
-        inject(v, "burst_3u", 5.0, False) == v)
-    chk("burst_3u 대상 → +3u",
-        inject(v, "burst_3u", 5.0, True) == [("k1", 25.0), ("k2", 115.0)])
-    chk("null 은 주입해도 null",
-        inject([("k1", None)], "bias_3u", 5.0, False) == [("k1", None)])
+    print("[C4] 주입 — 지표별 u(단위 다름)")
+    v = [("m1", 100.0), ("m2", 800.0), ("m4", -4.0)]
+    u2 = {"m1": 5.0, "m2": 40.0, "m4": 0.4}
+    chk("bias_1u = 나빠지는 방향(M4는 감소)",
+        inject(v, "bias_1u", u2, False) == [("m1", 105.0), ("m2", 840.0), ("m4", -4.4)])
+    chk("bias_3u = 3u",
+        inject(v, "bias_3u", u2, False) == [("m1", 115.0), ("m2", 920.0), ("m4", -5.2)])
+    chk("burst 대상 아님 → 원값", inject(v, "burst_3u", u2, False) == v)
+    chk("burst 대상 → 3u",
+        inject(v, "burst_3u", u2, True) == [("m1", 115.0), ("m2", 920.0), ("m4", -5.2)])
+    chk("u 없는 지표는 원값 유지",
+        inject(v, "bias_3u", {"m1": 5.0}, False) == [("m1", 115.0), ("m2", 800.0), ("m4", -4.0)])
+    chk("u 는 비음수(M4도 크기)",
+        estimate_u([_rec("z", "S", 10.0, 100.0, -2.0)], "ratio", (0.10,))["m4"] > 0)
+    chk("null은 주입해도 null", inject([("m1", None)], "bias_3u", u2, False) == [("m1", None)])
 
-    print("[C5] R 조건: A3 보류 수와 같은 수를 무작위 제거")
-    recs = [_synth_rec("S_T1_t1", "S01_x", 10.0, 100.0),
-            _synth_rec("S_T1_t2", "S01_x", 11.0, 110.0),
-            _synth_rec("S_T1_t3", "S01_x", 12.0, 120.0),
-            _synth_rec("S_T2_t1", "S01_x", 13.0, 130.0, k1_gated=None, q_held_k1=True),
-            _synth_rec("S_T2_t2", "S01_x", 14.0, 140.0, k1_gated=None, k2_gated=None,
-                       q_held_k1=True, q_held_k2=True)]
-    rmap, a3_held = r_withheld_map(recs)
-    chk("A3 보류 시행 2건 식별", len(a3_held) == 2, str(sorted(a3_held)))
-    chk("각 seed가 정확히 2건 제거", all(len(v) == 2 for v in rmap.values()),
-        str({k: len(v) for k, v in rmap.items()}))
-    chk("seed 3개", len(rmap) == 3)
+    print("[C5] R 배정 — 전체 P에서, 지표별")
+    recs = [_rec("S_T1_t1", "S", 100.0, 700.0, -3.0),
+            _rec("S_T1_t2", "S", 101.0, 710.0, -3.1),
+            _rec("S_T1_t3", "S", 102.0, 720.0, -3.2),
+            _rec("S_T2_t1", "S", 103.0, 730.0, -3.3, a1=False),
+            _rec("S_T2_t2", "S", 104.0, 740.0, -3.4, a1=False, a4=False),
+            _rec("S_T2_t3", "S", None, None, None)]
+    rmap, n_held = r_withheld_map(recs, seeds=list(range(1, 21)))
+    chk("M1 보류 2 · M2 보류 0 · M4 보류 1", (n_held["m1"], n_held["m2"], n_held["m4"]) == (2, 0, 1), str(n_held))
+    chk("지표별 정확히 n건 제거",
+        all(len(v["m1"]) == 2 and len(v["m2"]) == 0 and len(v["m4"]) == 1 for v in rmap.values()))
+    Pk = {("S_T1_t1", "T1"), ("S_T1_t2", "T1"), ("S_T1_t3", "T1"), ("S_T2_t1", "T2"), ("S_T2_t2", "T2")}
+    Qk = {("S_T2_t1", "T2"), ("S_T2_t2", "T2")}
+    uni = set().union(*[v["m1"] for v in rmap.values()])
+    chk("R 제거집합 ⊆ P", uni <= Pk)
+    chk("R이 Q-보류도 제거 대상에 포함(품질 독립)", bool(uni & Qk), str(sorted(uni)))
+    chk("하드 결측은 제외", ("S_T2_t3", "T2") not in uni)
 
-    print("[C6] 행 생성 수·구조")
-    rows = make_rows(recs, u=5.0, burst_trial_index=1)
-    n_none = sum(1 for r in rows if r["injection"] == "none")
+    print("[C6] 행 생성")
+    N = len(recs)
+    rows = make_rows(recs, u={"m1": 5.0, "m2": 40.0, "m4": 0.4}, burst_trial_index=1)
+    n_r = sum(1 for r in rows if r["condition"] == "R")
     n_bias = sum(1 for r in rows if r["injection"] in ("bias_1u", "bias_3u"))
     n_burst = sum(1 for r in rows if r["injection"] == "burst_3u")
-    n_r = sum(1 for r in rows if r["condition"] == "R")
-    chk("A1·A4는 주입 없음(none)만", all(
-        r["injection"] == "none" for r in rows if r["condition"] in ("A1", "A4")))
-    chk("R 행 = 시행수 × seed3", n_r == 5 * 3, "R=%d" % n_r)
-    chk("bias 행 = A2·A3 × 2수준 × 시행수", n_bias == 2 * 2 * 5, "bias=%d" % n_bias)
-    chk("burst 행 = A2·A3 × 시행수", n_burst == 2 * 5, "burst=%d" % n_burst)
-    chk("모든 행에 prompt 존재", all(r["prompt"] for r in rows))
-    chk("CSV 필드 고정", set(rows[0].keys()) == set(FIELDS), str(sorted(rows[0].keys())))
+    chk("R 행 = 시행수×seed3", n_r == N * 3, "R=%d (N=%d)" % (n_r, N))
+    chk("bias 행 = A2·A3 × 2수준 × 시행수", n_bias == 2 * 2 * N, "bias=%d" % n_bias)
+    chk("burst 행 = A2·A3 × 시행수", n_burst == 2 * N, "burst=%d" % n_burst)
+    chk("모든 행에 prompt", all(r["prompt"] for r in rows))
+    chk("CSV 필드 고정", set(rows[0].keys()) == set(FIELDS))
+    chk("M3는 필드에 없다(mga_ 미포함)", not any("mga" in k for k in rows[0].keys()))
+    chk("m1/m2/m4 provided 플래그 3개",
+        all(("%s_provided" % k) in rows[0] for k in METRIC_ORDER))
+    chk("u 가 지표별로 따로 기록됨",
+        any(r["u_m1_used"] != r["u_m2_used"] for r in rows))
 
-    print("[C7] 컴퓨트 산식 (§6.1) 재현 — v6.2(72영상) + v6.3(120영상·2모델)")
-    def n_vlm(n_videos, n_repeat_videos=0):
-        base = n_videos * 4 + n_videos * 3
-        inj = n_videos * 2 * 3
-        rep = n_repeat_videos * 2
-        return base, inj, base + inj, base + inj + rep
-
-    # --- v6.2 회계 (12명 → 72영상) — 이력 검증 ---
-    b, i, t, tt = n_vlm(72, 24)
-    chk("v6.2: 비주입 504 · 주입 432 · 합 936 · 반복포함 984",
-        (b, i, t, tt) == (504, 432, 936, 984), str((b, i, t, tt)))
-    chk("구 회계 1,008 은 '원래' 144를 중복 계상한 값",
-        1008 - 936 == 72, "1,008-936=72")
-
-    # --- v6.3 회계 (20명 → 120영상, 모델 2개) ---
-    chk("v6.3: 영상 120 (=20명×2과제×3시행)", 20 * 2 * 3 == 120, "20*2*3=120")
-    b3, i3, t3, tt3 = n_vlm(120, 24)
-    chk("v6.3: 비주입 840 · 주입 720 · 합 1,560 · 반복포함 1,608",
-        (b3, i3, t3, tt3) == (840, 720, 1560, 1608), str((b3, i3, t3, tt3)))
-    chk("v6.3: 2모델 3,216 (=1,608×2)", tt3 * 2 == 3216, "2모델=%d" % (tt3 * 2))
+    print("[C7] u 추정(지표별)")
+    ue = estimate_u([_rec("a", "S", 10.0, 100.0, -2.0), _rec("b", "S", 20.0, 200.0, -4.0)],
+                    "ratio", (0.10,))
+    chk("세 지표 모두 산출", set(ue) == set(METRIC_ORDER) and all(ue[k] is not None for k in METRIC_ORDER), str(ue))
+    chk("B안 = 기저 P95×0.10", abs(ue["m2"] / ue["m1"] - 10.0) < 1e-9, str(ue))
+    chk("B안 = 기저 P95×0.10 (최소 비율)",
+        abs(estimate_u([_rec("z2", "S", 100.0, 1000.0, -4.0)], "ratio", (0.10, 0.30))["m1"] - 10.0) < 1e-6,
+        str(estimate_u([_rec("z2", "S", 100.0, 1000.0, -4.0)], "ratio", (0.10, 0.30))))
+    chk("A안 = 절대값 지정", estimate_u([], "absolute", (), {"m1": 5.0, "m2": 40.0, "m4": 0.4})
+        == {"m1": 5.0, "m2": 40.0, "m4": 0.4})
 
     print("")
     print("오라클 종합: %s" % ("ALL PASS" if ok_all else "FAIL 있음"))
     print("※ 합성 레코드다. 실제 촬영·VLM 성능이 아니다.")
     try:
-        outp = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                            "..", "results", "conditions_v6_oracle.txt")
+        outp = os.path.join(HERE, "..", "results", "conditions_v7_oracle.txt")
         os.makedirs(os.path.dirname(outp), exist_ok=True)
         with io.open(outp, "w", encoding="utf-8") as f:
             f.write("\n".join(log) + "\n")
         print("[saved] %s" % os.path.abspath(outp))
-    except Exception as e:
-        print("[warn] 오라클 로그 저장 실패: %s" % e)
+    except OSError as e:
+        print("[warn] 로그 저장 실패: %s" % e)
     return ok_all
 
 
-# ===========================================================================
+HERE = os.path.dirname(os.path.abspath(__file__))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--selftest", action="store_true")
-    ap.add_argument("--session", help="세션 폴더 (하나)")
-    ap.add_argument("--sessions", nargs="*", default=[], help="세션 폴더들")
+    ap.add_argument("--session")
+    ap.add_argument("--sessions", nargs="*", default=[])
     ap.add_argument("--out", default="conditions.csv")
     ap.add_argument("--u-mode", choices=["ratio", "absolute"], default="ratio")
     ap.add_argument("--u-ratios", nargs="*", type=float, default=[0.10, 0.30])
-    ap.add_argument("--u-abs", type=float, default=None, help="A안: 실측 P95 절대오차 (mma)")
+    ap.add_argument("--u-abs-m1", type=float, default=None, help="A안: M1 실측 P95 절대오차(mm)")
+    ap.add_argument("--u-abs-m2", type=float, default=None, help="A안: M2 절대오차(deg)")
+    ap.add_argument("--u-abs-m4", type=float, default=None, help="A안: M4 절대오차(무차원)")
     ap.add_argument("--burst-trial-index", type=int, default=2)
     a = ap.parse_args()
-
     if a.selftest:
         return 0 if selftest() else 1
 
@@ -495,7 +434,6 @@ def main():
     if not dirs:
         print(__doc__)
         return 0
-
     recs = []
     for d in dirs:
         got = load_session(d)
@@ -503,31 +441,26 @@ def main():
             print("[warn] L2_metric/*.json 없음: %s" % d)
         recs += got
     if not recs:
-        print("입력 레코드 0건 — L2_metric 가 생성됐는지 확인하세요.")
+        print("입력 0건 — l2_from_app.py --write 로 L2_metric 를 만드세요.")
         return 1
 
-    ratios = tuple(a.u_ratios) if len(a.u_ratios) >= 1 else (0.10,)
-    u = estimate_u(recs, a.u_mode, ratios, a.u_abs)
+    abs_u = None
+    if a.u_mode == "absolute":
+        if None in (a.u_abs_m1, a.u_abs_m2, a.u_abs_m4):
+            print("[error] A안은 --u-abs-m1(mm)·--u-abs-m2(deg)·--u-abs-m4 둘 다 필요")
+            return 2
+        abs_u = {"m1": a.u_abs_m1, "m2": a.u_abs_m2, "m4": a.u_abs_m4}
+    u = estimate_u(recs, a.u_mode, tuple(a.u_ratios), abs_u)
     rows = make_rows(recs, u=u, burst_trial_index=a.burst_trial_index, u_mode=a.u_mode)
     write_csv(rows, a.out)
-
-    prov = {"generator": "make_conditions_v6.py",
-            "plan": "outputs/research-plan-v6.md §6·§7 (v6.2)",
-            "sessions": [os.path.basename(os.path.abspath(d.rstrip('/\\'))) for d in dirs],
-            "n_trials": len(recs), "n_rows": len(rows),
-            "u": u, "u_mode": a.u_mode, "u_ratios": list(ratios),
-            "burst_trial_index": a.burst_trial_index,
+    prov = {"generator": "make_conditions_v6.py (v7)", "metrics": list(METRIC_ORDER),
+            "sessions": [os.path.basename(os.path.abspath(d.rstrip("/\\"))) for d in dirs],
+            "n_trials": len(recs), "n_rows": len(rows), "u": u, "u_mode": a.u_mode,
             "conditions": CONDITIONS, "injections": INJECTIONS, "r_seeds": R_SEEDS}
     with io.open(os.path.splitext(a.out)[0] + ".provenance.json", "w", encoding="utf-8") as f:
         json.dump(prov, f, ensure_ascii=False, indent=1)
-
-    by = {}
-    for r in rows:
-        by[(r["condition"], r["injection"])] = by.get((r["condition"], r["injection"]), 0) + 1
     print("행 %d개 → %s" % (len(rows), a.out))
-    print("  u = %s (%s)" % (("%.4f" % u) if u is not None else "None", a.u_mode))
-    for k in sorted(by):
-        print("    %-9s %-10s %d" % (k[0], k[1], by[k]))
+    print("  u = %s (%s)" % (json.dumps(u), a.u_mode))
     return 0
 
 
