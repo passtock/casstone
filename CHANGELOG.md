@@ -2603,3 +2603,60 @@ cutoff 사전 고정 = **추가 pre-filter 없음**(원신호 왜곡 방지), fc
 
 ### 남은 것
 ① §4.4·§9.2에 "몸통 등받이 접촉 상실=2점" 명문화(연구자 승인) ② `qrobust` 임계를 내부 점검 자료로 `calibrate()` 후 해시 동결 ③ (선택) 앱에 Pose 배선 ④ T3 머리 위 도달 프레임 확인(자유과제 영상으론 불가).
+
+## 2026-10-01 (20차) — 녹화 앱에 Pose 추가: 신규 모듈 + 검증된 패처 (앱 원본 불변)
+
+**요청:** "새로 코드를 짜서 녹화앱에 pose추가해줘."
+
+**원칙:** `Mirror_therapy_clock_v3.py` 를 손으로 고치지 않았다. 신규 모듈 + 패처로만 주입.
+**원본 무결성:** sha256 `61af8c8860b67288e551167475cd665ec65abd4283a96f73e1a23f51d1dc0f20` — 전 과정 후 `sha256sum -c` **OK**.
+
+**산출물**
+- `capstone/호진파일/pose_recorder.py` (신규) — Pose 기록기, **오라클 27 PASS / 0 FAIL**
+- `tools/integrate_pose_into_app.py` (신규) — 패처(미리보기 기본·백업·멱등·문법검사)
+- `experiments/results/pose_recorder_oracle.txt`
+- 검증 사본·산출물: `scratch/pose_patch/` · 문서 `outputs/pose_앱통합_2026-10-01.md`
+
+**설계 핵심 — 스레드**
+실측: Pose(mc=1) 29 ms/frame(34 fps), Hands 15 ms. 순차 실행 시 30 fps → 약 22 fps. → Pose를 **워커 스레드**로 분리.
+**불변식 `n_submitted = n_processed + n_failed + n_dropped_by_queue`** 를 `stats()`·`meta.json` 에 기록. 작은 큐(2)에 200프레임 → `proc=2 drop=198 submitted=200` = 유실 은폐 없음.
+
+**저장 형식** = `experiments/v11/pose_offline.py` 와 동일 롱포맷(`Frame_ID,time_s,Landmark_ID,visibility,MP_*,RS_*,RS_Status`) → 기존 v10/v11 도구가 **수정 없이** 읽음. 세션 폴더에 `pose_landmarks.csv` + `pose_landmarks.meta.json` + `raw_pose/<frame_id>.npz`(원자적, 크래시 대비) 추가. 기존 파일·스키마 불변.
+
+**패처 주입 3곳** (앵커 각각 파일 내 유일)
+① `class VideoWorker(QThread):` 앞 → import + `_pose_submit`/`_pose_finalize`
+② `self.rec_ids.append(self.frame_id)` 뒤 → `_pose_submit(...)` 1줄
+③ `_close_writers` 의 `_finalize_recording()` 블록 뒤 → `_pose_finalize(self)` 1줄
+
+**검증 기록**
+- 오라클 27 PASS: CSV 규격·미탐지·원시 npz(33,7)·역투영 3종·depth 5×5 창·RS_Status 3분기·스레드 합계보존·v11 로더 호환·meta
+- 패처: 앵커 `{class:1, ids:1, close:1}` · `py_compile` 통과(추가 54줄) · **AST로 호출 위치 확인 = `VideoWorker.run()`·`_close_writers()`** · 멱등성 확인 · 원본 해시 불변
+- **실프레임 E2E**(실제 MediaPipe): 6프레임 → 6/6 검출, CSV 198행, `no_depth` 198, v11 유효 6/6
+- depth 경로(`depth_m`+rs2형 intrinsics): `ok` 25행 + 카메라 좌표 산출
+- 모듈 비활성 시 **예외 없이 통과** → 앱 정상 동작
+- 모듈 자체 오프라인 모드: 실영상 200프레임 → 200/200 검출, `lossless: true`
+
+**주의:** ① Pose는 CPU를 쓰므로 fps 저하 가능(`model_complexity=0` 또는 격자 호출로 완화) ② 드롭은 `meta.json`의 `n_dropped_by_queue`로 노출 ③ 앱이 업데이트되면 앵커 불일치로 패처가 **중단**(조용히 잘못 넣지 않음).
+**Unverified:** 실제 D455 촬영 · 실 파이프라인 fps 영향 · depth 정렬 좌표의 실제 정확도 · PyQt5 앱 전체 실행 · T3 머리 위 도달 프레임 포함.
+
+### 20차 보강 — 실제 앱에 적용 + 최강 검증 (2026-10-01 18:40)
+
+**"마저 진행해줘"** → 패치를 실제 앱에 적용하고, 적용 후 실제 앱 모듈로 검증까지 완료.
+
+**적용 결과**
+| | sha256 |
+|---|---|
+| 적용 전 | `61af8c8860b67288e551167475cd665ec65abd4283a96f73e1a23f51d1dc0f20` |
+| 적용 후 | `2ceab58d77138ccdfea7f03c4f57885537e2a398f9b7ff19e86f6075d3e41be2` |
+| 백업 | `capstone/호진파일/Mirror_therapy_clock_v3.py.bak_20261001_184009` (164,565 bytes) |
+
+**★ 실제 앱(패치 후) 검증 — PyQt6가 설치돼 있어 가능했던 최강 확인**
+- 실제 `Mirror_therapy_clock_v3.py` **import 성공**, `_PoseRecorder` 해석됨
+- `inspect.getsource` 로 **`VideoWorker.run()`** 안 `_pose_submit(...)`, **`VideoWorker._close_writers()`** 안 `_pose_finalize(self)` 확인
+- 실제 앱 함수 경유 E2E: `_pose_submit`×6 → `_pose_finalize` → **CSV 198행, Frame_ID 1200~1205**, `lossless: true`
+- v11 `load_pose_csv` 호환: `pos(6,33,3)`, 어깨 유효 6/6
+- 적용 후 실제 파일 `py_compile` **OK**
+
+**검증 중 정정:** 처음엔 `PyQt5` 유무로 import 가능성을 판단했으나(미설치), 앱은 **PyQt6** 를 쓴다. 재확인 후 import 검증을 진행했다.
+
+**미해결(정직):** 실제 D455 카메라로 Pose 동시 기록은 여전히 **Unverified**(하드웨어 없음). 실 파이프라인 fps 영향도 미측정.

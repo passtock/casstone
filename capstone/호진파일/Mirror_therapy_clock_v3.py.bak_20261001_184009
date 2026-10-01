@@ -1100,58 +1100,6 @@ class SplitWorker(QThread):
 
 
 # ============================ 비디오 스레드 ============================
-# =====================================================================
-# [POSE-PATCH v1] Pose 기록기 연결
-#   tools/integrate_pose_into_app.py 가 삽입했다. 기존 동작을 바꾸지 않는다.
-#   pose_recorder.py 가 없거나 오류가 나면 앱은 평소처럼 동작하고 로그만 남긴다.
-# =====================================================================
-try:
-    from pose_recorder import PoseRecorder as _PoseRecorder
-except Exception as _pose_import_err:
-    _PoseRecorder = None
-    print(f"[POSE] pose_recorder 를 불러오지 못했습니다: {_pose_import_err}")
-
-
-def _pose_submit(worker, frame_bgr, time_s, cap_mono, cap_unix):
-    """기록 프레임마다 1회. Pose 는 워커 스레드가 처리하므로 캡처를 막지 않는다."""
-    if _PoseRecorder is None:
-        return
-    try:
-        rec = getattr(worker, "_pose_rec", None)
-        if rec is None:
-            folder = getattr(worker, "_rec_folder", None)
-            if not folder:
-                return
-            rec = _PoseRecorder(folder, model_complexity=1, threaded=True)
-            start = getattr(rec, "start", None)
-            if callable(start):
-                start()
-            worker._pose_rec = rec
-            print(f"[POSE] 기록 시작 -> {rec.csv_path}")
-        rec.submit(getattr(worker, "frame_id", None), time_s, frame_bgr,
-                   depth_m=getattr(worker, "latest_depth", None),
-                   intr=getattr(worker, "depth_intr", None),
-                   cap_mono=cap_mono, cap_unix=cap_unix)
-    except Exception as exc:
-        worker._pose_error_count = getattr(worker, "_pose_error_count", 0) + 1
-        if worker._pose_error_count <= 3:
-            print(f"[POSE ERROR] {type(exc).__name__}: {exc}")
-
-
-def _pose_finalize(worker):
-    """세션 종료 시 1회. pose_landmarks.csv 와 meta.json 을 마감한다."""
-    rec = getattr(worker, "_pose_rec", None)
-    if rec is None:
-        return
-    try:
-        path = rec.finalize()
-        print(f"[POSE] 마감 -> {path} {rec.stats()}")
-    except Exception as exc:
-        print(f"[POSE ERROR] 마감 실패: {exc}")
-    finally:
-        worker._pose_rec = None
-
-
 class VideoWorker(QThread):
     # frame, angles, fps, n_hands, hands3d, rs_measurements, frame_meta
     frame_processed = pyqtSignal(np.ndarray, dict, float, int, dict, dict, dict)
@@ -1272,7 +1220,6 @@ class VideoWorker(QThread):
             except Exception as e:
                 print(f"[경고] 영상 마무리 처리 실패: {e}")
                 self.last_recording = None
-        _pose_finalize(self)   # [POSE-PATCH v1]
         # 헤더 보정까지 끝난 뒤에 대기 중인 GUI 스레드를 풀어 준다.
         self._rec_done.set()
 
@@ -1685,7 +1632,6 @@ class VideoWorker(QThread):
                 self.rec_ts.append(cap_unix)
                 self.rec_mono.append(cap_mono)
                 self.rec_ids.append(self.frame_id)
-                _pose_submit(self, frame, t, cap_mono, cap_unix)   # [POSE-PATCH v1]
 
             frame_meta = {
                 'frame_id': self.frame_id,

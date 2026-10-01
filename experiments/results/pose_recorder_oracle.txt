@@ -1,0 +1,35 @@
+[POSE] 큐 포화로 1 프레임을 건너뜀 (Pose가 캡처보다 느림)
+[POSE] 큐 포화로 51 프레임을 건너뜀 (Pose가 캡처보다 느림)
+[POSE] 큐 포화로 101 프레임을 건너뜀 (Pose가 캡처보다 느림)
+[POSE] 큐 포화로 151 프레임을 건너뜀 (Pose가 캡처보다 느림)
+========================================================================
+pose_recorder 오라클
+  [PASS] CSV 생성 
+  [PASS] 헤더 = v11 규격 | ['Frame_ID', 'time_s', 'Landmark_ID', 'visibility', 'MP_X_m', 'MP_Y_m', 'MP_Z_m', 'RS_X_m', 'RS_Y_m', 'RS_Z_m', 'RS_Status']
+  [PASS] 행 수 = 5프레임 × 33점 | 165
+  [PASS] Frame_ID 보존 
+  [PASS] 미탐지 없음 
+  [PASS] raw_pose 프레임별 npz | ['000000100.npz', '000000101.npz', '000000102.npz']
+  [PASS] raw npz 형상 (33, 7) | (33, 7)
+  [PASS] 미탐지 → not_detected 33행 
+  [PASS] 미탐지 시 visibility 0 
+  [PASS] 역투영: 주점 → (0,0,z) | (0.0, 0.0, 0.8)
+  [PASS] 역투영: +300px → x=0.4m | (0.4, 0.0, 0.8)
+  [PASS] 역투영: depth 0 → None 
+  [PASS] 역투영: intrinsics 없음 → None 
+  [PASS] intrinsics dict/객체 모두 허용 
+  [PASS] depth 창: 균일 0.8m | 0.800000011920929 1.00
+  [PASS] depth 창: 전부 구멍 → None | None
+  [PASS] depth+intr → RS_Status=ok | ok
+  [PASS] RS 좌표 채워짐 
+  [PASS] depth 있는데 intr 없음 → no_intrinsics | no_intrinsics
+  [PASS] 스레드: 큐 충분 → 40프레임 전량 처리 | {"n_submitted": 40, "n_processed": 40, "n_detected": 40, "n_dropped_by_queue": 0, "n_failed": 0, "accounted": 40, "lossless": true, "queue_size": 256, "overflow": "drop_new", "n_errors": 0, "csv": "C:\\Users\\passp\\AppData\\Local\\Temp\\pose_rec5_dzadj9p3\\pose_landmarks.csv"}
+  [PASS] 스레드: 유실 없음(processed+failed+dropped == submitted) | 40
+  [PASS] 스레드 CSV 행 수 = 40×33 
+  [PASS] 작은 큐: 합계 보존(유실 은폐 없음) | proc=2 drop=198 fail=0 submitted=200
+  [PASS] 작은 큐: 드롭이 0보다 크게 보고됨 | 198
+  [PASS] 큐 드롭 계수 노출 
+  [PASS] ★ v11 load_pose_csv 와 호환 | MP (5, 33, 3) valid=5/5 | RS finite=0
+  [PASS] meta.json: 출처·계수 기록 | {"tool": "capstone/호진파일/pose_recorder.py", "mediapipe": null, "model_complexity"
+------------------------------------------------------------------------
+27 PASS / 0 FAIL (total 27)
