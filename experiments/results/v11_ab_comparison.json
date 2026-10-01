@@ -1,0 +1,46 @@
+{
+  "provenance": {
+    "generator": "experiments/v11/qrobust.py + run_session_v11.py",
+    "session": "20260915_비장애인_test_26세_남",
+    "n_pilot_records": 16
+  },
+  "synthetic_proof_P2": {
+    "13.4fps": {
+      "old_v10_pass": false,
+      "new_pass": true,
+      "max_dt_s": 0.1172,
+      "ifr_v10": 0.0837,
+      "max_gap_ratio": 1.58,
+      "missing_frac": 0.0054,
+      "new_reasons": []
+    },
+    "30.0fps": {
+      "old_v10_pass": true,
+      "new_pass": true,
+      "max_dt_s": 0.0611,
+      "ifr_v10": 0.0798,
+      "max_gap_ratio": 1.83,
+      "missing_frac": 0.0,
+      "new_reasons": []
+    }
+  },
+  "pilot_wrist_q": {
+    "old_v10_pass": 0,
+    "new_pass": 0,
+    "new_reason_split": {
+      "real_drop_only": 0,
+      "task_no_motion_only": 1,
+      "both": 15,
+      "neither": 0
+    },
+    "reading": "파일럿에서 신규칙 탈락은 (a) 실제 프레임 드롭 (b) 이 과제가 손목 이동을 만들지 않음 때문이다. 절대초 임계 자체의 문제는 합성 실험으로 분리 증명했다(13.4fps 결측없음 → 구규칙 탈락 / 신규칙 통과)."
+  },
+  "pilot_trunk_q": {
+    "new_pass": 0,
+    "reason_counts": {
+      "unstable_trunk_baseline": 16,
+      "no_pose": 0
+    },
+    "reading": "파일럿에는 §6.3.1 의 '정지 2초 기준선'이 없으므로 체간 기준선 SD가 크다 → Q가 정상적으로 보류한다. 프로토콜 적용 후 재측정 대상."
+  }
+}

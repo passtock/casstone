@@ -1,0 +1,147 @@
+{
+  "session": "20260915_비장애인_test_26세_남",
+  "n_records": 16,
+  "max_gap_s": {
+    "min": 0.18053299999999695,
+    "median": 0.268591500000003,
+    "max": 0.9022279999999974
+  },
+  "interp_frac": {
+    "min": 0.21202612209667115,
+    "median": 0.24401228047910134,
+    "max": 0.2970600408262104
+  },
+  "n_below_gap_0.1s": 0,
+  "n_below_interp_0.10": 0,
+  "n_pass": 0,
+  "records": [
+    {
+      "trial": "Trial_1",
+      "hand": "Left",
+      "max_gap_s": 0.18251699999999893,
+      "interp_frac": 0.21202612209667115,
+      "n": 109,
+      "pass": false
+    },
+    {
+      "trial": "Trial_1",
+      "hand": "Right",
+      "max_gap_s": 0.25296800000000097,
+      "interp_frac": 0.22748865218571684,
+      "n": 109,
+      "pass": false
+    },
+    {
+      "trial": "Trial_2",
+      "hand": "Left",
+      "max_gap_s": 0.9022279999999974,
+      "interp_frac": 0.26636176357326813,
+      "n": 101,
+      "pass": false
+    },
+    {
+      "trial": "Trial_2",
+      "hand": "Right",
+      "max_gap_s": 0.26841699999999946,
+      "interp_frac": 0.21862210702985016,
+      "n": 101,
+      "pass": false
+    },
+    {
+      "trial": "Trial_3",
+      "hand": "Left",
+      "max_gap_s": 0.22321700000000533,
+      "interp_frac": 0.2379643997977484,
+      "n": 97,
+      "pass": false
+    },
+    {
+      "trial": "Trial_3",
+      "hand": "Right",
+      "max_gap_s": 0.298254,
+      "interp_frac": 0.2337413774573322,
+      "n": 97,
+      "pass": false
+    },
+    {
+      "trial": "Trial_4",
+      "hand": "Left",
+      "max_gap_s": 0.20508499999999685,
+      "interp_frac": 0.2219933125399556,
+      "n": 100,
+      "pass": false
+    },
+    {
+      "trial": "Trial_4",
+      "hand": "Right",
+      "max_gap_s": 0.291561999999999,
+      "interp_frac": 0.22635286890414846,
+      "n": 101,
+      "pass": false
+    },
+    {
+      "trial": "Trial_5",
+      "hand": "Left",
+      "max_gap_s": 0.2687660000000065,
+      "interp_frac": 0.25134383307893676,
+      "n": 109,
+      "pass": false
+    },
+    {
+      "trial": "Trial_5",
+      "hand": "Right",
+      "max_gap_s": 0.2687660000000065,
+      "interp_frac": 0.25322159164949665,
+      "n": 108,
+      "pass": false
+    },
+    {
+      "trial": "Trial_6",
+      "hand": "Left",
+      "max_gap_s": 0.2903559999999885,
+      "interp_frac": 0.22540564109164604,
+      "n": 107,
+      "pass": false
+    },
+    {
+      "trial": "Trial_6",
+      "hand": "Right",
+      "max_gap_s": 0.42815899999999374,
+      "interp_frac": 0.25006016116045426,
+      "n": 107,
+      "pass": false
+    },
+    {
+      "trial": "Trial_7",
+      "hand": "Left",
+      "max_gap_s": 0.18053299999999695,
+      "interp_frac": 0.2680997132966515,
+      "n": 91,
+      "pass": false
+    },
+    {
+      "trial": "Trial_7",
+      "hand": "Right",
+      "max_gap_s": 0.39542299999999386,
+      "interp_frac": 0.2932068490585901,
+      "n": 91,
+      "pass": false
+    },
+    {
+      "trial": "Trial_8",
+      "hand": "Left",
+      "max_gap_s": 0.25360799999999983,
+      "interp_frac": 0.29454435349416397,
+      "n": 97,
+      "pass": false
+    },
+    {
+      "trial": "Trial_8",
+      "hand": "Right",
+      "max_gap_s": 0.25360799999999983,
+      "interp_frac": 0.2970600408262104,
+      "n": 97,
+      "pass": false
+    }
+  ]
+}

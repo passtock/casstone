@@ -1,0 +1,24 @@
+========================================================================
+l2_metrics_v11 오라클
+  [PASS] M1 ≈ 80 mm (v10 재사용, 샘플링 오차 허용) | 79.9560
+  [PASS] M2 완전신전 = 0 deg 
+  [PASS] M4 source = pose_wrist (Pose 있음) | pose_wrist
+  [PASS] M4 유한 SPARC ≤ 0 | -5.080668846690182
+  [PASS] ★ TD_lean 이 축 없이 산출 | 35.0
+  [PASS] ★ TD_lean ≈ 35 mm | 35.000 mm
+  [PASS] ★ TD_lean 은 anterior_axis 불필요 표시 
+  [PASS] ★ Q 손 통과 @13.4fps | []
+  [PASS] ★ Q 손목 통과 @13.4fps (구규칙은 탈락) | [] 1.0000000000000238
+  [PASS] ★ Q 체간 통과 @13.4fps | []
+  [PASS] fps_effective 보고 | 13.40
+  [PASS] ★ 구규칙은 13.4fps 에서 탈락(회귀 근거) | old_pass=False max_dt=0.117 ifr=0.084
+  [PASS] ★ 신규칙은 같은 조건에서 통과 
+  [PASS] ★ 30fps 에서도 TD_lean ≈ 35 mm | 35.000
+  [PASS] ★ fps 간 Q 판정 일치 
+  [PASS] Pose 없으면 TD 사유 no_pose 
+  [PASS] Pose 없으면 M4 source = hands_wrist | hands_wrist
+  [PASS] forward 모드: 축 없으면 no_anterior_axis | no_anterior_axis
+  [PASS] forward 모드: 축 주면 ≈ 35 mm | 35.000
+  [PASS] 두 TD 정의가 같은 합성에서 일치 
+------------------------------------------------------------------------
+20 PASS / 0 FAIL (total 20)

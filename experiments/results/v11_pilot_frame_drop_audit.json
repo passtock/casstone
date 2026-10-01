@@ -1,0 +1,116 @@
+{
+  "session": "20260915_비장애인_test_26세_남",
+  "n_trials": 8,
+  "total_missing_frames": 54,
+  "provenance": {
+    "source": "앱 landmarks.csv 의 Left 손 행에서 Frame_ID 연속성 검사",
+    "script": "experiments/v11/run_session_v11.py 보조 진단"
+  },
+  "interpretation": "Q 의 gap_ratio_exceeded/missing_frames 는 실제 프레임 드롭을 검출한 것이다(오탐 아님).",
+  "trials": [
+    {
+      "trial": "Trial_1",
+      "n_frames": 133,
+      "fid_span": 137,
+      "missing_frames": 4,
+      "missing_frac_of_span": 0.0292,
+      "n_gaps": 2,
+      "max_fid_jump": 3,
+      "median_dt_s": 0.0634,
+      "max_dt_s": 0.1825,
+      "max_gap_ratio": 2.88,
+      "fps_median": 15.77
+    },
+    {
+      "trial": "Trial_2",
+      "n_frames": 116,
+      "fid_span": 135,
+      "missing_frames": 19,
+      "missing_frac_of_span": 0.1407,
+      "n_gaps": 4,
+      "max_fid_jump": 13,
+      "median_dt_s": 0.0636,
+      "max_dt_s": 0.9022,
+      "max_gap_ratio": 14.18,
+      "fps_median": 15.72
+    },
+    {
+      "trial": "Trial_3",
+      "n_frames": 125,
+      "fid_span": 130,
+      "missing_frames": 5,
+      "missing_frac_of_span": 0.0385,
+      "n_gaps": 3,
+      "max_fid_jump": 3,
+      "median_dt_s": 0.0634,
+      "max_dt_s": 0.2232,
+      "max_gap_ratio": 3.52,
+      "fps_median": 15.78
+    },
+    {
+      "trial": "Trial_4",
+      "n_frames": 129,
+      "fid_span": 134,
+      "missing_frames": 5,
+      "missing_frac_of_span": 0.0373,
+      "n_gaps": 4,
+      "max_fid_jump": 3,
+      "median_dt_s": 0.0695,
+      "max_dt_s": 0.2051,
+      "max_gap_ratio": 2.95,
+      "fps_median": 14.38
+    },
+    {
+      "trial": "Trial_5",
+      "n_frames": 132,
+      "fid_span": 137,
+      "missing_frames": 5,
+      "missing_frac_of_span": 0.0365,
+      "n_gaps": 2,
+      "max_fid_jump": 5,
+      "median_dt_s": 0.0633,
+      "max_dt_s": 0.2688,
+      "max_gap_ratio": 4.25,
+      "fps_median": 15.8
+    },
+    {
+      "trial": "Trial_6",
+      "n_frames": 128,
+      "fid_span": 135,
+      "missing_frames": 7,
+      "missing_frac_of_span": 0.0519,
+      "n_gaps": 5,
+      "max_fid_jump": 3,
+      "median_dt_s": 0.0773,
+      "max_dt_s": 0.2904,
+      "max_gap_ratio": 3.75,
+      "fps_median": 12.93
+    },
+    {
+      "trial": "Trial_7",
+      "n_frames": 99,
+      "fid_span": 106,
+      "missing_frames": 7,
+      "missing_frac_of_span": 0.066,
+      "n_gaps": 4,
+      "max_fid_jump": 3,
+      "median_dt_s": 0.0689,
+      "max_dt_s": 0.1805,
+      "max_gap_ratio": 2.62,
+      "fps_median": 14.52
+    },
+    {
+      "trial": "Trial_8",
+      "n_frames": 106,
+      "fid_span": 108,
+      "missing_frames": 2,
+      "missing_frac_of_span": 0.0185,
+      "n_gaps": 2,
+      "max_fid_jump": 2,
+      "median_dt_s": 0.0629,
+      "max_dt_s": 0.2536,
+      "max_gap_ratio": 4.03,
+      "fps_median": 15.9
+    }
+  ]
+}

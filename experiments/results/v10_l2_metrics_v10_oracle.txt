@@ -1,0 +1,24 @@
+========================================================================
+l2_metrics_v10 오라클
+  [PASS] 로딩: 프레임 수 200 | (200, 21, 3)
+  [PASS] M1 상한 절단 없음(capped=False) 
+  [PASS] M1 = 합성 최대거리(≈80 mm) | M1=80.0000 exp=80.0000
+  [PASS] M1 P95 보조 저장 
+  [PASS] 각도: 직각 → 굴곡 90 deg | 90.000000
+  [PASS] 각도: 135도 내각 → 굴곡 45 deg | 45.000000
+  [PASS] M2 14각 
+  [PASS] M2 완전신전 → 굴곡 0 deg | 0.0
+  [PASS] M2 각도 이름 = 엄지 2 + 네손가락×3 
+  [PASS] M2 굽힘 1관절 → 합계 > 0 | 148.53384978643052
+  [PASS] M4 손목 정지 → undefined_signal | undefined_signal
+  [PASS] M5 전방축 주입 → 40 mm | 40.000
+  [PASS] M5 전방축 없으면 null + 사유 | no_anterior_axis
+  [PASS] M4 Pose 손목(이동) → 유한 SPARC ≤0 | -4.299222533334802
+  [PASS] Q: 0.6초 결측 → 손 품질 실패 | ratio=0.94 gap=0.60
+  [PASS] Q: 정상 시행 → 손 품질 통과 | dev=0.000
+  [PASS] Pose 없으면 TD 사유 no_pose 
+  [PASS] M1 상한 초과 계수 노출 
+  [PASS] Pose+전방축 → TD 산출 | 40.0
+  [PASS] Pose 있으면 M4 source=pose_wrist | pose_wrist
+------------------------------------------------------------------------
+20 PASS / 0 FAIL (total 20)

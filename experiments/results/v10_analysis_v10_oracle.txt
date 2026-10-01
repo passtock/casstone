@@ -1,0 +1,23 @@
+========================================================================
+analysis_v10 오라클
+  [PASS] 통합 MAE = 과제 평균 | {'P1': 2.0, 'P2': 1.0}
+  [PASS] 과제 결측 시 남은 과제로 평균 
+  [PASS] Wilcoxon exact(전부 양수, n=6) | p=0.031250 exact
+  [PASS] Wilcoxon 0차이 전부 → n=0, p=1 
+  [PASS] Holm: a 통과(b=0.04<0.05) | (0.03, True)
+  [PASS] Holm: b 비통과(p_adj=0.08) | (0.08, False)
+  [PASS] Holm: c 비통과 
+  [PASS] 부트스트랩: 상수 → CI=[1,1] | 1.0 1.0 1.0
+  [PASS] 환자 수 25 | 25
+  [PASS] PR-2 양수(개선) | 0.480
+  [PASS] PR-2 고정순서 1단계 유의 | p=3.192e-05
+  [PASS] 고정순서 = PR-2→PR-3→PR-1 
+  [PASS] R seed 3개 사용 | ['20261001', '20261002', '20261003']
+  [PASS] 과제별 결과 병기 
+  [PASS] Holm 민감도 병기 
+  [PASS] 고정순서: 1단계 비유의면 이후 중단 표시 | step0_sig=False
+  [PASS] 실패: valid/conservative 병기 
+  [PASS] 실패: 보수적 손실이 유효 MAE보다 나쁨(효과량이 작아짐) | valid=0.550 cons=0.247
+  [PASS] 환자<20 → exploratory=True 
+------------------------------------------------------------------------
+19 PASS / 0 FAIL (total 19)

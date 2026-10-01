@@ -1,0 +1,28 @@
+========================================================================
+conditions_v10 오라클
+  [PASS] A1: 수치 블록 없음 
+  [PASS] A1: 참고표 없음 
+  [PASS] A1: 영상 제공됨 
+  [PASS] A2: 4개 키(M1·M2·SPARC·TD) | ['mga_mm', 'tam_total_deg', 'sparc', 'td_mm']
+  [PASS] A2: 참고표 포함 
+  [PASS] A2: Q 실패해도 원값 유지 | {'mga_mm': 10.0, 'tam_total_deg': 11.0, 'sparc': 12.0, 'td_mm': 13.0}
+  [PASS] A3: Q 실패 지표만 null | {'mga_mm': None, 'tam_total_deg': 11.0, 'sparc': 12.0, 'td_mm': 13.0}
+  [PASS] A3: A2와 같은 참고표 
+  [PASS] T3: 손 지표 키 없음 | ['sparc', 'td_mm']
+  [PASS] T3: A3-hand 생성 안 함 
+  [PASS] A3-hand: 손 지표 2개만 | ['mga_mm', 'tam_total_deg']
+  [PASS] A3-hand: 참고표도 손만 | ['T1|mga_mm', 'T1|tam_total_deg']
+  [PASS] 하드 결측: A2에서 null 
+  [PASS] 하드 결측: R에서도 null 유지 
+  [PASS] R: A3와 같은 보류 개수 | A3=1 R=1
+  [PASS] R: seed 3개 생성 
+  [PASS] R: seed별 보류 개수 = A3 추가보류 수(3) | [3, 3, 3]
+  [PASS] R: seed 간 보류 위치가 실제로 달라짐 
+  [PASS] A2-noRef: 참고표 없음·수치는 A2와 동일 
+  [PASS] A1n: 모든 키 null + null 참고표 
+  [PASS] A4: 영상 없음 표기 
+  [PASS] 참고표: 유효인원 <15 → unavailable 
+  [PASS] 프롬프트에 조건명 없음 | set()
+  [PASS] 등받이 자세 기준 명시 
+------------------------------------------------------------------------
+24 PASS / 0 FAIL (total 24)

@@ -1,0 +1,23 @@
+========================================================================
+qrobust 오라클 (v11)
+  [PASS] 표본통계: 13.4fps median_dt≈0.075s | 0.0737 s (fps_eff 13.6)
+  [PASS] ★ 신규칙: 13.4fps 결측없음 → 통과 | []
+  [PASS] ★ 신규칙: 30.0fps 결측없음 → 통과 | []
+  [PASS] ★ fps 무관 일관성 
+  [PASS] ★ 구규칙: 13.4fps 결측없음 → 탈락(문제 재현) | max_dt=0.113 ifr=0.089
+  [PASS] ★ 구규칙: 30.0fps 결측없음 → 통과 | max_dt=0.050 ifr=0.079
+  [PASS] 결측 20프레임 → 탈락 | ['gap_ratio_exceeded']
+  [PASS] 결측 사유에 gap/missing 포함 | ['gap_ratio_exceeded']
+  [PASS] max_gap_ratio 는 dt 배수(무차원) | 1.530
+  [PASS] 결측 없는 13.4fps → missing_frac ≈ 0 | 0.0112
+  [PASS] ★ 보정이 결과 필드를 거부 
+  [PASS] 보정: 탈락률이 목표 대역 | rej=0.15 g=2.0 m=0.05
+  [PASS] 보정: 결과 반환 키 
+  [PASS] 감사: 구 탈락률 > 신 탈락률 | old=0.67 new=0.33
+  [PASS] 정지 대비 0.2mm 이동 → motion_unresolved | ratio=1.33 ['motion_unresolved']
+  [PASS] 정지 대비 5mm 이동 → 통과(노이즈보다 구분됨) | ratio=3.2
+  [PASS] 정지 대비 20cm 이동 → 통과 | ratio=74.3
+  [PASS] ★ 이동/잡음 비 단조 증가 | 1.33 < 3.2 < 74.3
+  [PASS] motion_unresolved 는 reasons 와 flags 양쪽에 노출 
+------------------------------------------------------------------------
+19 PASS / 0 FAIL (total 19)

@@ -2506,3 +2506,100 @@ cutoff 사전 고정 = **추가 pre-filter 없음**(원신호 왜곡 방지), fc
 **§7.4 문장 정정**: "현 M1(K1_mp)이 같은 계열" → "확정된 M1 = MGA".
 
 **재감사(불변식) 결과:** 정본 M1=MGA 2 · M3=K1_mp 민감도 2 · `mga_mm` 2 · §6.3.1 3 · `cue_t` 6 · D-23 부분해소 1 · 고아 행 0. 쉬운본 M1=MGA 1 · 정지2초 1. 코드 `METRICS={m1:m1_mga_mm/mga_mm, m2, m4}` 일치. **오라클 7종 ALL PASS(189).**
+
+## 2026-10-01 (17차) — 교수 피드백 검증: 정본 내부 불일치 8건 확정 + ARAT 채점 정본의 체간 기준 발견
+
+**요청:** "우리 연구계획서 최종본에 대한 피드백이거든? 교수님은 왜 ARAT 2과제만 하냐, 충분하냐, 손 움직임만 보는 게 맞냐, 상체를 봐야 하지 않냐고 하셨어."
+
+**산출물:** `outputs/교수피드백_검증및대응_2026-10-01.md` (29KB)
+
+### 검증 결과 (정본 `outputs/실험계획서_최종본.md` 대조)
+**받은 피드백의 정본 불일치 지적 4건 = 전부 사실 (줄 확정)**
+- L436 `M1 (K1_mp)` / L438 `M3 (MGA)` ↔ §0·§7.6 M1=MGA·M3=K1_mp
+- L569 §7.5 본문 "K1_mp를 입력, MGA는 기술통계" ↔ §7.5 표
+- L550 §7.4 "커밋된 입력은 K1_mp·TAM" ↔ §7.5·§7.6 SPARC 주 입력
+- L603/604 §8 A2/A3 ↔ 코드 `METRICS={m1:mga_mm,m2:m4}` 3입력
+
+**피드백이 놓친 미반영 4건 추가 발견**
+- L247 §5-10 · L282 §5.1-N10 "M1=P95 · M3=max" (반대)
+- L224·L228 §4 "M1(K1_mp)" (T2 정렬 근거 문장이 구 정의 위에 있음)
+- L504 §7.4 "체간·**SPARC** … 제외" (SPARC는 이제 주 입력)
+- **오라클 총계 3개 병존**: L853 "176 checks" / L889 "6종 180 PASS" / CHANGELOG "7종 189"
+→ **16차 감사의 "고아 행 0" 선언은 불충분했다.** 지표 개명 후 "옛 이름이 남은 모든 표"를 검사하지 않았다.
+
+**★ 신규 근거 (교수님 질문 2 직결): ARAT 채점 정본에 체간이 명시적 기준이다**
+- Yozbatiran 2008 원문 직접 확인: *"The trunk must remain in contact with the back of the chair throughout testing"* / *"abnormal posture is evident (eg, if subject's trunk completely loses contact with the back of the chair)"* → **grasp·grip·pinch·gross 4개 소척도 전부에서 3점→2점 기준.** 우리 T2=pinch 12번에 직접 적용.
+- 정본 §7.4(L504)는 체간을 "지표 미구현"으로 제외, §6.2 요약·§9.1 프롬프트는 "자세 유지"로만 뭉갬 → **VLM이 채점 축 하나를 원리적으로 관측 불가.** 교수님 질문은 범위 확대가 아니라 **타당도 위협**이다.
+- 룰북(L40·L110)·채점시트(`posture_loss`)에는 이미 있다 → **3중 불일치**(계획서 §6.2/§9.1/§7 ↔ 룰북·시트).
+
+**인용 정정 2건**
+- Faity 2022 = **Kinect v2·정면 1.5 m·높이 1.40 m**(원문 확인). 정본 §2.7의 "체간 ICC 0.93"은 **우리 D455 측면 0.65–0.85 m에 전이 불가**. Table 1 정확 ICC는 **Unverified**(본문 서술만 확보).
+- Collins 2018은 **두 편**: Physiotherapy 104(2):153–166(PMID **29402446**, 체간 SMD **1.55**) vs Front Neurol 9:472(PMID **29988530**, SMD **1.42**). 정본 Sources가 **physio DOI에 front-neurol PMID를 결합**한 오류.
+- MediaPipe Pose 공식문서: world landmark 원점 = **골반 중심** → 체간 **이동량** 복원 불가, **경사/전굴**만 가능(ARAT 등받이 기준과 정합).
+
+**처방(3안):** A안(최소 침습, 필수: 문서-코드 통일 + 채점 정의에 등받이 기준 명문화 + 시야 확보 + T1×T2 상호작용 사전등록) / B안(체간 지표 입력 추가) / **C안(권장: A 전부 + 체간은 C1–C4 통과 시에만 승격, 승격 시 SPARC를 민감도로 강등해 3개 유지)**.
+
+**Blocked/Unverified:** 우리 배치에서 체간이 화면에 들어오는지(치구·팬텀 실측 필요) · 우리 배치에서 체간 C1–C4 · Faity Table 1 정확 ICC · 오라클 최신 총계(재실행 필요).
+
+## 2026-10-01 (18차) — 실험계획서 v10 검토 + v10 실행 코드 3종 (오라클 63 PASS)
+
+**요청:** "`capstone/실험계획서_v10_최종본.md` 이게 아마 최종본이 될 것 같은데 검토해주고 코드 한 번 짜줘."
+
+**산출물**
+- 검토: `outputs/v10_검토_및_코드_2026-10-01.md`
+- 코드: `experiments/v10/{l2_metrics_v10,conditions_v10,analysis_v10}.py` + `README.md`
+- 오라클 로그: `experiments/results/v10_*_oracle.txt` (20+24+19 = **63 PASS / 0 FAIL**)
+- 실측: `experiments/results/v10_pilot_l2_demo.json` · `v10_wrist_q_audit_pilot.json`
+
+### 검토 — 통과한 것
+- **지표 명칭 혼선 0건** (`M3` 등장 0회). v7의 M1/M3 반대 표기 문제 재발 없음.
+- **§13 호출 수 산식 정확**: 6,750+675+450+450+150 = **8,475** / 공통설정 시 **9,825** (재계산 일치). 225=25명×9시행, 150=25×2×3 검산.
+- **§19 참고문헌 10건 전부 원출처 일치** (Yozbatiran PDF 직접 확인 · Kwakkel 2019 Int J Stroke판 PMID 31510885 · van der Lee 2001 PMID 11239280 · Li 2026 확인 · Balasubramanian 2015/2012 PMID 확인 · Cornec 2024 PMID 38812037 · Faity 2022 PMID 35408349 · Qwen3.8-27B·InternVL3.5-8B HF 실재). v7의 Collins PMID 결합 오류 유형 재발 없음.
+
+### 검토 — ★ 코드 실행이 잡은 문제 2건
+**P1 (Blocked):** 촬영 앱 `Mirror_therapy_clock_v3.py`에 **MediaPipe Pose 없음**(grep 0건). 파일럿 landmarks.csv도 21점(Hands)만 → v10 §7.2/§7.3 정의대로의 **M4(Pose 손목 SPARC)·M5(TD) 산출 불가**. 파일럿 16레코드 실측: M4는 전부 `hands_wrist` 폴백, **M5는 16/16 null(`no_pose`)**. v10 §18이 "SPARC·TD 실제 구현 확인 필요"로 표시한 것은 정확.
+
+**P2 (🔴 신규):** **§8.2 손목 Q 임계가 파일럿 fps에서 100% 탈락**시킨다. 비장애 26세 남 · 손 추적 100% · 13.4 fps에서 `max_gap_s` 0.181–0.902초(임계 0.10), `interp_frac` 0.212–0.297(임계 0.10) → **0/16 통과**. 원인은 임계가 절대 초 단위인데 실제 프레임 간격 중앙값이 55 ms이기 때문. → A3가 SPARC를 항상 보류하고 §12.4 보류율 곡선이 손목에서 100%가 된다. v7의 `Q1=0.7` 전부 탈락 사례와 같은 유형.
+
+**D1 (🟠):** ARAT 정본(Yozbatiran 2008)의 **"몸통이 등받이에서 완전히 떨어지면 2점"** 기준이 v10에 없다("등받이" 등장 1회, 조작적 정의 없음). TD를 주 수치로 승격했는데 **채점 규칙이 없어** A2/A3가 "무관한 숫자 추가 효과"를 재게 된다. → §4.4 룰북·§9.2 프롬프트에 한 줄 명문화 권고. (작성한 `conditions_v10.py`는 이 문장을 이미 포함 — 연구자 승인 항목)
+
+### 코드 (v10 §7·§8.2 / §9·§10·§11.3 / §12)
+`l2_metrics_v10`: M1(MGA, **절단 없음**+초과 계수) · M2(14각 합 P95) · M4(SPARC, 손목 경로를 Hands와 분리, 소스 태그) · M5(TD, **전방축 필수**, 없으면 사유 null) · Q(하드 결측과 분리).
+`conditions_v10`: 참고 분포(개인 중앙값→집단 중앙값/Q25/Q75, n<15 unavailable) · A1·A2·A3·R·A4·A1n·A2-noRef·A3-hand · R은 **전체 후보 P에서 지표별 비복원 무작위**(seed 20261001/2/3) · 조건명 은닉 · **"등받이 접촉 상실=2점" 채점 기준 포함**.
+`analysis_v10`: 환자 통합 MAE((T1+T2+T3)/3) · **고정순서 PR-2→PR-3→PR-1**(중단 규칙) · 환자단위 부트스트랩 2,000 · Holm k=3 민감도 · R seed별 MAE 후 평균 · 실패 valid/conservative 병기 · n<20 탐색적 표시.
+
+**오라클 검증 예:** 직각→굴곡 90.000000° · M1=80.0000 mm(독립 재계산 일치) · 전방축 없으면 `no_anterior_axis` · Wilcoxon exact n=6 전부양수 → p=0.03125(=2/64) · Holm 0.01/0.04/0.2 → 0.03/0.08/0.2 · T3에 손 지표 키 없음 · 하드 결측은 전 조건 null 유지.
+
+**남은 것:** Pose 배선 · §8.2 손목 임계 재정의 · D1 문구 명문화 · 카메라 시야 검증.
+
+## 2026-10-01 (19차) — v11: v10 블로커 2건(P1·P2) **신규 코드로** 해결. 기존 코드 미수정.
+
+**요청:** "기존 코드는 내비두고 새코드를 짜서 해결해줘."
+
+**원칙 준수:** `experiments/v10/*.py` · `capstone/호진파일/Mirror_therapy_clock_v3.py` **미수정**(mtime 17:29–17:31 / 09-29, v11 작업은 17:38 이후). v10은 **import 재사용**만 했다.
+
+**산출물:** `experiments/v11/{pose_offline,qrobust,l2_metrics_v11,run_session_v11}.py` + README · 검토 `outputs/v11_문제해결_2026-10-01.md` · 오라클 **52 PASS / 0 FAIL**(19+13+20)
+
+### P1 해결 — 오프라인 Pose
+`pose_offline.py`가 저장된 `original.avi`를 사후 처리해 Pose 롱포맷 CSV 생성(v10 §6.2 "촬영과 추적 분리" 원칙 활용). 출력은 v10 `load_pose_csv`와 호환(오라클 검증).
+- 파일럿 1,825프레임/36.8초, **1,825/1,825 검출**. 산출 `pose_landmarks.csv` 60,225행 + `.meta.json`(FOV 보고).
+- **★ 이전 세션 우려 반증:** 어깨 100.0% · 골반 99.5/100.0% · 손목 100/95.9% 가 vis≥0.5 → **체간이 실제로 프레임에 들어온다.**
+- **★ 파일럿 TD 16/16 산출**(이전 16/16 null). M1 84.4–114.9mm · SPARC −4.09~−7.18(전부 pose_wrist) · TD 62.4–169.9mm.
+- 좌표계 실측: hips mid ≈ (−0.0001, −0.0011, 0.0004) m → world landmark 원점 = 골반 중점 확인.
+
+### P2 해결 — dt 상대 Q
+`qrobust.py`: `max_gap_ratio = max(dt)/median(dt)`, `missing_frac = 기대격자 대비 결측비율`, `motion_noise_ratio = 이동 P99 / 정지 P95`.
+- **★ 통제 증명(결측 0, 같은 내용, fps만 변경):** 13.4fps → 구규칙 **탈락**(max_dt 0.117s) / 신규칙 **통과** · 30.0fps → 둘 다 통과. → 구규칙 탈락은 **fps 의존 임계의 문제**였음이 분리 증명됨.
+- `motion_unresolved`는 `flags`로 별도 노출(임상 실패와 미동일시, v10 §7.2).
+- `calibrate()`는 `score/mae/arat/vlm` 필드가 들어오면 **예외**(v10 §8.2 튜닝 금지 강제) — 오라클 검증.
+
+### M5 두 정의
+`TD_lean`(축 불필요, 기본) = max‖horizontal(P_sh_mid−P_hip_mid)‖−기준선 · `TD_forward`(ArUco 축 필요).
+- **작성 중 버그 검출·수정:** 수평면을 (x,y)로 오인 → TD=0. **수직축은 y, 수평면은 (x,z)** 가 맞다. 오라클이 잡음.
+
+### 신규 발견 — 파일럿 실제 프레임 드롭
+`v11_pilot_frame_drop_audit.json`: 8시행 총 **54프레임 누락**(시행당 1.8–14.1%, Trial_2는 **13프레임 연속 드롭**). → 신규칙의 `gap_ratio_exceeded`/`missing_frames`는 **정탐**.
+파일럿 손목 Q 탈락 사유 분해: 실제드롭+무이동 15 / 무이동만 1. 체간 Q 16/16 `unstable_trunk_baseline` = 파일럿에 §6.3.1 정지 2초 기준선이 없음(정상 동작).
+
+### 남은 것
+① §4.4·§9.2에 "몸통 등받이 접촉 상실=2점" 명문화(연구자 승인) ② `qrobust` 임계를 내부 점검 자료로 `calibrate()` 후 해시 동결 ③ (선택) 앱에 Pose 배선 ④ T3 머리 위 도달 프레임 확인(자유과제 영상으론 불가).

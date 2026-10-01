@@ -1,0 +1,589 @@
+{
+  "session": "20260915_비장애인_test_26세_남",
+  "n_files": 8,
+  "n_records": 16,
+  "pose_used": "capstone/호진파일/outputs/데이터_저장/20260915_비장애인_test_26세_남\\pose_landmarks.csv",
+  "td_mode": "lean",
+  "anterior_axis": null,
+  "aggregate": {
+    "n_ok": 16,
+    "td_non_null": 16,
+    "sparc_non_null": 16,
+    "q_hand_pass": 0,
+    "q_wrist_pass_new": 0,
+    "q_wrist_pass_old_v10": 0,
+    "q_trunk_pass": 0,
+    "fps_effective_range": [
+      [
+        16.331330023516063,
+        19.55569461827434
+      ],
+      null
+    ],
+    "fps_min": 16.331330023516063,
+    "fps_max": 19.55569461827434,
+    "mga_mm_range": [
+      84.36169019769459,
+      114.87686443301106
+    ],
+    "tam_deg_range": [
+      893.5982172259421,
+      999.2014036967064
+    ],
+    "sparc_range": [
+      -7.178677941079231,
+      -4.093765318734329
+    ],
+    "td_mm_range": [
+      62.34564091875304,
+      182.53451158553173
+    ],
+    "td_lean_mm_range": [
+      62.34564091875304,
+      182.53451158553173
+    ],
+    "q_wrist_new_reasons": {
+      "gap_ratio_exceeded": 15,
+      "motion_unresolved": 16,
+      "missing_frames": 5
+    }
+  },
+  "records": [
+    {
+      "trial": "Trial_1",
+      "hand": "Left",
+      "mga_mm": 91.70851069487226,
+      "tam_deg": 959.3625631809507,
+      "sparc": -5.359870321175533,
+      "sparc_src": "pose_wrist",
+      "sparc_reason": "ok",
+      "td_mm": 169.92412922753292,
+      "td_mode": "lean",
+      "td_reason": "ok",
+      "td_lean_mm": 169.92412922753292,
+      "q_hand": false,
+      "q_hand_reasons": [
+        "gap_ratio_exceeded",
+        "segment_length_unstable"
+      ],
+      "q_wrist": false,
+      "q_wrist_reasons": [
+        "gap_ratio_exceeded",
+        "motion_unresolved"
+      ],
+      "q_trunk": false,
+      "q_trunk_reasons": [
+        "unstable_trunk_baseline"
+      ],
+      "fps_effective": 19.547666985945437,
+      "median_dt_s": 0.05115699999999945,
+      "max_gap_ratio": 3.72052700510199,
+      "missing_frac": 0.13157526185948143,
+      "q_wrist_old_pass": false,
+      "old_ifr_v10": 0.2850974627704715,
+      "old_max_dt_s": 0.18251699999999893
+    },
+    {
+      "trial": "Trial_1",
+      "hand": "Right",
+      "mga_mm": 104.69368243677027,
+      "tam_deg": 981.7416816674346,
+      "sparc": -4.783132838457046,
+      "sparc_src": "pose_wrist",
+      "sparc_reason": "ok",
+      "td_mm": 169.62995613963338,
+      "td_mode": "lean",
+      "td_reason": "ok",
+      "td_lean_mm": 169.62995613963338,
+      "q_hand": false,
+      "q_hand_reasons": [
+        "gap_ratio_exceeded"
+      ],
+      "q_wrist": false,
+      "q_wrist_reasons": [
+        "gap_ratio_exceeded",
+        "motion_unresolved"
+      ],
+      "q_trunk": false,
+      "q_trunk_reasons": [
+        "unstable_trunk_baseline"
+      ],
+      "fps_effective": 19.489758132101983,
+      "median_dt_s": 0.05130899999999894,
+      "max_gap_ratio": 4.608158412754193,
+      "missing_frac": 0.14219200494456985,
+      "q_wrist_old_pass": false,
+      "old_ifr_v10": 0.2993672710804618,
+      "old_max_dt_s": 0.25296800000000097
+    },
+    {
+      "trial": "Trial_2",
+      "hand": "Left",
+      "mga_mm": 96.50875282193529,
+      "tam_deg": 960.4487597355352,
+      "sparc": -6.14182108667438,
+      "sparc_src": "pose_wrist",
+      "sparc_reason": "ok",
+      "td_mm": 67.34677514551859,
+      "td_mode": "lean",
+      "td_reason": "ok",
+      "td_lean_mm": 67.34677514551859,
+      "q_hand": false,
+      "q_hand_reasons": [
+        "gap_ratio_exceeded"
+      ],
+      "q_wrist": false,
+      "q_wrist_reasons": [
+        "gap_ratio_exceeded",
+        "missing_frames",
+        "motion_unresolved"
+      ],
+      "q_trunk": false,
+      "q_trunk_reasons": [
+        "unstable_trunk_baseline"
+      ],
+      "fps_effective": 19.19275281653688,
+      "median_dt_s": 0.0521029999999989,
+      "max_gap_ratio": 15.785904842331897,
+      "missing_frac": 0.23316918309802392,
+      "q_wrist_old_pass": false,
+      "old_ifr_v10": 0.3723233899097603,
+      "old_max_dt_s": 0.9022279999999974
+    },
+    {
+      "trial": "Trial_2",
+      "hand": "Right",
+      "mga_mm": 90.90046444332451,
+      "tam_deg": 995.467460170397,
+      "sparc": -5.52460479862185,
+      "sparc_src": "pose_wrist",
+      "sparc_reason": "ok",
+      "td_mm": 62.34564091875304,
+      "td_mode": "lean",
+      "td_reason": "ok",
+      "td_lean_mm": 62.34564091875304,
+      "q_hand": false,
+      "q_hand_reasons": [
+        "gap_ratio_exceeded"
+      ],
+      "q_wrist": false,
+      "q_wrist_reasons": [
+        "gap_ratio_exceeded",
+        "motion_unresolved"
+      ],
+      "q_trunk": false,
+      "q_trunk_reasons": [
+        "unstable_trunk_baseline"
+      ],
+      "fps_effective": 17.763093620384865,
+      "median_dt_s": 0.056296500000000194,
+      "max_gap_ratio": 4.123986393470262,
+      "missing_frac": 0.12478735324604484,
+      "q_wrist_old_pass": false,
+      "old_ifr_v10": 0.31357918639078913,
+      "old_max_dt_s": 0.26841699999999946
+    },
+    {
+      "trial": "Trial_3",
+      "hand": "Left",
+      "mga_mm": 95.15423224982113,
+      "tam_deg": 934.6095919570598,
+      "sparc": -6.797538425691236,
+      "sparc_src": "pose_wrist",
+      "sparc_reason": "ok",
+      "td_mm": 130.8859493659256,
+      "td_mode": "lean",
+      "td_reason": "ok",
+      "td_lean_mm": 130.8859493659256,
+      "q_hand": false,
+      "q_hand_reasons": [
+        "gap_ratio_exceeded"
+      ],
+      "q_wrist": false,
+      "q_wrist_reasons": [
+        "gap_ratio_exceeded",
+        "motion_unresolved"
+      ],
+      "q_trunk": false,
+      "q_trunk_reasons": [
+        "unstable_trunk_baseline"
+      ],
+      "fps_effective": 18.09561724150326,
+      "median_dt_s": 0.05526200000000259,
+      "max_gap_ratio": 3.7203503311495822,
+      "missing_frac": 0.09448564910853463,
+      "q_wrist_old_pass": false,
+      "old_ifr_v10": 0.3366885234155803,
+      "old_max_dt_s": 0.22321700000000533
+    },
+    {
+      "trial": "Trial_3",
+      "hand": "Right",
+      "mga_mm": 88.77917164209293,
+      "tam_deg": 981.6086403171724,
+      "sparc": -7.178677941079231,
+      "sparc_src": "pose_wrist",
+      "sparc_reason": "ok",
+      "td_mm": 130.8859493659256,
+      "td_mode": "lean",
+      "td_reason": "ok",
+      "td_lean_mm": 130.8859493659256,
+      "q_hand": false,
+      "q_hand_reasons": [
+        "gap_ratio_exceeded",
+        "segment_length_unstable"
+      ],
+      "q_wrist": false,
+      "q_wrist_reasons": [
+        "gap_ratio_exceeded",
+        "motion_unresolved"
+      ],
+      "q_trunk": false,
+      "q_trunk_reasons": [
+        "unstable_trunk_baseline"
+      ],
+      "fps_effective": 18.329117636276955,
+      "median_dt_s": 0.054558000000000106,
+      "max_gap_ratio": 5.546427654972684,
+      "missing_frac": 0.11323078703969613,
+      "q_wrist_old_pass": false,
+      "old_ifr_v10": 0.3360706121227409,
+      "old_max_dt_s": 0.298254
+    },
+    {
+      "trial": "Trial_4",
+      "hand": "Left",
+      "mga_mm": 88.21506961603896,
+      "tam_deg": 980.0715722331087,
+      "sparc": -4.731361759026787,
+      "sparc_src": "pose_wrist",
+      "sparc_reason": "ok",
+      "td_mm": 181.1958963782771,
+      "td_mode": "lean",
+      "td_reason": "ok",
+      "td_lean_mm": 181.1958963782771,
+      "q_hand": false,
+      "q_hand_reasons": [
+        "gap_ratio_exceeded"
+      ],
+      "q_wrist": false,
+      "q_wrist_reasons": [
+        "gap_ratio_exceeded",
+        "motion_unresolved"
+      ],
+      "q_trunk": false,
+      "q_trunk_reasons": [
+        "unstable_trunk_baseline"
+      ],
+      "fps_effective": 18.78022442368143,
+      "median_dt_s": 0.053247500000001224,
+      "max_gap_ratio": 3.4330062444244613,
+      "missing_frac": 0.10940684835042935,
+      "q_wrist_old_pass": false,
+      "old_ifr_v10": 0.2951817618968988,
+      "old_max_dt_s": 0.20508499999999685
+    },
+    {
+      "trial": "Trial_4",
+      "hand": "Right",
+      "mga_mm": 88.39151540090599,
+      "tam_deg": 975.1458262489546,
+      "sparc": -5.030173949487406,
+      "sparc_src": "pose_wrist",
+      "sparc_reason": "ok",
+      "td_mm": 182.53451158553173,
+      "td_mode": "lean",
+      "td_reason": "ok",
+      "td_lean_mm": 182.53451158553173,
+      "q_hand": false,
+      "q_hand_reasons": [
+        "gap_ratio_exceeded"
+      ],
+      "q_wrist": false,
+      "q_wrist_reasons": [
+        "gap_ratio_exceeded",
+        "motion_unresolved"
+      ],
+      "q_trunk": false,
+      "q_trunk_reasons": [
+        "unstable_trunk_baseline"
+      ],
+      "fps_effective": 18.66402881726079,
+      "median_dt_s": 0.053578999999999155,
+      "max_gap_ratio": 2.5071389910227464,
+      "missing_frac": 0.09686125655580469,
+      "q_wrist_old_pass": false,
+      "old_ifr_v10": 0.3126208750918867,
+      "old_max_dt_s": 0.291561999999999
+    },
+    {
+      "trial": "Trial_5",
+      "hand": "Left",
+      "mga_mm": 98.13250033676968,
+      "tam_deg": 991.7141055421197,
+      "sparc": -5.9391918567209725,
+      "sparc_src": "pose_wrist",
+      "sparc_reason": "ok",
+      "td_mm": 134.7010331356799,
+      "td_mode": "lean",
+      "td_reason": "ok",
+      "td_lean_mm": 134.7010331356799,
+      "q_hand": false,
+      "q_hand_reasons": [
+        "gap_ratio_exceeded"
+      ],
+      "q_wrist": false,
+      "q_wrist_reasons": [
+        "gap_ratio_exceeded",
+        "motion_unresolved"
+      ],
+      "q_trunk": false,
+      "q_trunk_reasons": [
+        "unstable_trunk_baseline"
+      ],
+      "fps_effective": 19.381347391271984,
+      "median_dt_s": 0.05159599999999642,
+      "max_gap_ratio": 5.517443212652517,
+      "missing_frac": 0.12105746560250641,
+      "q_wrist_old_pass": false,
+      "old_ifr_v10": 0.29826819151135375,
+      "old_max_dt_s": 0.2687660000000065
+    },
+    {
+      "trial": "Trial_5",
+      "hand": "Right",
+      "mga_mm": 87.5827552729246,
+      "tam_deg": 983.9116523042474,
+      "sparc": -5.229356129538912,
+      "sparc_src": "pose_wrist",
+      "sparc_reason": "ok",
+      "td_mm": 134.7010331356799,
+      "td_mode": "lean",
+      "td_reason": "ok",
+      "td_lean_mm": 134.7010331356799,
+      "q_hand": false,
+      "q_hand_reasons": [
+        "gap_ratio_exceeded"
+      ],
+      "q_wrist": false,
+      "q_wrist_reasons": [
+        "gap_ratio_exceeded",
+        "motion_unresolved"
+      ],
+      "q_trunk": false,
+      "q_trunk_reasons": [
+        "unstable_trunk_baseline"
+      ],
+      "fps_effective": 19.55569461827434,
+      "median_dt_s": 0.051135999999996073,
+      "max_gap_ratio": 5.567076032541094,
+      "missing_frac": 0.13554327439675395,
+      "q_wrist_old_pass": false,
+      "old_ifr_v10": 0.30027398816902773,
+      "old_max_dt_s": 0.2687660000000065
+    },
+    {
+      "trial": "Trial_6",
+      "hand": "Left",
+      "mga_mm": 98.70563364641099,
+      "tam_deg": 940.0610875793874,
+      "sparc": -5.237012616802766,
+      "sparc_src": "pose_wrist",
+      "sparc_reason": "ok",
+      "td_mm": 96.84008884623937,
+      "td_mode": "lean",
+      "td_reason": "ok",
+      "td_lean_mm": 96.84008884623937,
+      "q_hand": false,
+      "q_hand_reasons": [
+        "gap_ratio_exceeded",
+        "segment_length_unstable"
+      ],
+      "q_wrist": false,
+      "q_wrist_reasons": [
+        "gap_ratio_exceeded",
+        "missing_frames",
+        "motion_unresolved"
+      ],
+      "q_trunk": false,
+      "q_trunk_reasons": [
+        "unstable_trunk_baseline"
+      ],
+      "fps_effective": 19.16553270598143,
+      "median_dt_s": 0.05217700000000036,
+      "max_gap_ratio": 3.3816815838395717,
+      "missing_frac": 0.16792571693411762,
+      "q_wrist_old_pass": false,
+      "old_ifr_v10": 0.23748159425882964,
+      "old_max_dt_s": 0.2903559999999885
+    },
+    {
+      "trial": "Trial_6",
+      "hand": "Right",
+      "mga_mm": 90.16159537697689,
+      "tam_deg": 999.2014036967064,
+      "sparc": -5.616282135589038,
+      "sparc_src": "pose_wrist",
+      "sparc_reason": "ok",
+      "td_mm": 96.84008884623937,
+      "td_mode": "lean",
+      "td_reason": "ok",
+      "td_lean_mm": 96.84008884623937,
+      "q_hand": false,
+      "q_hand_reasons": [
+        "gap_ratio_exceeded"
+      ],
+      "q_wrist": false,
+      "q_wrist_reasons": [
+        "gap_ratio_exceeded",
+        "missing_frames",
+        "motion_unresolved"
+      ],
+      "q_trunk": false,
+      "q_trunk_reasons": [
+        "unstable_trunk_baseline"
+      ],
+      "fps_effective": 18.726591760295925,
+      "median_dt_s": 0.05340000000001055,
+      "max_gap_ratio": 5.913333333332347,
+      "missing_frac": 0.17524369940139095,
+      "q_wrist_old_pass": false,
+      "old_ifr_v10": 0.26173535760745864,
+      "old_max_dt_s": 0.42815899999999374
+    },
+    {
+      "trial": "Trial_7",
+      "hand": "Left",
+      "mga_mm": 96.65644523098655,
+      "tam_deg": 992.9846434136846,
+      "sparc": -4.27605069934067,
+      "sparc_src": "pose_wrist",
+      "sparc_reason": "ok",
+      "td_mm": 71.7639829771531,
+      "td_mode": "lean",
+      "td_reason": "ok",
+      "td_lean_mm": 71.7639829771531,
+      "q_hand": false,
+      "q_hand_reasons": [
+        "gap_ratio_exceeded"
+      ],
+      "q_wrist": false,
+      "q_wrist_reasons": [
+        "gap_ratio_exceeded",
+        "missing_frames",
+        "motion_unresolved"
+      ],
+      "q_trunk": false,
+      "q_trunk_reasons": [
+        "unstable_trunk_baseline"
+      ],
+      "fps_effective": 18.97101229321609,
+      "median_dt_s": 0.05271199999999965,
+      "max_gap_ratio": 4.512350129002841,
+      "missing_frac": 0.17807742286345973,
+      "q_wrist_old_pass": false,
+      "old_ifr_v10": 0.2875725772771099,
+      "old_max_dt_s": 0.18053299999999695
+    },
+    {
+      "trial": "Trial_7",
+      "hand": "Right",
+      "mga_mm": 114.87686443301106,
+      "tam_deg": 905.4782269079908,
+      "sparc": -4.501097537462578,
+      "sparc_src": "pose_wrist",
+      "sparc_reason": "ok",
+      "td_mm": 71.7639829771531,
+      "td_mode": "lean",
+      "td_reason": "ok",
+      "td_lean_mm": 71.7639829771531,
+      "q_hand": false,
+      "q_hand_reasons": [
+        "gap_ratio_exceeded",
+        "segment_length_unstable"
+      ],
+      "q_wrist": false,
+      "q_wrist_reasons": [
+        "gap_ratio_exceeded",
+        "missing_frames",
+        "motion_unresolved"
+      ],
+      "q_trunk": false,
+      "q_trunk_reasons": [
+        "unstable_trunk_baseline"
+      ],
+      "fps_effective": 18.657064497472525,
+      "median_dt_s": 0.0535989999999984,
+      "max_gap_ratio": 5.6040224631058395,
+      "missing_frac": 0.18130288492062407,
+      "q_wrist_old_pass": false,
+      "old_ifr_v10": 0.32572311308388907,
+      "old_max_dt_s": 0.39542299999999386
+    },
+    {
+      "trial": "Trial_8",
+      "hand": "Left",
+      "mga_mm": 84.36169019769459,
+      "tam_deg": 955.6374366761369,
+      "sparc": -4.093765318734329,
+      "sparc_src": "pose_wrist",
+      "sparc_reason": "ok",
+      "td_mm": 80.4303673278382,
+      "td_mode": "lean",
+      "td_reason": "ok",
+      "td_lean_mm": 80.4303673278382,
+      "q_hand": false,
+      "q_hand_reasons": [
+        "gap_ratio_exceeded"
+      ],
+      "q_wrist": false,
+      "q_wrist_reasons": [
+        "gap_ratio_exceeded",
+        "motion_unresolved"
+      ],
+      "q_trunk": false,
+      "q_trunk_reasons": [
+        "unstable_trunk_baseline"
+      ],
+      "fps_effective": 16.670000666798874,
+      "median_dt_s": 0.05998800000000415,
+      "max_gap_ratio": 2.511002200439789,
+      "missing_frac": 0.04063831333012757,
+      "q_wrist_old_pass": false,
+      "old_ifr_v10": 0.3084247672858426,
+      "old_max_dt_s": 0.25360799999999983
+    },
+    {
+      "trial": "Trial_8",
+      "hand": "Right",
+      "mga_mm": 92.26540358077723,
+      "tam_deg": 893.5982172259421,
+      "sparc": -4.5657023003078,
+      "sparc_src": "pose_wrist",
+      "sparc_reason": "ok",
+      "td_mm": 80.93188075621062,
+      "td_mode": "lean",
+      "td_reason": "ok",
+      "td_lean_mm": 80.93188075621062,
+      "q_hand": false,
+      "q_hand_reasons": [
+        "gap_ratio_exceeded"
+      ],
+      "q_wrist": false,
+      "q_wrist_reasons": [
+        "motion_unresolved"
+      ],
+      "q_trunk": false,
+      "q_trunk_reasons": [
+        "unstable_trunk_baseline"
+      ],
+      "fps_effective": 16.331330023516063,
+      "median_dt_s": 0.06123200000000395,
+      "max_gap_ratio": 2.459988241442102,
+      "missing_frac": 0.03006982047050477,
+      "q_wrist_old_pass": false,
+      "old_ifr_v10": 0.3124666904067372,
+      "old_max_dt_s": 0.25360799999999983
+    }
+  ]
+}
