@@ -1,16 +1,14 @@
 # VLM 재활 영상 분석 결과 보고서
 
-- **대상 영상**: `KakaoTalk_20260909_183548574.mp4` (길이: 80.7초)
+- **대상 영상**: `C:/Users/passp/OneDrive/바탕 화면/jeayong/capstone/06_VLM_재활평가_테스트/KakaoTalk_20260909_183548574.mp4` (길이: 80.7초)
 - **분석 모델**: `Qwen/Qwen2.5-VL-3B-Instruct` (로컬 GPU 가속 구동)
-- **총 소요 시간**: 37.0초
-- **분석 일시**: 2026-09-09 19:47:26
+- **총 소요 시간**: 1495.9초
+- **분석 일시**: 2026-09-15 18:42:06
 
 ---
 
 ## 1. 전체 활동 및 세팅 식별 (Activity & Scene Identification)
-1) The table has two round objects, which appear to be crystal balls, placed on it. The participant is sitting at the table with both hands resting on the table surface.
-
-2) Yes, the participant is performing a bimanual (two-handed) grasping task on the two round objects. The participant is using both hands to grasp the crystal balls simultaneously, indicating that they are performing a bimanual grasping action.
+The video shows a rehabilitation video of an upper-limb movement session. The participant is sitting at a table with two round objects in front of him. He is wearing a brown jacket and has short black hair. He is using both hands to grasp and stabilize the objects. He is looking at the camera and appears to be concentrating on his movements. The background of the video shows a room with shelves and cabinets.
 
 ---
 
@@ -18,8 +16,8 @@
 
 ### [오른손 (Right Hand)]
 - **유의미한 움직임 감지 (Motion)**: X (No) (응답 원문: `No`)
-- **물체 파지/접촉 감지 (Grasp)**: X (No) (응답 원문: `No`)
-- **도출된 운동 프리미티브**: **Idle (대기/휴지)**
+- **물체 파지/접촉 감지 (Grasp)**: O (Yes) (응답 원문: `Yes`)
+- **도출된 운동 프리미티브**: **Stabilize (물체 유지/고정)**
 
 ### [왼손 (Left Hand)]
 - **유의미한 움직임 감지 (Motion)**: X (No) (응답 원문: `No`)
@@ -29,7 +27,7 @@
 ---
 
 ## 3. 양손 대칭성 및 운동 협응 분석 (Bimanual Coordination & Symmetry)
-The movements of the left and right hands are symmetrical, with no noticeable hesitation, tremor, or asymmetry. Both hands maintain a steady grip on the spherical objects throughout the video.
+Yes, both hands are placed and moved symmetrically over the two spherical objects. There is no hesitation, tremor, or asymmetry in either hand's movement.
 
 ---
 

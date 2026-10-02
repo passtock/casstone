@@ -1,0 +1,127 @@
+{
+  "provenance": {
+    "tol": 0.2,
+    "min_agree": 2,
+    "rest_s": 2.0,
+    "theta": "손가락 14각 합(엄지2·나머지3)",
+    "fit": "LOSO(나머지 2세션)",
+    "fit_caveat": "비장애 세션을 남길 때 환자 세션에서 B를 적합 → 사양과 다름",
+    "time_axis": "capture_monotonic_s (29차는 time_s 사용)"
+  },
+  "detection": {
+    "Healthy|Left|I1_jump": {
+      "n_trials": 8,
+      "cur": 0.875,
+      "B": 0.875
+    },
+    "Healthy|Left|I2_loss": {
+      "n_trials": 8,
+      "cur": 0.875,
+      "B": 0.875
+    },
+    "Healthy|Left|I3_scale": {
+      "n_trials": 8,
+      "cur": 1.0,
+      "B": 1.0
+    },
+    "Healthy|Left|I4_collapse": {
+      "n_trials": 8,
+      "cur": 0.875,
+      "B": 0.75
+    },
+    "Healthy|Right|I1_jump": {
+      "n_trials": 8,
+      "cur": 0.875,
+      "B": 0.875
+    },
+    "Healthy|Right|I2_loss": {
+      "n_trials": 8,
+      "cur": 0.75,
+      "B": 0.875
+    },
+    "Healthy|Right|I3_scale": {
+      "n_trials": 8,
+      "cur": 1.0,
+      "B": 1.0
+    },
+    "Healthy|Right|I4_collapse": {
+      "n_trials": 8,
+      "cur": 0.875,
+      "B": 0.875
+    },
+    "Patient|Left|I1_jump": {
+      "n_trials": 8,
+      "cur": 0.125,
+      "B": 1.0
+    },
+    "Patient|Left|I2_loss": {
+      "n_trials": 8,
+      "cur": 0.125,
+      "B": 0.625
+    },
+    "Patient|Left|I3_scale": {
+      "n_trials": 8,
+      "cur": 1.0,
+      "B": 1.0
+    },
+    "Patient|Left|I4_collapse": {
+      "n_trials": 8,
+      "cur": 0.125,
+      "B": 1.0
+    },
+    "Patient|Right|I1_jump": {
+      "n_trials": 8,
+      "cur": 0.125,
+      "B": 1.0
+    },
+    "Patient|Right|I2_loss": {
+      "n_trials": 8,
+      "cur": 0.125,
+      "B": 1.0
+    },
+    "Patient|Right|I3_scale": {
+      "n_trials": 8,
+      "cur": 1.0,
+      "B": 1.0
+    },
+    "Patient|Right|I4_collapse": {
+      "n_trials": 8,
+      "cur": 0.125,
+      "B": 1.0
+    }
+  },
+  "false_alarm": {
+    "Healthy|Left": {
+      "n_trials": 8,
+      "n_frames": 968,
+      "cur_frame": 0.871900826446281,
+      "cur_trial": 1.0,
+      "B_frame": 0.41838842975206614,
+      "B_trial": 1.0
+    },
+    "Healthy|Right": {
+      "n_trials": 8,
+      "n_frames": 963,
+      "cur_frame": 0.7850467289719626,
+      "cur_trial": 1.0,
+      "B_frame": 0.4963655244029076,
+      "B_trial": 1.0
+    },
+    "Patient|Left": {
+      "n_trials": 8,
+      "n_frames": 493,
+      "cur_frame": 0.37322515212981744,
+      "cur_trial": 1.0,
+      "B_frame": 0.31643002028397565,
+      "B_trial": 1.0
+    },
+    "Patient|Right": {
+      "n_trials": 8,
+      "n_frames": 493,
+      "cur_frame": 0.36511156186612576,
+      "cur_trial": 1.0,
+      "B_frame": 0.6977687626774848,
+      "B_trial": 1.0
+    }
+  }
+}

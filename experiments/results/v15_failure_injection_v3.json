@@ -1,0 +1,204 @@
+{
+  "provenance": {
+    "fixed_from_v2": [
+      "O1 세션 키 분리",
+      "O2 비율상한 30% 규칙",
+      "O3 주입전 위반 차감"
+    ],
+    "tol": 0.2,
+    "min_agree": 2,
+    "cap": 0.3,
+    "caveat": "오류 라벨 없음 → 미주입 위반률이며 참 오경보율이 아님. I1/I2/I4는 손끝 한 점만 변경."
+  },
+  "per_session": {
+    "20260915_비장애인_test_26세_남||Left": {
+      "group": "Healthy",
+      "n": 8,
+      "cur_median_rate": 0.9269385585175058,
+      "B_median_rate": 0.3857609139126887,
+      "cur_reject_over_cap": 8,
+      "B_reject_over_cap": 6
+    },
+    "20260915_비장애인_test_26세_남||Right": {
+      "group": "Healthy",
+      "n": 8,
+      "cur_median_rate": 0.8937728937728938,
+      "B_median_rate": 0.49956379498364234,
+      "cur_reject_over_cap": 8,
+      "B_reject_over_cap": 8
+    },
+    "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본||Left": {
+      "group": "Patient",
+      "n": 7,
+      "cur_median_rate": 0.5151515151515151,
+      "B_median_rate": 0.49230769230769234,
+      "cur_reject_over_cap": 7,
+      "B_reject_over_cap": 6
+    },
+    "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본||Right": {
+      "group": "Patient",
+      "n": 7,
+      "cur_median_rate": 0.23636363636363636,
+      "B_median_rate": 0.15384615384615385,
+      "cur_reject_over_cap": 1,
+      "B_reject_over_cap": 2
+    },
+    "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본||Left": {
+      "group": "Patient",
+      "n": 8,
+      "cur_median_rate": 0.3790322580645161,
+      "B_median_rate": 0.2074978204010462,
+      "cur_reject_over_cap": 5,
+      "B_reject_over_cap": 3
+    },
+    "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본||Right": {
+      "group": "Patient",
+      "n": 8,
+      "cur_median_rate": 0.3306451612903226,
+      "B_median_rate": 0.6980777728678744,
+      "cur_reject_over_cap": 5,
+      "B_reject_over_cap": 8
+    }
+  },
+  "injection_net": {
+    "20260915_비장애인_test_26세_남||Healthy|Left|I1_jump": {
+      "n": 8,
+      "cur": 0.0,
+      "B": 0.75
+    },
+    "20260915_비장애인_test_26세_남||Healthy|Left|I2_loss": {
+      "n": 8,
+      "cur": 0.0,
+      "B": 0.625
+    },
+    "20260915_비장애인_test_26세_남||Healthy|Left|I3_scale": {
+      "n": 8,
+      "cur": 0.125,
+      "B": 0.875
+    },
+    "20260915_비장애인_test_26세_남||Healthy|Left|I4_collapse": {
+      "n": 8,
+      "cur": 0.0,
+      "B": 0.5
+    },
+    "20260915_비장애인_test_26세_남||Healthy|Right|I1_jump": {
+      "n": 8,
+      "cur": 0.125,
+      "B": 0.625
+    },
+    "20260915_비장애인_test_26세_남||Healthy|Right|I2_loss": {
+      "n": 8,
+      "cur": 0.0,
+      "B": 0.75
+    },
+    "20260915_비장애인_test_26세_남||Healthy|Right|I3_scale": {
+      "n": 8,
+      "cur": 0.25,
+      "B": 1.0
+    },
+    "20260915_비장애인_test_26세_남||Healthy|Right|I4_collapse": {
+      "n": 8,
+      "cur": 0.125,
+      "B": 0.5
+    },
+    "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본||Patient|Left|I1_jump": {
+      "n": 7,
+      "cur": 0.42857142857142855,
+      "B": 0.7142857142857143
+    },
+    "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본||Patient|Left|I2_loss": {
+      "n": 7,
+      "cur": 0.0,
+      "B": 0.0
+    },
+    "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본||Patient|Left|I3_scale": {
+      "n": 7,
+      "cur": 0.7142857142857143,
+      "B": 0.7142857142857143
+    },
+    "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본||Patient|Left|I4_collapse": {
+      "n": 7,
+      "cur": 0.42857142857142855,
+      "B": 0.7142857142857143
+    },
+    "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본||Patient|Right|I1_jump": {
+      "n": 7,
+      "cur": 0.14285714285714285,
+      "B": 0.8571428571428571
+    },
+    "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본||Patient|Right|I2_loss": {
+      "n": 7,
+      "cur": 0.0,
+      "B": 0.14285714285714285
+    },
+    "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본||Patient|Right|I3_scale": {
+      "n": 7,
+      "cur": 0.8571428571428571,
+      "B": 1.0
+    },
+    "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본||Patient|Right|I4_collapse": {
+      "n": 7,
+      "cur": 0.14285714285714285,
+      "B": 0.8571428571428571
+    },
+    "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본||Patient|Left|I1_jump": {
+      "n": 8,
+      "cur": 0.0,
+      "B": 0.875
+    },
+    "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본||Patient|Left|I2_loss": {
+      "n": 8,
+      "cur": 0.0,
+      "B": 0.25
+    },
+    "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본||Patient|Left|I3_scale": {
+      "n": 8,
+      "cur": 0.875,
+      "B": 0.875
+    },
+    "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본||Patient|Left|I4_collapse": {
+      "n": 8,
+      "cur": 0.0,
+      "B": 0.875
+    },
+    "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본||Patient|Right|I1_jump": {
+      "n": 8,
+      "cur": 0.0,
+      "B": 0.625
+    },
+    "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본||Patient|Right|I2_loss": {
+      "n": 8,
+      "cur": 0.0,
+      "B": 0.0
+    },
+    "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본||Patient|Right|I3_scale": {
+      "n": 8,
+      "cur": 0.875,
+      "B": 0.625
+    },
+    "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본||Patient|Right|I4_collapse": {
+      "n": 8,
+      "cur": 0.0,
+      "B": 0.625
+    }
+  },
+  "rigid_hand_check": {
+    "baseline_violation_frames": 0,
+    "I1_jump": {
+      "detected_frames": 0,
+      "of": 8
+    },
+    "I2_loss": {
+      "detected_frames": 0,
+      "of": 8
+    },
+    "I3_scale": {
+      "detected_frames": 8,
+      "of": 8
+    },
+    "I4_collapse": {
+      "detected_frames": 0,
+      "of": 8
+    }
+  }
+}

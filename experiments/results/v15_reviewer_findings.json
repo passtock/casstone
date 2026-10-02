@@ -1,0 +1,511 @@
+{
+  "by_session": {
+    "20260915_비장애인_test_26세_남": {
+      "meta_frames_written": 1825,
+      "affected": null,
+      "app_landmarks_frames": 1706,
+      "app_landmarks_rows": 67263,
+      "rs_status_ok_pct": 32.38,
+      "summary_n_rows": 16,
+      "summary_n_cols": 58,
+      "MGA_mm_3D_cal_missing": "16/16",
+      "median_RS_Valid_Rate_by_hand": {
+        "Right": 0.215,
+        "Left": 0.4445
+      },
+      "median_Flex_Speed_by_hand": {
+        "Right": 1502204279.75,
+        "Left": 1183891558.25
+      },
+      "has_Time_Base": false,
+      "has_Flex_Speed_p95": false,
+      "split_summary_rows_sum": 16,
+      "split_landmark_files": 8,
+      "L2_n": null,
+      "L2_sparc_differs_from_app": null
+    },
+    "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본": {
+      "meta_frames_written": 33038,
+      "affected": "좌측 (Left Hand)",
+      "app_landmarks_frames": 1187,
+      "app_landmarks_rows": 48174,
+      "rs_status_ok_pct": 63.1,
+      "summary_n_rows": 14,
+      "summary_n_cols": 63,
+      "MGA_mm_3D_cal_missing": "14/14",
+      "median_RS_Valid_Rate_by_hand": {
+        "Right": 0.207,
+        "Left": 0.492
+      },
+      "median_Flex_Speed_by_hand": {
+        "Right": 197.3,
+        "Left": 141.0
+      },
+      "has_Time_Base": true,
+      "has_Flex_Speed_p95": true,
+      "split_summary_rows_sum": 14,
+      "split_landmark_files": 7,
+      "L2_n": null,
+      "L2_sparc_differs_from_app": null
+    },
+    "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본": {
+      "meta_frames_written": 1031,
+      "affected": "좌측 (Left Hand)",
+      "app_landmarks_frames": 982,
+      "app_landmarks_rows": 41202,
+      "rs_status_ok_pct": 78.58,
+      "summary_n_rows": 18,
+      "summary_n_cols": 63,
+      "MGA_mm_3D_cal_missing": "18/18",
+      "median_RS_Valid_Rate_by_hand": {
+        "Right": 0.919,
+        "Left": 0.419
+      },
+      "median_Flex_Speed_by_hand": {
+        "Right": 279.1,
+        "Left": 235.4
+      },
+      "has_Time_Base": true,
+      "has_Flex_Speed_p95": true,
+      "split_summary_rows_sum": 18,
+      "split_landmark_files": 9,
+      "L2_n": 18,
+      "L2_sparc_differs_from_app": 16
+    }
+  },
+  "detail": {
+    "checks": {
+      "schema": {
+        "healthy_cols": [
+          58
+        ],
+        "patient_cols": [
+          63,
+          63
+        ],
+        "patient_only_cols": [
+          "Dt_Dropped",
+          "Ext_Speed_p95_deg_s",
+          "Flex_Speed_p95_deg_s",
+          "Segments",
+          "Time_Base"
+        ]
+      }
+    },
+    "sessions": {
+      "20260915_비장애인_test_26세_남": {
+        "meta_frames_written": 1825,
+        "meta_fps": 16.933905014606836,
+        "affected_side": null,
+        "app_landmarks_file": "Session_20260915_213947_950555_8a398dea_landmarks.csv",
+        "app_landmarks_rows": 67263,
+        "app_landmarks_frames": 1706,
+        "rs_status_ok_pct": 32.38,
+        "rs_status_top": [
+          [
+            "depth_hole",
+            44012
+          ],
+          [
+            "ok",
+            21781
+          ],
+          [
+            "outside_image",
+            411
+          ],
+          [
+            "depth_off_hand",
+            389
+          ],
+          [
+            "depth_out_of_range",
+            383
+          ]
+        ],
+        "summary_n_rows": 16,
+        "summary_n_cols": 58,
+        "summary_cols_extra_vs_58": [
+          "Cycle_Period_s",
+          "Cycles",
+          "Duration_s",
+          "End_s",
+          "Ext_Speed_deg_s",
+          "Flex_Speed_deg_s",
+          "Hand",
+          "Index_ROM_3D_deg",
+          "Index_ROM_deg",
+          "Interrupted",
+          "MGA_cm",
+          "MGA_mm_3D",
+          "MGA_mm_3D_cal",
+          "MP_MGA_raw_mm",
+          "Paired_Samples",
+          "ROM_Index_DIP_deg",
+          "ROM_Index_MCP_deg",
+          "ROM_Index_PIP_deg",
+          "ROM_Middle_DIP_deg",
+          "ROM_Middle_MCP_deg",
+          "ROM_Middle_PIP_deg",
+          "ROM_Pinky_DIP_deg",
+          "ROM_Pinky_MCP_deg",
+          "ROM_Pinky_PIP_deg",
+          "ROM_Ring_DIP_deg",
+          "ROM_Ring_MCP_deg",
+          "ROM_Ring_PIP_deg",
+          "ROM_Thumb_CMC_deg",
+          "ROM_Thumb_IP_deg",
+          "ROM_Thumb_MCP_deg",
+          "RS_Dist_Median_m",
+          "RS_Index_ROM_deg",
+          "RS_Landmarks_Mean",
+          "RS_MGA_p95_mm",
+          "RS_MGA_raw_mm",
+          "RS_MP_mean_abs_difference_mm",
+          "RS_Valid_Rate",
+          "RS_Valid_Samples",
+          "RS_minus_MP_mean_mm",
+          "Requested_Duration_s",
+          "SPARC",
+          "Samples",
+          "Start_s",
+          "TAM_Index_deg",
+          "TAM_Middle_deg",
+          "TAM_Pinky_deg",
+          "TAM_Ring_deg",
+          "TAM_Thumb_deg",
+          "TAM_total_deg",
+          "Task",
+          "Thumb_CMC_ROM_deg",
+          "Thumb_PalmarAbd_ROM_deg",
+          "Thumb_PalmarAbd_max_deg",
+          "Thumb_RadialAbd_ROM_deg",
+          "Thumb_RadialAbd_max_deg",
+          "Trial",
+          "Trial_Mode",
+          "Valid_Duration_s"
+        ],
+        "MGA_mm_3D_cal_missing": 16,
+        "MGA_mm_3D_cal_n": 16,
+        "median_RS_Valid_Rate_by_hand": {
+          "Right": 0.215,
+          "Left": 0.4445
+        },
+        "median_MP_MGA_raw_mm_by_hand": {
+          "Right": 90.53,
+          "Left": 95.83
+        },
+        "median_MGA_mm_3D_by_hand": {
+          "Right": 84.4,
+          "Left": 86.4
+        },
+        "median_SPARC_by_hand": {
+          "Right": -8.1085,
+          "Left": -8.854
+        },
+        "median_TAM_total_deg_by_hand": {
+          "Right": 981.68,
+          "Left": 981.385
+        },
+        "median_Flex_Speed_deg_s_by_hand": {
+          "Right": 1502204279.75,
+          "Left": 1183891558.25
+        },
+        "has_Time_Base": false,
+        "has_Flex_Speed_p95": false,
+        "split_summary_rows_sum": 16,
+        "split_landmark_files": 8
+      },
+      "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본": {
+        "meta_frames_written": 33038,
+        "meta_fps": 23.054565702458536,
+        "affected_side": "좌측 (Left Hand)",
+        "app_landmarks_file": "Session_20260929_091131_013975_36520a5c_landmarks.csv",
+        "app_landmarks_rows": 48174,
+        "app_landmarks_frames": 1187,
+        "rs_status_ok_pct": 63.1,
+        "rs_status_top": [
+          [
+            "ok",
+            30398
+          ],
+          [
+            "depth_hole",
+            15366
+          ],
+          [
+            "outside_image",
+            1645
+          ],
+          [
+            "insufficient_depth",
+            247
+          ],
+          [
+            "depth_out_of_range",
+            231
+          ]
+        ],
+        "summary_n_rows": 14,
+        "summary_n_cols": 63,
+        "summary_cols_extra_vs_58": [
+          "Cycle_Period_s",
+          "Cycles",
+          "Dt_Dropped",
+          "Duration_s",
+          "End_s",
+          "Ext_Speed_deg_s",
+          "Ext_Speed_p95_deg_s",
+          "Flex_Speed_deg_s",
+          "Flex_Speed_p95_deg_s",
+          "Hand",
+          "Index_ROM_3D_deg",
+          "Index_ROM_deg",
+          "Interrupted",
+          "MGA_cm",
+          "MGA_mm_3D",
+          "MGA_mm_3D_cal",
+          "MP_MGA_raw_mm",
+          "Paired_Samples",
+          "ROM_Index_DIP_deg",
+          "ROM_Index_MCP_deg",
+          "ROM_Index_PIP_deg",
+          "ROM_Middle_DIP_deg",
+          "ROM_Middle_MCP_deg",
+          "ROM_Middle_PIP_deg",
+          "ROM_Pinky_DIP_deg",
+          "ROM_Pinky_MCP_deg",
+          "ROM_Pinky_PIP_deg",
+          "ROM_Ring_DIP_deg",
+          "ROM_Ring_MCP_deg",
+          "ROM_Ring_PIP_deg",
+          "ROM_Thumb_CMC_deg",
+          "ROM_Thumb_IP_deg",
+          "ROM_Thumb_MCP_deg",
+          "RS_Dist_Median_m",
+          "RS_Index_ROM_deg",
+          "RS_Landmarks_Mean",
+          "RS_MGA_p95_mm",
+          "RS_MGA_raw_mm",
+          "RS_MP_mean_abs_difference_mm",
+          "RS_Valid_Rate",
+          "RS_Valid_Samples",
+          "RS_minus_MP_mean_mm",
+          "Requested_Duration_s",
+          "SPARC",
+          "Samples",
+          "Segments",
+          "Start_s",
+          "TAM_Index_deg",
+          "TAM_Middle_deg",
+          "TAM_Pinky_deg",
+          "TAM_Ring_deg",
+          "TAM_Thumb_deg",
+          "TAM_total_deg",
+          "Task",
+          "Thumb_CMC_ROM_deg",
+          "Thumb_PalmarAbd_ROM_deg",
+          "Thumb_PalmarAbd_max_deg",
+          "Thumb_RadialAbd_ROM_deg",
+          "Thumb_RadialAbd_max_deg",
+          "Time_Base",
+          "Trial",
+          "Trial_Mode",
+          "Valid_Duration_s"
+        ],
+        "MGA_mm_3D_cal_missing": 14,
+        "MGA_mm_3D_cal_n": 14,
+        "median_RS_Valid_Rate_by_hand": {
+          "Right": 0.207,
+          "Left": 0.492
+        },
+        "median_MP_MGA_raw_mm_by_hand": {
+          "Right": 101.33,
+          "Left": 86.4
+        },
+        "median_MGA_mm_3D_by_hand": {
+          "Right": 95.1,
+          "Left": 78.8
+        },
+        "median_SPARC_by_hand": {
+          "Right": -4.228,
+          "Left": -3.33
+        },
+        "median_TAM_total_deg_by_hand": {
+          "Right": 741.43,
+          "Left": 783.63
+        },
+        "median_Flex_Speed_deg_s_by_hand": {
+          "Right": 197.3,
+          "Left": 141.0
+        },
+        "has_Time_Base": true,
+        "has_Flex_Speed_p95": true,
+        "split_summary_rows_sum": 14,
+        "split_landmark_files": 7
+      },
+      "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본": {
+        "meta_frames_written": 1031,
+        "meta_fps": 13.377130815672016,
+        "affected_side": "좌측 (Left Hand)",
+        "app_landmarks_file": "Session_20260929_093605_968004_2a3fee70_landmarks.csv",
+        "app_landmarks_rows": 41202,
+        "app_landmarks_frames": 982,
+        "rs_status_ok_pct": 78.58,
+        "rs_status_top": [
+          [
+            "ok",
+            32378
+          ],
+          [
+            "depth_hole",
+            8461
+          ],
+          [
+            "insufficient_depth",
+            270
+          ],
+          [
+            "depth_edge",
+            48
+          ],
+          [
+            "depth_off_hand",
+            26
+          ]
+        ],
+        "summary_n_rows": 18,
+        "summary_n_cols": 63,
+        "summary_cols_extra_vs_58": [
+          "Cycle_Period_s",
+          "Cycles",
+          "Dt_Dropped",
+          "Duration_s",
+          "End_s",
+          "Ext_Speed_deg_s",
+          "Ext_Speed_p95_deg_s",
+          "Flex_Speed_deg_s",
+          "Flex_Speed_p95_deg_s",
+          "Hand",
+          "Index_ROM_3D_deg",
+          "Index_ROM_deg",
+          "Interrupted",
+          "MGA_cm",
+          "MGA_mm_3D",
+          "MGA_mm_3D_cal",
+          "MP_MGA_raw_mm",
+          "Paired_Samples",
+          "ROM_Index_DIP_deg",
+          "ROM_Index_MCP_deg",
+          "ROM_Index_PIP_deg",
+          "ROM_Middle_DIP_deg",
+          "ROM_Middle_MCP_deg",
+          "ROM_Middle_PIP_deg",
+          "ROM_Pinky_DIP_deg",
+          "ROM_Pinky_MCP_deg",
+          "ROM_Pinky_PIP_deg",
+          "ROM_Ring_DIP_deg",
+          "ROM_Ring_MCP_deg",
+          "ROM_Ring_PIP_deg",
+          "ROM_Thumb_CMC_deg",
+          "ROM_Thumb_IP_deg",
+          "ROM_Thumb_MCP_deg",
+          "RS_Dist_Median_m",
+          "RS_Index_ROM_deg",
+          "RS_Landmarks_Mean",
+          "RS_MGA_p95_mm",
+          "RS_MGA_raw_mm",
+          "RS_MP_mean_abs_difference_mm",
+          "RS_Valid_Rate",
+          "RS_Valid_Samples",
+          "RS_minus_MP_mean_mm",
+          "Requested_Duration_s",
+          "SPARC",
+          "Samples",
+          "Segments",
+          "Start_s",
+          "TAM_Index_deg",
+          "TAM_Middle_deg",
+          "TAM_Pinky_deg",
+          "TAM_Ring_deg",
+          "TAM_Thumb_deg",
+          "TAM_total_deg",
+          "Task",
+          "Thumb_CMC_ROM_deg",
+          "Thumb_PalmarAbd_ROM_deg",
+          "Thumb_PalmarAbd_max_deg",
+          "Thumb_RadialAbd_ROM_deg",
+          "Thumb_RadialAbd_max_deg",
+          "Time_Base",
+          "Trial",
+          "Trial_Mode",
+          "Valid_Duration_s"
+        ],
+        "MGA_mm_3D_cal_missing": 18,
+        "MGA_mm_3D_cal_n": 18,
+        "median_RS_Valid_Rate_by_hand": {
+          "Right": 0.919,
+          "Left": 0.419
+        },
+        "median_MP_MGA_raw_mm_by_hand": {
+          "Right": 108.8,
+          "Left": 99.76
+        },
+        "median_MGA_mm_3D_by_hand": {
+          "Right": 98.0,
+          "Left": 92.7
+        },
+        "median_SPARC_by_hand": {
+          "Right": -3.742,
+          "Left": -3.682
+        },
+        "median_TAM_total_deg_by_hand": {
+          "Right": 771.26,
+          "Left": 787.69
+        },
+        "median_Flex_Speed_deg_s_by_hand": {
+          "Right": 279.1,
+          "Left": 235.4
+        },
+        "has_Time_Base": true,
+        "has_Flex_Speed_p95": true,
+        "split_summary_rows_sum": 18,
+        "split_landmark_files": 9,
+        "L2_n": 18,
+        "L2_sparc_differs_from_app": 16,
+        "L2_examples": [
+          {
+            "id": "Trial_1_Left",
+            "l2_sparc": -7.5986,
+            "app_sparc": -5.929,
+            "l2_m1_mga_mm": 100.331,
+            "app_MP_MGA_raw_mm": 100.33,
+            "app_MGA_mm_3D": 92.7,
+            "l2_m2_tam_deg": 794.43,
+            "app_TAM_total_deg": 794.43
+          },
+          {
+            "id": "Trial_1_Right",
+            "l2_sparc": -7.418,
+            "app_sparc": -5.928,
+            "l2_m1_mga_mm": 107.445,
+            "app_MP_MGA_raw_mm": 107.45,
+            "app_MGA_mm_3D": 101.3,
+            "l2_m2_tam_deg": 738.73,
+            "app_TAM_total_deg": 738.73
+          },
+          {
+            "id": "Trial_2_Left",
+            "l2_sparc": -6.6707,
+            "app_sparc": -3.435,
+            "l2_m1_mga_mm": 94.377,
+            "app_MP_MGA_raw_mm": 94.38,
+            "app_MGA_mm_3D": 91.6,
+            "l2_m2_tam_deg": 733.67,
+            "app_TAM_total_deg": 733.67
+          }
+        ]
+      }
+    }
+  }
+}

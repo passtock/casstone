@@ -1,0 +1,359 @@
+{
+  "session": "20260915_비장애인_test_26세_남",
+  "hand": "Right",
+  "rest_mode": "strict",
+  "session_dt_ref_s": 0.07767099999999871,
+  "n_session_frames": 963,
+  "tol_source": "하한 0.20 (개발군 미측정)",
+  "cap": 0.3,
+  "n_trials": 8,
+  "hold_rate": 1.0,
+  "demotion": {
+    "demote": true,
+    "threshold": 0.5,
+    "over": {
+      "T1": 1.0,
+      "T2": 1.0
+    },
+    "action": "D_TI_max·F_sum14를 A3의 조건부 입력으로 강등"
+  },
+  "records": [
+    {
+      "trial": "Trial_1",
+      "n_frames": 131,
+      "dt_ref_session_s": 0.07767099999999871,
+      "dt_ref_local_s": 0.07280050000000049,
+      "rest_mode": "strict",
+      "track_ratio": 0.9923664122137404,
+      "n_valid": 130,
+      "hand_consistency_invalid": 1,
+      "hand_consistency_invalid_frac": 0.007633587786259542,
+      "implausible_span": 0,
+      "seg_denom_frames": 0,
+      "seg_pair_denom": 0,
+      "seg_flags": 0,
+      "seg_rate": null,
+      "seg_rest_ok": false,
+      "seg_violating": [],
+      "seg_per_segment": {
+        "Th(1-2)": null,
+        "Th(2-3)": null,
+        "Th(3-4)": null,
+        "In(5-6)": null,
+        "In(6-7)": null,
+        "In(7-8)": null,
+        "Md(9-10)": null,
+        "Md(10-11)": null,
+        "Md(11-12)": null,
+        "Rg(13-14)": null,
+        "Rg(14-15)": null,
+        "Rg(15-16)": null,
+        "Pk(17-18)": null,
+        "Pk(18-19)": null,
+        "Pk(19-20)": null
+      },
+      "reasons": [
+        "segment_baseline_unavailable"
+      ],
+      "hard_missing": [
+        "segment_baseline_unavailable"
+      ],
+      "pass": false
+    },
+    {
+      "trial": "Trial_2",
+      "n_frames": 121,
+      "dt_ref_session_s": 0.07767099999999871,
+      "dt_ref_local_s": 0.07855299999999943,
+      "rest_mode": "strict",
+      "track_ratio": 0.9917355371900827,
+      "n_valid": 120,
+      "hand_consistency_invalid": 1,
+      "hand_consistency_invalid_frac": 0.008264462809917356,
+      "implausible_span": 0,
+      "seg_denom_frames": 0,
+      "seg_pair_denom": 0,
+      "seg_flags": 0,
+      "seg_rate": null,
+      "seg_rest_ok": false,
+      "seg_violating": [],
+      "seg_per_segment": {
+        "Th(1-2)": null,
+        "Th(2-3)": null,
+        "Th(3-4)": null,
+        "In(5-6)": null,
+        "In(6-7)": null,
+        "In(7-8)": null,
+        "Md(9-10)": null,
+        "Md(10-11)": null,
+        "Md(11-12)": null,
+        "Rg(13-14)": null,
+        "Rg(14-15)": null,
+        "Rg(15-16)": null,
+        "Pk(17-18)": null,
+        "Pk(18-19)": null,
+        "Pk(19-20)": null
+      },
+      "reasons": [
+        "segment_baseline_unavailable"
+      ],
+      "hard_missing": [
+        "segment_baseline_unavailable"
+      ],
+      "pass": false
+    },
+    {
+      "trial": "Trial_3",
+      "n_frames": 124,
+      "dt_ref_session_s": 0.07767099999999871,
+      "dt_ref_local_s": 0.07721300000000042,
+      "rest_mode": "strict",
+      "track_ratio": 0.967741935483871,
+      "n_valid": 120,
+      "hand_consistency_invalid": 4,
+      "hand_consistency_invalid_frac": 0.03225806451612903,
+      "implausible_span": 0,
+      "seg_denom_frames": 0,
+      "seg_pair_denom": 0,
+      "seg_flags": 0,
+      "seg_rate": null,
+      "seg_rest_ok": false,
+      "seg_violating": [],
+      "seg_per_segment": {
+        "Th(1-2)": null,
+        "Th(2-3)": null,
+        "Th(3-4)": null,
+        "In(5-6)": null,
+        "In(6-7)": null,
+        "In(7-8)": null,
+        "Md(9-10)": null,
+        "Md(10-11)": null,
+        "Md(11-12)": null,
+        "Rg(13-14)": null,
+        "Rg(14-15)": null,
+        "Rg(15-16)": null,
+        "Pk(17-18)": null,
+        "Pk(18-19)": null,
+        "Pk(19-20)": null
+      },
+      "reasons": [
+        "segment_baseline_unavailable"
+      ],
+      "hard_missing": [
+        "segment_baseline_unavailable"
+      ],
+      "pass": false
+    },
+    {
+      "trial": "Trial_4",
+      "n_frames": 130,
+      "dt_ref_session_s": 0.07767099999999871,
+      "dt_ref_local_s": 0.07878799999999586,
+      "rest_mode": "strict",
+      "track_ratio": 1.0,
+      "n_valid": 130,
+      "hand_consistency_invalid": 0,
+      "hand_consistency_invalid_frac": 0.0,
+      "implausible_span": 0,
+      "seg_denom_frames": 0,
+      "seg_pair_denom": 0,
+      "seg_flags": 0,
+      "seg_rate": null,
+      "seg_rest_ok": false,
+      "seg_violating": [],
+      "seg_per_segment": {
+        "Th(1-2)": null,
+        "Th(2-3)": null,
+        "Th(3-4)": null,
+        "In(5-6)": null,
+        "In(6-7)": null,
+        "In(7-8)": null,
+        "Md(9-10)": null,
+        "Md(10-11)": null,
+        "Md(11-12)": null,
+        "Rg(13-14)": null,
+        "Rg(14-15)": null,
+        "Rg(15-16)": null,
+        "Pk(17-18)": null,
+        "Pk(18-19)": null,
+        "Pk(19-20)": null
+      },
+      "reasons": [
+        "segment_baseline_unavailable"
+      ],
+      "hard_missing": [
+        "segment_baseline_unavailable"
+      ],
+      "pass": false
+    },
+    {
+      "trial": "Trial_5",
+      "n_frames": 131,
+      "dt_ref_session_s": 0.07767099999999871,
+      "dt_ref_local_s": 0.06944899999999521,
+      "rest_mode": "strict",
+      "track_ratio": 0.9847328244274809,
+      "n_valid": 129,
+      "hand_consistency_invalid": 2,
+      "hand_consistency_invalid_frac": 0.015267175572519083,
+      "implausible_span": 0,
+      "seg_denom_frames": 0,
+      "seg_pair_denom": 0,
+      "seg_flags": 0,
+      "seg_rate": null,
+      "seg_rest_ok": false,
+      "seg_violating": [],
+      "seg_per_segment": {
+        "Th(1-2)": null,
+        "Th(2-3)": null,
+        "Th(3-4)": null,
+        "In(5-6)": null,
+        "In(6-7)": null,
+        "In(7-8)": null,
+        "Md(9-10)": null,
+        "Md(10-11)": null,
+        "Md(11-12)": null,
+        "Rg(13-14)": null,
+        "Rg(14-15)": null,
+        "Rg(15-16)": null,
+        "Pk(17-18)": null,
+        "Pk(18-19)": null,
+        "Pk(19-20)": null
+      },
+      "reasons": [
+        "segment_baseline_unavailable"
+      ],
+      "hard_missing": [
+        "segment_baseline_unavailable"
+      ],
+      "pass": false
+    },
+    {
+      "trial": "Trial_6",
+      "n_frames": 124,
+      "dt_ref_session_s": 0.07767099999999871,
+      "dt_ref_local_s": 0.07902999999999594,
+      "rest_mode": "strict",
+      "track_ratio": 0.9435483870967742,
+      "n_valid": 117,
+      "hand_consistency_invalid": 7,
+      "hand_consistency_invalid_frac": 0.056451612903225805,
+      "implausible_span": 0,
+      "seg_denom_frames": 0,
+      "seg_pair_denom": 0,
+      "seg_flags": 0,
+      "seg_rate": null,
+      "seg_rest_ok": false,
+      "seg_violating": [],
+      "seg_per_segment": {
+        "Th(1-2)": null,
+        "Th(2-3)": null,
+        "Th(3-4)": null,
+        "In(5-6)": null,
+        "In(6-7)": null,
+        "In(7-8)": null,
+        "Md(9-10)": null,
+        "Md(10-11)": null,
+        "Md(11-12)": null,
+        "Rg(13-14)": null,
+        "Rg(14-15)": null,
+        "Rg(15-16)": null,
+        "Pk(17-18)": null,
+        "Pk(18-19)": null,
+        "Pk(19-20)": null
+      },
+      "reasons": [
+        "segment_baseline_unavailable"
+      ],
+      "hard_missing": [
+        "segment_baseline_unavailable"
+      ],
+      "pass": false
+    },
+    {
+      "trial": "Trial_7",
+      "n_frames": 97,
+      "dt_ref_session_s": 0.07767099999999871,
+      "dt_ref_local_s": 0.07108000000000914,
+      "rest_mode": "strict",
+      "track_ratio": 0.9072164948453608,
+      "n_valid": 88,
+      "hand_consistency_invalid": 9,
+      "hand_consistency_invalid_frac": 0.09278350515463918,
+      "implausible_span": 0,
+      "seg_denom_frames": 0,
+      "seg_pair_denom": 0,
+      "seg_flags": 0,
+      "seg_rate": null,
+      "seg_rest_ok": false,
+      "seg_violating": [],
+      "seg_per_segment": {
+        "Th(1-2)": null,
+        "Th(2-3)": null,
+        "Th(3-4)": null,
+        "In(5-6)": null,
+        "In(6-7)": null,
+        "In(7-8)": null,
+        "Md(9-10)": null,
+        "Md(10-11)": null,
+        "Md(11-12)": null,
+        "Rg(13-14)": null,
+        "Rg(14-15)": null,
+        "Rg(15-16)": null,
+        "Pk(17-18)": null,
+        "Pk(18-19)": null,
+        "Pk(19-20)": null
+      },
+      "reasons": [
+        "hand_gap_over_5x_dt_ref",
+        "segment_baseline_unavailable"
+      ],
+      "hard_missing": [
+        "segment_baseline_unavailable"
+      ],
+      "pass": false
+    },
+    {
+      "trial": "Trial_8",
+      "n_frames": 105,
+      "dt_ref_session_s": 0.07767099999999871,
+      "dt_ref_local_s": 0.06495200000000523,
+      "rest_mode": "strict",
+      "track_ratio": 0.9523809523809523,
+      "n_valid": 100,
+      "hand_consistency_invalid": 5,
+      "hand_consistency_invalid_frac": 0.047619047619047616,
+      "implausible_span": 0,
+      "seg_denom_frames": 0,
+      "seg_pair_denom": 0,
+      "seg_flags": 0,
+      "seg_rate": null,
+      "seg_rest_ok": false,
+      "seg_violating": [],
+      "seg_per_segment": {
+        "Th(1-2)": null,
+        "Th(2-3)": null,
+        "Th(3-4)": null,
+        "In(5-6)": null,
+        "In(6-7)": null,
+        "In(7-8)": null,
+        "Md(9-10)": null,
+        "Md(10-11)": null,
+        "Md(11-12)": null,
+        "Rg(13-14)": null,
+        "Rg(14-15)": null,
+        "Rg(15-16)": null,
+        "Pk(17-18)": null,
+        "Pk(18-19)": null,
+        "Pk(19-20)": null
+      },
+      "reasons": [
+        "segment_baseline_unavailable"
+      ],
+      "hard_missing": [
+        "segment_baseline_unavailable"
+      ],
+      "pass": false
+    }
+  ]
+}

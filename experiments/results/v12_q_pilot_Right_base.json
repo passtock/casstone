@@ -1,0 +1,352 @@
+{
+  "session": "20260915_비장애인_test_26세_남",
+  "setting": "base",
+  "hand": "Right",
+  "n_trials": 8,
+  "n_ok": 8,
+  "q_hand_pass": 0,
+  "q_wrist_pass": 7,
+  "q_wrist_hard": 0,
+  "q_trunk_pass": 0,
+  "records": [
+    {
+      "trial": "Trial_1",
+      "hand": "Right",
+      "n_raw_frames": 131,
+      "dt_ref_s": 0.07280050000000049,
+      "effective_rate_hz": 16.48193795133568,
+      "acq_miss_rate": 0.13245033112582782,
+      "q_hand_pass": false,
+      "q_hand_reasons": [
+        "segment_deviation"
+      ],
+      "hand_valid_ratio": 1.0,
+      "seg_dev_frac": 1.0,
+      "q_wrist": {
+        "pass": true,
+        "reasons": [],
+        "hard_missing": [],
+        "hard": false,
+        "dt_ref_s": 0.05130899999999894,
+        "effective_rate_hz": 17.607062917933092,
+        "n_raw_frames": 137,
+        "valid_ratio": 1.0,
+        "n_obs": 137,
+        "max_gap_s": 0.0,
+        "max_gap_ratio": 0.0,
+        "acq_miss_rate": 0.10457516339869281,
+        "n_missing_est": 16,
+        "interp_grid_frac": 0.0,
+        "setting": "base"
+      },
+      "q_trunk": {
+        "pass": false,
+        "reasons": [
+          "unstable_trunk_baseline"
+        ],
+        "valid_ratio": 1.0,
+        "baseline_sd_mm": 46.65845231630099,
+        "max_gap_s": 0.0,
+        "setting": "base"
+      },
+      "n_pose_in_span": 137
+    },
+    {
+      "trial": "Trial_2",
+      "hand": "Right",
+      "n_raw_frames": 121,
+      "dt_ref_s": 0.07855299999999943,
+      "effective_rate_hz": 15.26700464422281,
+      "acq_miss_rate": 0.14184397163120568,
+      "q_hand_pass": false,
+      "q_hand_reasons": [
+        "segment_deviation"
+      ],
+      "hand_valid_ratio": 1.0,
+      "seg_dev_frac": 0.33884297520661155,
+      "q_wrist": {
+        "pass": true,
+        "reasons": [],
+        "hard_missing": [],
+        "hard": false,
+        "dt_ref_s": 0.05428299999999808,
+        "effective_rate_hz": 17.233394284232038,
+        "n_raw_frames": 136,
+        "valid_ratio": 1.0,
+        "n_obs": 136,
+        "max_gap_s": 0.11767100000000141,
+        "max_gap_ratio": 2.1677320708141696,
+        "acq_miss_rate": 0.06206896551724138,
+        "n_missing_est": 9,
+        "interp_grid_frac": 0.029787234042553193,
+        "setting": "base"
+      },
+      "q_trunk": {
+        "pass": false,
+        "reasons": [
+          "unstable_trunk_baseline"
+        ],
+        "valid_ratio": 1.0,
+        "baseline_sd_mm": 38.01885497070603,
+        "max_gap_s": 0.11767100000000141,
+        "setting": "base"
+      },
+      "n_pose_in_span": 136
+    },
+    {
+      "trial": "Trial_3",
+      "hand": "Right",
+      "n_raw_frames": 124,
+      "dt_ref_s": 0.07721300000000042,
+      "effective_rate_hz": 16.565625330807464,
+      "acq_miss_rate": 0.14482758620689656,
+      "q_hand_pass": false,
+      "q_hand_reasons": [
+        "segment_deviation"
+      ],
+      "hand_valid_ratio": 1.0,
+      "seg_dev_frac": 1.0,
+      "q_wrist": {
+        "pass": true,
+        "reasons": [],
+        "hard_missing": [],
+        "hard": false,
+        "dt_ref_s": 0.05596600000000507,
+        "effective_rate_hz": 16.965724892491597,
+        "n_raw_frames": 126,
+        "valid_ratio": 1.0,
+        "n_obs": 126,
+        "max_gap_s": 0.1157310000000038,
+        "max_gap_ratio": 2.0678804988741972,
+        "acq_miss_rate": 0.05263157894736842,
+        "n_missing_est": 7,
+        "interp_grid_frac": 0.013574660633484163,
+        "setting": "base"
+      },
+      "q_trunk": {
+        "pass": false,
+        "reasons": [
+          "unstable_trunk_baseline"
+        ],
+        "valid_ratio": 1.0,
+        "baseline_sd_mm": 45.960035863797515,
+        "max_gap_s": 0.1157310000000038,
+        "setting": "base"
+      },
+      "n_pose_in_span": 126
+    },
+    {
+      "trial": "Trial_4",
+      "hand": "Right",
+      "n_raw_frames": 130,
+      "dt_ref_s": 0.07878799999999586,
+      "effective_rate_hz": 16.359750144764774,
+      "acq_miss_rate": 0.14473684210526316,
+      "q_hand_pass": false,
+      "q_hand_reasons": [
+        "segment_deviation"
+      ],
+      "hand_valid_ratio": 1.0,
+      "seg_dev_frac": 0.9692307692307692,
+      "q_wrist": {
+        "pass": true,
+        "reasons": [],
+        "hard_missing": [],
+        "hard": false,
+        "dt_ref_s": 0.05443600000000259,
+        "effective_rate_hz": 17.25877695101845,
+        "n_raw_frames": 136,
+        "valid_ratio": 1.0,
+        "n_obs": 136,
+        "max_gap_s": 0.11193999999999704,
+        "max_gap_ratio": 2.056359761922105,
+        "acq_miss_rate": 0.05555555555555555,
+        "n_missing_est": 8,
+        "interp_grid_frac": 0.017094017094017096,
+        "setting": "base"
+      },
+      "q_trunk": {
+        "pass": false,
+        "reasons": [
+          "unstable_trunk_baseline"
+        ],
+        "valid_ratio": 1.0,
+        "baseline_sd_mm": 62.05134810052911,
+        "max_gap_s": 0.11193999999999704,
+        "setting": "base"
+      },
+      "n_pose_in_span": 136
+    },
+    {
+      "trial": "Trial_5",
+      "hand": "Right",
+      "n_raw_frames": 131,
+      "dt_ref_s": 0.06944899999999521,
+      "effective_rate_hz": 17.33849095644318,
+      "acq_miss_rate": 0.13245033112582782,
+      "q_hand_pass": false,
+      "q_hand_reasons": [
+        "segment_deviation"
+      ],
+      "hand_valid_ratio": 1.0,
+      "seg_dev_frac": 0.48091603053435117,
+      "q_wrist": {
+        "pass": true,
+        "reasons": [],
+        "hard_missing": [],
+        "hard": false,
+        "dt_ref_s": 0.050142999999998494,
+        "effective_rate_hz": 17.71014054472368,
+        "n_raw_frames": 133,
+        "valid_ratio": 1.0,
+        "n_obs": 133,
+        "max_gap_s": 0.10287200000000496,
+        "max_gap_ratio": 2.0515725026426033,
+        "acq_miss_rate": 0.11333333333333333,
+        "n_missing_est": 17,
+        "interp_grid_frac": 0.013452914798206279,
+        "setting": "base"
+      },
+      "q_trunk": {
+        "pass": false,
+        "reasons": [
+          "unstable_trunk_baseline"
+        ],
+        "valid_ratio": 1.0,
+        "baseline_sd_mm": 21.76387842273592,
+        "max_gap_s": 0.10287200000000496,
+        "setting": "base"
+      },
+      "n_pose_in_span": 133
+    },
+    {
+      "trial": "Trial_6",
+      "hand": "Right",
+      "n_raw_frames": 124,
+      "dt_ref_s": 0.07902999999999594,
+      "effective_rate_hz": 14.653114322883159,
+      "acq_miss_rate": 0.16216216216216217,
+      "q_hand_pass": false,
+      "q_hand_reasons": [
+        "segment_deviation"
+      ],
+      "hand_valid_ratio": 1.0,
+      "seg_dev_frac": 1.0,
+      "q_wrist": {
+        "pass": false,
+        "reasons": [
+          "gap_ratio_exceeded",
+          "acquisition_missing"
+        ],
+        "hard_missing": [],
+        "hard": false,
+        "dt_ref_s": 0.05135150000000266,
+        "effective_rate_hz": 16.765973122228978,
+        "n_raw_frames": 141,
+        "valid_ratio": 1.0,
+        "n_obs": 141,
+        "max_gap_s": 0.1422860000000128,
+        "max_gap_ratio": 2.770824610770969,
+        "acq_miss_rate": 0.16568047337278108,
+        "n_missing_est": 28,
+        "interp_grid_frac": 0.056,
+        "setting": "base"
+      },
+      "q_trunk": {
+        "pass": false,
+        "reasons": [
+          "unstable_trunk_baseline"
+        ],
+        "valid_ratio": 1.0,
+        "baseline_sd_mm": 40.09295391093302,
+        "max_gap_s": 0.1422860000000128,
+        "setting": "base"
+      },
+      "n_pose_in_span": 141
+    },
+    {
+      "trial": "Trial_7",
+      "hand": "Right",
+      "n_raw_frames": 97,
+      "dt_ref_s": 0.07108000000000914,
+      "effective_rate_hz": 14.88804423362009,
+      "acq_miss_rate": 0.20491803278688525,
+      "q_hand_pass": false,
+      "q_hand_reasons": [
+        "segment_deviation"
+      ],
+      "hand_valid_ratio": 1.0,
+      "seg_dev_frac": 1.0,
+      "q_wrist": {
+        "pass": true,
+        "reasons": [],
+        "hard_missing": [],
+        "hard": false,
+        "dt_ref_s": 0.05271199999999965,
+        "effective_rate_hz": 16.594802820866,
+        "n_raw_frames": 107,
+        "valid_ratio": 1.0,
+        "n_obs": 107,
+        "max_gap_s": 0.12636999999999432,
+        "max_gap_ratio": 2.39736682349361,
+        "acq_miss_rate": 0.12295081967213115,
+        "n_missing_est": 15,
+        "interp_grid_frac": 0.03664921465968586,
+        "setting": "base"
+      },
+      "q_trunk": {
+        "pass": false,
+        "reasons": [
+          "unstable_trunk_baseline"
+        ],
+        "valid_ratio": 1.0,
+        "baseline_sd_mm": 32.016493833750445,
+        "max_gap_s": 0.12636999999999432,
+        "setting": "base"
+      },
+      "n_pose_in_span": 107
+    },
+    {
+      "trial": "Trial_8",
+      "hand": "Right",
+      "n_raw_frames": 105,
+      "dt_ref_s": 0.06495200000000523,
+      "effective_rate_hz": 16.59992909914896,
+      "acq_miss_rate": 0.1732283464566929,
+      "q_hand_pass": false,
+      "q_hand_reasons": [
+        "segment_deviation"
+      ],
+      "hand_valid_ratio": 1.0,
+      "seg_dev_frac": 0.8952380952380953,
+      "q_wrist": {
+        "pass": true,
+        "reasons": [],
+        "hard_missing": [],
+        "hard": false,
+        "dt_ref_s": 0.055633000000000266,
+        "effective_rate_hz": 16.325482931222698,
+        "n_raw_frames": 102,
+        "valid_ratio": 1.0,
+        "n_obs": 102,
+        "max_gap_s": 0.11128800000000183,
+        "max_gap_ratio": 2.0003954487444737,
+        "acq_miss_rate": 0.09734513274336283,
+        "n_missing_est": 11,
+        "interp_grid_frac": 0.016216216216216217,
+        "setting": "base"
+      },
+      "q_trunk": {
+        "pass": false,
+        "reasons": [
+          "unstable_trunk_baseline"
+        ],
+        "valid_ratio": 1.0,
+        "baseline_sd_mm": 28.821586117070837,
+        "max_gap_s": 0.11128800000000183,
+        "setting": "base"
+      },
+      "n_pose_in_span": 102
+    }
+  ]
+}

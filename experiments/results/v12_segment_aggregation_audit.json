@@ -1,0 +1,142 @@
+{
+  "provenance": {
+    "session": "20260915_비장애인_test_26세_남",
+    "source": "experiments/v12/qv12.py 보조 진단"
+  },
+  "rows": [
+    {
+      "trial": "Trial_1",
+      "hand": "Left",
+      "n": 133,
+      "frame_any_firstwin": 0.947,
+      "frame_any_globalmed": 0.609,
+      "mean_single_segment_rate": 0.681
+    },
+    {
+      "trial": "Trial_1",
+      "hand": "Right",
+      "n": 131,
+      "frame_any_firstwin": 0.969,
+      "frame_any_globalmed": 0.511,
+      "mean_single_segment_rate": 0.648
+    },
+    {
+      "trial": "Trial_2",
+      "hand": "Left",
+      "n": 116,
+      "frame_any_firstwin": 0.948,
+      "frame_any_globalmed": 0.603,
+      "mean_single_segment_rate": 0.641
+    },
+    {
+      "trial": "Trial_2",
+      "hand": "Right",
+      "n": 121,
+      "frame_any_firstwin": 1.0,
+      "frame_any_globalmed": 0.339,
+      "mean_single_segment_rate": 0.464
+    },
+    {
+      "trial": "Trial_3",
+      "hand": "Left",
+      "n": 125,
+      "frame_any_firstwin": 0.888,
+      "frame_any_globalmed": 0.584,
+      "mean_single_segment_rate": 0.466
+    },
+    {
+      "trial": "Trial_3",
+      "hand": "Right",
+      "n": 124,
+      "frame_any_firstwin": 0.903,
+      "frame_any_globalmed": 0.395,
+      "mean_single_segment_rate": 0.71
+    },
+    {
+      "trial": "Trial_4",
+      "hand": "Left",
+      "n": 129,
+      "frame_any_firstwin": 0.891,
+      "frame_any_globalmed": 0.721,
+      "mean_single_segment_rate": 0.58
+    },
+    {
+      "trial": "Trial_4",
+      "hand": "Right",
+      "n": 130,
+      "frame_any_firstwin": 0.892,
+      "frame_any_globalmed": 0.446,
+      "mean_single_segment_rate": 0.379
+    },
+    {
+      "trial": "Trial_5",
+      "hand": "Left",
+      "n": 132,
+      "frame_any_firstwin": 0.515,
+      "frame_any_globalmed": 0.78,
+      "mean_single_segment_rate": 0.16
+    },
+    {
+      "trial": "Trial_5",
+      "hand": "Right",
+      "n": 131,
+      "frame_any_firstwin": 0.534,
+      "frame_any_globalmed": 0.351,
+      "mean_single_segment_rate": 0.19
+    },
+    {
+      "trial": "Trial_6",
+      "hand": "Left",
+      "n": 128,
+      "frame_any_firstwin": 0.961,
+      "frame_any_globalmed": 0.633,
+      "mean_single_segment_rate": 0.586
+    },
+    {
+      "trial": "Trial_6",
+      "hand": "Right",
+      "n": 124,
+      "frame_any_firstwin": 1.0,
+      "frame_any_globalmed": 0.46,
+      "mean_single_segment_rate": 0.538
+    },
+    {
+      "trial": "Trial_7",
+      "hand": "Left",
+      "n": 99,
+      "frame_any_firstwin": 0.899,
+      "frame_any_globalmed": 0.98,
+      "mean_single_segment_rate": 0.558
+    },
+    {
+      "trial": "Trial_7",
+      "hand": "Right",
+      "n": 97,
+      "frame_any_firstwin": 0.99,
+      "frame_any_globalmed": 0.928,
+      "mean_single_segment_rate": 0.608
+    },
+    {
+      "trial": "Trial_8",
+      "hand": "Left",
+      "n": 106,
+      "frame_any_firstwin": 0.896,
+      "frame_any_globalmed": 0.934,
+      "mean_single_segment_rate": 0.286
+    },
+    {
+      "trial": "Trial_8",
+      "hand": "Right",
+      "n": 105,
+      "frame_any_firstwin": 1.0,
+      "frame_any_globalmed": 0.581,
+      "mean_single_segment_rate": 0.63
+    }
+  ],
+  "summary": {
+    "median_frame_any_firstwin": 0.925,
+    "median_frame_any_globalmed": 0.5934999999999999,
+    "median_single_segment_rate": 0.569,
+    "aggregation_amplification_1_minus_(1_p)^15": 0.9999967102791117
+  }
+}

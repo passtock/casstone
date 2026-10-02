@@ -1,0 +1,2348 @@
+{
+  "generated": "2026-10-02",
+  "root": "capstone/호진파일/outputs/데이터_저장",
+  "inventory": [
+    {
+      "session": "20260915_비장애인_test_26세_남",
+      "group": "Healthy",
+      "name": "test",
+      "age": 26,
+      "sex": "남성 (Male)",
+      "fma": null,
+      "brunnstrom": null,
+      "affected": null,
+      "trial_mode": "manual",
+      "total_trials": 8,
+      "session_dur_s": 107.79155015945435,
+      "actual_fps": 16.933905014606836,
+      "frames_written": 1825,
+      "n_trial_rows": 16,
+      "trial_rows_by_task_hand": {
+        "Task 1|Left": 8,
+        "Task 1|Right": 8
+      },
+      "landmark_cols_has_Hand": false,
+      "n_unique_frames": 1825,
+      "hands": [],
+      "n_split_trials": 8
+    },
+    {
+      "session": "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본",
+      "group": "Patient",
+      "name": "권미사",
+      "age": 62,
+      "sex": "여성 (Female)",
+      "fma": 11,
+      "brunnstrom": "Stage 1 (완전이완)",
+      "affected": "좌측 (Left Hand)",
+      "trial_mode": "manual",
+      "total_trials": 7,
+      "session_dur_s": 1433.1416451931,
+      "actual_fps": 23.054565702458536,
+      "frames_written": 33038,
+      "n_trial_rows": 14,
+      "trial_rows_by_task_hand": {
+        "Task 1|Left": 7,
+        "Task 1|Right": 7
+      },
+      "landmark_cols_has_Hand": true,
+      "n_unique_frames": 1187,
+      "hands": [
+        "Left",
+        "Right"
+      ],
+      "n_split_trials": 7
+    },
+    {
+      "session": "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본",
+      "group": "Patient",
+      "name": "권미사애프터",
+      "age": 62,
+      "sex": "여성 (Female)",
+      "fma": 11,
+      "brunnstrom": "Stage 1 (완전이완)",
+      "affected": "좌측 (Left Hand)",
+      "trial_mode": "manual",
+      "total_trials": 9,
+      "session_dur_s": 77.06898808479309,
+      "actual_fps": 13.377130815672016,
+      "frames_written": 1031,
+      "n_trial_rows": 18,
+      "trial_rows_by_task_hand": {
+        "Task 1|Left": 9,
+        "Task 1|Right": 9
+      },
+      "landmark_cols_has_Hand": true,
+      "n_unique_frames": 982,
+      "hands": [
+        "Left",
+        "Right"
+      ],
+      "n_split_trials": 9
+    }
+  ],
+  "portfolio_pooled": {
+    "label": "전체 통합(참고)",
+    "n_rows": 48,
+    "n_groups": 6,
+    "group_keys": [
+      "20260915_비장애인_test_26세_남|Task 1|Left",
+      "20260915_비장애인_test_26세_남|Task 1|Right",
+      "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본|Task 1|Left",
+      "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본|Task 1|Right",
+      "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본|Task 1|Left",
+      "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본|Task 1|Right"
+    ],
+    "metrics": [
+      {
+        "metric": "Index_ROM_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 23.8340647062399,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "Index_ROM_3D_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 22.289364825416772,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "RS_Index_ROM_deg",
+        "n": 44,
+        "n_groups": 6,
+        "miss_pct": 8.333333333333332,
+        "mdc_pct": 42.52307252261036,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "Thumb_CMC_ROM_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 70.10924173252792,
+        "viol_pct": 0.0,
+        "verdict": "조건미달",
+        "ok": [
+          true,
+          false,
+          true
+        ]
+      },
+      {
+        "metric": "Thumb_PalmarAbd_max_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 26.188823463811403,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "Thumb_PalmarAbd_ROM_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 72.9832235026315,
+        "viol_pct": 0.0,
+        "verdict": "조건미달",
+        "ok": [
+          true,
+          false,
+          true
+        ]
+      },
+      {
+        "metric": "Thumb_RadialAbd_max_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 35.139064286617305,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "Thumb_RadialAbd_ROM_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 83.46490209253878,
+        "viol_pct": 0.0,
+        "verdict": "조건미달",
+        "ok": [
+          true,
+          false,
+          true
+        ]
+      },
+      {
+        "metric": "ROM_Thumb_CMC_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 70.10924173252792,
+        "viol_pct": 0.0,
+        "verdict": "조건미달",
+        "ok": [
+          true,
+          false,
+          true
+        ]
+      },
+      {
+        "metric": "ROM_Thumb_MCP_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 78.09862255456073,
+        "viol_pct": 0.0,
+        "verdict": "조건미달",
+        "ok": [
+          true,
+          false,
+          true
+        ]
+      },
+      {
+        "metric": "ROM_Thumb_IP_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 101.92636331604537,
+        "viol_pct": 0.0,
+        "verdict": "조건미달",
+        "ok": [
+          true,
+          false,
+          true
+        ]
+      },
+      {
+        "metric": "ROM_Index_MCP_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 54.5207304422358,
+        "viol_pct": 0.0,
+        "verdict": "조건미달",
+        "ok": [
+          true,
+          false,
+          true
+        ]
+      },
+      {
+        "metric": "ROM_Index_PIP_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 23.8340647062399,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "ROM_Index_DIP_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 59.93979585748531,
+        "viol_pct": 0.0,
+        "verdict": "조건미달",
+        "ok": [
+          true,
+          false,
+          true
+        ]
+      },
+      {
+        "metric": "ROM_Middle_MCP_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 34.678673952157396,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "ROM_Middle_PIP_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 25.960835901529805,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "ROM_Middle_DIP_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 18.044140394993917,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "ROM_Ring_MCP_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 44.42136161212805,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "ROM_Ring_PIP_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 18.597701687337953,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "ROM_Ring_DIP_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 21.756645254589024,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "ROM_Pinky_MCP_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 48.703273955573465,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "ROM_Pinky_PIP_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 30.57197800677943,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "ROM_Pinky_DIP_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 34.37284841225929,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "TAM_Thumb_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 90.61852634210805,
+        "viol_pct": 0.0,
+        "verdict": "조건미달",
+        "ok": [
+          true,
+          false,
+          true
+        ]
+      },
+      {
+        "metric": "TAM_Index_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 24.957014726569113,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "TAM_Middle_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 14.095522443374335,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "TAM_Ring_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 22.15719984982919,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "TAM_Pinky_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 22.538344874645198,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "TAM_total_deg",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 17.66264025646274,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "Flex_Speed_deg_s",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 75.87005969976815,
+        "viol_pct": 33.33333333333333,
+        "verdict": "조건미달",
+        "ok": [
+          true,
+          false,
+          false
+        ]
+      },
+      {
+        "metric": "Ext_Speed_deg_s",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 101.32596804052503,
+        "viol_pct": 33.33333333333333,
+        "verdict": "조건미달",
+        "ok": [
+          true,
+          false,
+          false
+        ]
+      },
+      {
+        "metric": "SPARC",
+        "n": 46,
+        "n_groups": 6,
+        "miss_pct": 4.166666666666666,
+        "mdc_pct": 92.498522739997,
+        "viol_pct": 0.0,
+        "verdict": "조건미달",
+        "ok": [
+          true,
+          false,
+          true
+        ]
+      },
+      {
+        "metric": "MGA_cm",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 14.861084722785002,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "MGA_mm_3D",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 15.049595682180515,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "MGA_mm_3D_cal",
+        "n": 0,
+        "n_groups": 6,
+        "miss_pct": 100.0,
+        "mdc_pct": null,
+        "viol_pct": null,
+        "verdict": "조건미달",
+        "ok": [
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "metric": "MP_MGA_raw_mm",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 16.216834839301146,
+        "viol_pct": 0.0,
+        "verdict": "편입가능",
+        "ok": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "metric": "RS_MGA_raw_mm",
+        "n": 45,
+        "n_groups": 6,
+        "miss_pct": 6.25,
+        "mdc_pct": 101.69460413503506,
+        "viol_pct": 0.0,
+        "verdict": "조건미달",
+        "ok": [
+          true,
+          false,
+          true
+        ]
+      },
+      {
+        "metric": "RS_MGA_p95_mm",
+        "n": 41,
+        "n_groups": 6,
+        "miss_pct": 14.583333333333334,
+        "mdc_pct": 73.54985359644654,
+        "viol_pct": 0.0,
+        "verdict": "조건미달",
+        "ok": [
+          true,
+          false,
+          true
+        ]
+      },
+      {
+        "metric": "Duration_s",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 87.64503903482851,
+        "viol_pct": 0.0,
+        "verdict": "조건미달",
+        "ok": [
+          true,
+          false,
+          true
+        ]
+      },
+      {
+        "metric": "Cycle_Period_s",
+        "n": 7,
+        "n_groups": 6,
+        "miss_pct": 85.41666666666666,
+        "mdc_pct": 92.54251239326321,
+        "viol_pct": 0.0,
+        "verdict": "조건미달",
+        "ok": [
+          false,
+          false,
+          true
+        ]
+      },
+      {
+        "metric": "Valid_Duration_s",
+        "n": 48,
+        "n_groups": 6,
+        "miss_pct": 0.0,
+        "mdc_pct": 89.01169710898799,
+        "viol_pct": 0.0,
+        "verdict": "조건미달",
+        "ok": [
+          true,
+          false,
+          true
+        ]
+      }
+    ]
+  },
+  "portfolio_by_group": {
+    "Healthy": {
+      "label": "Healthy",
+      "n_rows": 16,
+      "n_groups": 2,
+      "group_keys": [
+        "20260915_비장애인_test_26세_남|Task 1|Left",
+        "20260915_비장애인_test_26세_남|Task 1|Right"
+      ],
+      "metrics": [
+        {
+          "metric": "Index_ROM_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 17.210864007721778,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "Index_ROM_3D_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 11.43990242334013,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "RS_Index_ROM_deg",
+          "n": 12,
+          "n_groups": 2,
+          "miss_pct": 25.0,
+          "mdc_pct": 30.798071784931523,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            false,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "Thumb_CMC_ROM_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 53.58394504232988,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "Thumb_PalmarAbd_max_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 102.65942775739582,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "Thumb_PalmarAbd_ROM_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 125.81394022803309,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "Thumb_RadialAbd_max_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 87.73455915432325,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "Thumb_RadialAbd_ROM_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 112.75999867474385,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Thumb_CMC_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 53.58394504232988,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Thumb_MCP_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 61.092415236464646,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Thumb_IP_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 29.119082368572045,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Index_MCP_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 39.59188842676345,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Index_PIP_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 17.210864007721778,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Index_DIP_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 47.41501865147883,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Middle_MCP_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 23.51815940861448,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Middle_PIP_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 27.164799581190138,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Middle_DIP_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 8.754453227093425,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Ring_MCP_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 44.42136161212805,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Ring_PIP_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 18.957023082372462,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Ring_DIP_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 20.82669469674684,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Pinky_MCP_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 48.703273955573465,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Pinky_PIP_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 35.186201020476474,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Pinky_DIP_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 32.39787466955787,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "TAM_Thumb_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 21.47603192321173,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "TAM_Index_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 20.35232481036712,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "TAM_Middle_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 11.555402472571178,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "TAM_Ring_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 22.15719984982919,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "TAM_Pinky_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 22.114125096873906,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "TAM_total_deg",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 10.812932120513205,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "Flex_Speed_deg_s",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 399.7558175150725,
+          "viol_pct": 100.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            false
+          ]
+        },
+        {
+          "metric": "Ext_Speed_deg_s",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 252.72299033829074,
+          "viol_pct": 100.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            false
+          ]
+        },
+        {
+          "metric": "SPARC",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 102.0291210149444,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "MGA_cm",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 17.642871314933494,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "MGA_mm_3D",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 27.149346357264285,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "MGA_mm_3D_cal",
+          "n": 0,
+          "n_groups": 2,
+          "miss_pct": 100.0,
+          "mdc_pct": null,
+          "viol_pct": null,
+          "verdict": "조건미달",
+          "ok": [
+            false,
+            false,
+            false
+          ]
+        },
+        {
+          "metric": "MP_MGA_raw_mm",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 21.954253430089697,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "RS_MGA_raw_mm",
+          "n": 13,
+          "n_groups": 2,
+          "miss_pct": 18.75,
+          "mdc_pct": 102.10076933043736,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "RS_MGA_p95_mm",
+          "n": 12,
+          "n_groups": 2,
+          "miss_pct": 25.0,
+          "mdc_pct": 56.51439671265218,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            false,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "Duration_s",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 27.714855657313958,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "Cycle_Period_s",
+          "n": 7,
+          "n_groups": 2,
+          "miss_pct": 56.25,
+          "mdc_pct": 92.54251239326321,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            false,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "Valid_Duration_s",
+          "n": 16,
+          "n_groups": 2,
+          "miss_pct": 0.0,
+          "mdc_pct": 27.998359379450253,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        }
+      ]
+    },
+    "Patient": {
+      "label": "Patient",
+      "n_rows": 32,
+      "n_groups": 4,
+      "group_keys": [
+        "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본|Task 1|Left",
+        "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본|Task 1|Right",
+        "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본|Task 1|Left",
+        "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본|Task 1|Right"
+      ],
+      "metrics": [
+        {
+          "metric": "Index_ROM_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 33.69947750250222,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "Index_ROM_3D_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 56.659245597833376,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "RS_Index_ROM_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 50.826819037632205,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "Thumb_CMC_ROM_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 88.28770864075821,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "Thumb_PalmarAbd_max_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 22.867838511687417,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "Thumb_PalmarAbd_ROM_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 64.25355887249525,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "Thumb_RadialAbd_max_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 19.408522213788256,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "Thumb_RadialAbd_ROM_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 75.9869525270615,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Thumb_CMC_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 88.28770864075821,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Thumb_MCP_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 89.32972595377107,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Thumb_IP_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 121.12626917658787,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Index_MCP_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 58.81342119717692,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Index_PIP_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 33.69947750250222,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Index_DIP_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 75.09838265857076,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Middle_MCP_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 43.996320039311584,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Middle_PIP_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 25.960835901529805,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Middle_DIP_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 21.002189386253846,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Ring_MCP_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 36.92876736575994,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Ring_PIP_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 18.597701687337953,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Ring_DIP_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 21.756645254589024,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Pinky_MCP_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 43.623030330153114,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Pinky_PIP_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 27.787315558130253,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "ROM_Pinky_DIP_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 34.936699971373095,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "TAM_Thumb_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 105.24686184225965,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "TAM_Index_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 37.466816106789246,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "TAM_Middle_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 19.701421561311896,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "TAM_Ring_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 22.941310456091223,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "TAM_Pinky_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 27.083920447264546,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "TAM_total_deg",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 29.41997133350203,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "Flex_Speed_deg_s",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 42.28877799486353,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "Ext_Speed_deg_s",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 76.94027067895672,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "SPARC",
+          "n": 30,
+          "n_groups": 4,
+          "miss_pct": 6.25,
+          "mdc_pct": 92.02136527716029,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "MGA_cm",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 11.102336374886905,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "MGA_mm_3D",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 11.446621870457745,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "MGA_mm_3D_cal",
+          "n": 0,
+          "n_groups": 4,
+          "miss_pct": 100.0,
+          "mdc_pct": null,
+          "viol_pct": null,
+          "verdict": "조건미달",
+          "ok": [
+            false,
+            false,
+            false
+          ]
+        },
+        {
+          "metric": "MP_MGA_raw_mm",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 15.075458255941648,
+          "viol_pct": 0.0,
+          "verdict": "편입가능",
+          "ok": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "metric": "RS_MGA_raw_mm",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 63.1262836113314,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "RS_MGA_p95_mm",
+          "n": 29,
+          "n_groups": 4,
+          "miss_pct": 9.375,
+          "mdc_pct": 78.21076244424837,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "Duration_s",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 94.83659795552732,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        },
+        {
+          "metric": "Cycle_Period_s",
+          "n": 0,
+          "n_groups": 4,
+          "miss_pct": 100.0,
+          "mdc_pct": null,
+          "viol_pct": null,
+          "verdict": "조건미달",
+          "ok": [
+            false,
+            false,
+            false
+          ]
+        },
+        {
+          "metric": "Valid_Duration_s",
+          "n": 32,
+          "n_groups": 4,
+          "miss_pct": 0.0,
+          "mdc_pct": 95.85011539305705,
+          "viol_pct": 0.0,
+          "verdict": "조건미달",
+          "ok": [
+            true,
+            false,
+            true
+          ]
+        }
+      ]
+    }
+  },
+  "frame_drops": {
+    "20260915_비장애인_test_26세_남": [
+      {
+        "trial": "Trial_1",
+        "n_frames": 133,
+        "missing_frames": 4,
+        "missing_pct": 2.9197080291970803,
+        "max_fid_jump": 3,
+        "median_dt_s": 0.06339300000000003,
+        "max_dt_s": 0.18251699999999893,
+        "fps_median": 15.774612338901763
+      },
+      {
+        "trial": "Trial_2",
+        "n_frames": 116,
+        "missing_frames": 19,
+        "missing_pct": 14.074074074074074,
+        "max_fid_jump": 13,
+        "median_dt_s": 0.06362999999999985,
+        "max_dt_s": 0.9022279999999974,
+        "fps_median": 15.715857300015752
+      },
+      {
+        "trial": "Trial_3",
+        "n_frames": 125,
+        "missing_frames": 5,
+        "missing_pct": 3.8461538461538463,
+        "max_fid_jump": 3,
+        "median_dt_s": 0.06338799999999978,
+        "max_dt_s": 0.22321700000000533,
+        "fps_median": 15.77585662901501
+      },
+      {
+        "trial": "Trial_4",
+        "n_frames": 129,
+        "missing_frames": 5,
+        "missing_pct": 3.7313432835820897,
+        "max_fid_jump": 3,
+        "median_dt_s": 0.06953299999999984,
+        "max_dt_s": 0.20508499999999685,
+        "fps_median": 14.381660506522115
+      },
+      {
+        "trial": "Trial_5",
+        "n_frames": 132,
+        "missing_frames": 5,
+        "missing_pct": 3.6496350364963503,
+        "max_fid_jump": 5,
+        "median_dt_s": 0.06330700000000178,
+        "max_dt_s": 0.2687660000000065,
+        "fps_median": 15.79604151199665
+      },
+      {
+        "trial": "Trial_6",
+        "n_frames": 128,
+        "missing_frames": 7,
+        "missing_pct": 5.185185185185185,
+        "max_fid_jump": 3,
+        "median_dt_s": 0.07734800000000064,
+        "max_dt_s": 0.2903559999999885,
+        "fps_median": 12.928582510213474
+      },
+      {
+        "trial": "Trial_7",
+        "n_frames": 99,
+        "missing_frames": 7,
+        "missing_pct": 6.60377358490566,
+        "max_fid_jump": 3,
+        "median_dt_s": 0.06888649999999785,
+        "max_dt_s": 0.18053299999999695,
+        "fps_median": 14.516632431608969
+      },
+      {
+        "trial": "Trial_8",
+        "n_frames": 106,
+        "missing_frames": 2,
+        "missing_pct": 1.8518518518518519,
+        "max_fid_jump": 2,
+        "median_dt_s": 0.06288699999998926,
+        "max_dt_s": 0.25360799999999983,
+        "fps_median": 15.901537678696245
+      }
+    ],
+    "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본": [
+      {
+        "trial": "Trial_1",
+        "n_frames": 135,
+        "missing_frames": 0,
+        "missing_pct": 0.0,
+        "max_fid_jump": 1,
+        "median_dt_s": 0.0774985000000008,
+        "max_dt_s": 0.15352299999999985,
+        "fps_median": 12.903475551139566
+      },
+      {
+        "trial": "Trial_2",
+        "n_frames": 91,
+        "missing_frames": 0,
+        "missing_pct": 0.0,
+        "max_fid_jump": 1,
+        "median_dt_s": 0.07328800000000157,
+        "max_dt_s": 0.1370989999999992,
+        "fps_median": 13.64479860277233
+      },
+      {
+        "trial": "Trial_3",
+        "n_frames": 66,
+        "missing_frames": 0,
+        "missing_pct": 0.0,
+        "max_fid_jump": 1,
+        "median_dt_s": 0.07453499999999735,
+        "max_dt_s": 0.13257099999999866,
+        "fps_median": 13.416515730865171
+      },
+      {
+        "trial": "Trial_4",
+        "n_frames": 55,
+        "missing_frames": 0,
+        "missing_pct": 0.0,
+        "max_fid_jump": 1,
+        "median_dt_s": 0.07729199999999992,
+        "max_dt_s": 0.1455709999999968,
+        "fps_median": 12.937949593748396
+      },
+      {
+        "trial": "Trial_6",
+        "n_frames": 67,
+        "missing_frames": 0,
+        "missing_pct": 0.0,
+        "max_fid_jump": 1,
+        "median_dt_s": 0.07711150000000089,
+        "max_dt_s": 0.14164000000000954,
+        "fps_median": 12.968234310057365
+      },
+      {
+        "trial": "Trial_7",
+        "n_frames": 65,
+        "missing_frames": 0,
+        "missing_pct": 0.0,
+        "max_fid_jump": 1,
+        "median_dt_s": 0.07818550000001068,
+        "max_dt_s": 0.14957599999999616,
+        "fps_median": 12.790095350159088
+      },
+      {
+        "trial": "Trial_8",
+        "n_frames": 65,
+        "missing_frames": 0,
+        "missing_pct": 0.0,
+        "max_fid_jump": 1,
+        "median_dt_s": 0.08039949999999152,
+        "max_dt_s": 0.15555100000000266,
+        "fps_median": 12.437888295326532
+      }
+    ],
+    "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본": [
+      {
+        "trial": "Trial_1",
+        "n_frames": 74,
+        "missing_frames": 0,
+        "missing_pct": 0.0,
+        "max_fid_jump": 1,
+        "median_dt_s": 0.07401799999999881,
+        "max_dt_s": 0.15383999999999975,
+        "fps_median": 13.51022724202243
+      },
+      {
+        "trial": "Trial_2",
+        "n_frames": 50,
+        "missing_frames": 0,
+        "missing_pct": 0.0,
+        "max_fid_jump": 1,
+        "median_dt_s": 0.07421000000000078,
+        "max_dt_s": 0.13068400000000224,
+        "fps_median": 13.475272874275563
+      },
+      {
+        "trial": "Trial_4",
+        "n_frames": 62,
+        "missing_frames": 0,
+        "missing_pct": 0.0,
+        "max_fid_jump": 1,
+        "median_dt_s": 0.07281900000000263,
+        "max_dt_s": 0.1348060000000011,
+        "fps_median": 13.732679657781127
+      },
+      {
+        "trial": "Trial_5",
+        "n_frames": 51,
+        "missing_frames": 0,
+        "missing_pct": 0.0,
+        "max_fid_jump": 1,
+        "median_dt_s": 0.07503399999999871,
+        "max_dt_s": 0.12454899999999469,
+        "fps_median": 13.327291627795628
+      },
+      {
+        "trial": "Trial_6",
+        "n_frames": 73,
+        "missing_frames": 0,
+        "missing_pct": 0.0,
+        "max_fid_jump": 1,
+        "median_dt_s": 0.07292650000000123,
+        "max_dt_s": 0.1294279999999972,
+        "fps_median": 13.712436494278256
+      },
+      {
+        "trial": "Trial_7",
+        "n_frames": 62,
+        "missing_frames": 0,
+        "missing_pct": 0.0,
+        "max_fid_jump": 1,
+        "median_dt_s": 0.07457800000000248,
+        "max_dt_s": 0.1556460000000044,
+        "fps_median": 13.40878006918886
+      },
+      {
+        "trial": "Trial_8",
+        "n_frames": 52,
+        "missing_frames": 0,
+        "missing_pct": 0.0,
+        "max_fid_jump": 1,
+        "median_dt_s": 0.09002999999999872,
+        "max_dt_s": 0.16044899999999984,
+        "fps_median": 11.107408641564081
+      },
+      {
+        "trial": "Trial_9",
+        "n_frames": 69,
+        "missing_frames": 0,
+        "missing_pct": 0.0,
+        "max_fid_jump": 1,
+        "median_dt_s": 0.07328299999999643,
+        "max_dt_s": 0.13238800000000595,
+        "fps_median": 13.645729568932067
+      }
+    ]
+  },
+  "q_v13": {
+    "20260915_비장애인_test_26세_남": {
+      "Left": {
+        "hand": "Left",
+        "rest_mode": "fallback",
+        "n_trials": 8,
+        "q_hand_pass": 0,
+        "q_hand_reasons": {
+          "segment_deviation_over_cap": 8
+        },
+        "seg_rate_median": 0.9306979570137465,
+        "session_dt_ref_s": 0.07778449999999992,
+        "hand_consistency_invalid_total": 7,
+        "n_frames_total": 968
+      },
+      "Right": {
+        "hand": "Right",
+        "rest_mode": "fallback",
+        "n_trials": 8,
+        "q_hand_pass": 2,
+        "q_hand_reasons": {
+          "segment_deviation_over_cap": 6,
+          "hand_gap_over_5x_dt_ref": 1
+        },
+        "seg_rate_median": 0.9409992069785884,
+        "session_dt_ref_s": 0.07767099999999871,
+        "hand_consistency_invalid_total": 29,
+        "n_frames_total": 963
+      }
+    },
+    "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본": {
+      "Left": {
+        "hand": "Left",
+        "rest_mode": "fallback",
+        "n_trials": 7,
+        "q_hand_pass": 0,
+        "q_hand_reasons": {
+          "segment_deviation_over_cap": 7
+        },
+        "seg_rate_median": 0.5151515151515151,
+        "session_dt_ref_s": 0.07704000000000022,
+        "hand_consistency_invalid_total": 0,
+        "n_frames_total": 544
+      },
+      "Right": {
+        "hand": "Right",
+        "rest_mode": "fallback",
+        "n_trials": 7,
+        "q_hand_pass": 6,
+        "q_hand_reasons": {
+          "segment_deviation_over_cap": 1
+        },
+        "seg_rate_median": 0.23636363636363636,
+        "session_dt_ref_s": 0.07704000000000022,
+        "hand_consistency_invalid_total": 0,
+        "n_frames_total": 544
+      }
+    },
+    "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본": {
+      "Left": {
+        "hand": "Left",
+        "rest_mode": "fallback",
+        "n_trials": 9,
+        "q_hand_pass": 4,
+        "q_hand_reasons": {
+          "segment_deviation_over_cap": 5
+        },
+        "seg_rate_median": 0.3709677419354839,
+        "session_dt_ref_s": 0.07437999999999789,
+        "hand_consistency_invalid_total": 0,
+        "n_frames_total": 509
+      },
+      "Right": {
+        "hand": "Right",
+        "rest_mode": "fallback",
+        "n_trials": 9,
+        "q_hand_pass": 4,
+        "q_hand_reasons": {
+          "segment_deviation_over_cap": 5
+        },
+        "seg_rate_median": 0.3064516129032258,
+        "session_dt_ref_s": 0.07437999999999789,
+        "hand_consistency_invalid_total": 0,
+        "n_frames_total": 509
+      }
+    }
+  },
+  "landmark_coverage": {
+    "per_landmark": {
+      "0": {
+        "n_segments": 0,
+        "by_segment_rule": false,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": false,
+        "covered_by_gate": false
+      },
+      "1": {
+        "n_segments": 1,
+        "by_segment_rule": false,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": false,
+        "covered_by_gate": false
+      },
+      "2": {
+        "n_segments": 2,
+        "by_segment_rule": true,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": false,
+        "covered_by_gate": true
+      },
+      "3": {
+        "n_segments": 2,
+        "by_segment_rule": true,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": false,
+        "covered_by_gate": true
+      },
+      "4": {
+        "n_segments": 1,
+        "by_segment_rule": false,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": true,
+        "covered_by_gate": false
+      },
+      "5": {
+        "n_segments": 1,
+        "by_segment_rule": false,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": false,
+        "covered_by_gate": false
+      },
+      "6": {
+        "n_segments": 2,
+        "by_segment_rule": true,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": false,
+        "covered_by_gate": true
+      },
+      "7": {
+        "n_segments": 2,
+        "by_segment_rule": true,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": false,
+        "covered_by_gate": true
+      },
+      "8": {
+        "n_segments": 1,
+        "by_segment_rule": false,
+        "by_hand_consistency": true,
+        "by_app_implausible_span_NOT_A_GATE": true,
+        "covered_by_gate": true
+      },
+      "9": {
+        "n_segments": 1,
+        "by_segment_rule": false,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": false,
+        "covered_by_gate": false
+      },
+      "10": {
+        "n_segments": 2,
+        "by_segment_rule": true,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": false,
+        "covered_by_gate": true
+      },
+      "11": {
+        "n_segments": 2,
+        "by_segment_rule": true,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": false,
+        "covered_by_gate": true
+      },
+      "12": {
+        "n_segments": 1,
+        "by_segment_rule": false,
+        "by_hand_consistency": true,
+        "by_app_implausible_span_NOT_A_GATE": true,
+        "covered_by_gate": true
+      },
+      "13": {
+        "n_segments": 1,
+        "by_segment_rule": false,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": false,
+        "covered_by_gate": false
+      },
+      "14": {
+        "n_segments": 2,
+        "by_segment_rule": true,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": false,
+        "covered_by_gate": true
+      },
+      "15": {
+        "n_segments": 2,
+        "by_segment_rule": true,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": false,
+        "covered_by_gate": true
+      },
+      "16": {
+        "n_segments": 1,
+        "by_segment_rule": false,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": true,
+        "covered_by_gate": false
+      },
+      "17": {
+        "n_segments": 1,
+        "by_segment_rule": false,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": false,
+        "covered_by_gate": false
+      },
+      "18": {
+        "n_segments": 2,
+        "by_segment_rule": true,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": false,
+        "covered_by_gate": true
+      },
+      "19": {
+        "n_segments": 2,
+        "by_segment_rule": true,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": false,
+        "covered_by_gate": true
+      },
+      "20": {
+        "n_segments": 1,
+        "by_segment_rule": false,
+        "by_hand_consistency": false,
+        "by_app_implausible_span_NOT_A_GATE": true,
+        "covered_by_gate": false
+      }
+    },
+    "uncovered_by_gate": [
+      0,
+      1,
+      4,
+      5,
+      9,
+      13,
+      16,
+      17,
+      20
+    ],
+    "uncovered_without_aux": [
+      0,
+      1,
+      5,
+      9,
+      13,
+      17
+    ],
+    "uncovered_gate_tips": [
+      4,
+      16,
+      20
+    ],
+    "note": "v13 게이트가 잡지 못하는 랜드마크: [0, 1, 4, 5, 9, 13, 16, 17, 20]. 그중 손끝: [4, 16, 20]. 엄지끝 4는 D_TI_max의 정의 랜드마크이며 게이트 밖이다. 앱 `implausible_span`(260mm)은 비게이트 보완(큰 이탈만 잡음)."
+  }
+}

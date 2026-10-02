@@ -1,0 +1,683 @@
+{
+  "provenance": {
+    "time_axis": "capture_monotonic_s (distance_comparison.csv) — 단일 정본",
+    "metrics": "v13.2 정의를 원자료에서 재계산. SPARC_task(Pose 손목 3D)는 환자 Pose 부재로 불가 → Index_PIP 각도계열 SPARC 로 대체 표기",
+    "naming": "1.96√2·SD/|mean| 는 '반복시행 변동성 비율'. 임상 MDC 아님.",
+    "stats": "집단 검정·치료효과 추론 없음. 시행 수준 기술통계만.",
+    "replaces": "experiments/analysis/metric_portfolio_check_v2.py (수정 없이 대체)"
+  },
+  "sessions": {
+    "20260915_비장애인_test_26세_남": {
+      "meta": {
+        "group": "Healthy",
+        "age": 26,
+        "affected": null,
+        "meta_fps": 16.933905014606836,
+        "meta_frames": 1825
+      },
+      "hands": {
+        "Left": {
+          "side_role": "control",
+          "n_trials": 8,
+          "trials": [
+            {
+              "trial": "Trial_1",
+              "n_frames": 133,
+              "D_TI_max_mm": 91.70851069487226,
+              "F_sum14_p95_deg": 959.3625631809506,
+              "SPARC_indexPIP": -12.017886944992362,
+              "sparc_status": "ok",
+              "duration_s": 7.777008000000933,
+              "median_dt_s": 0.052201500000592205,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_2",
+              "n_frames": 116,
+              "D_TI_max_mm": 96.50875282193529,
+              "F_sum14_p95_deg": 960.4487597355352,
+              "SPARC_indexPIP": -9.091960335550278,
+              "sparc_status": "ok",
+              "duration_s": 7.811243000000104,
+              "median_dt_s": 0.054093000002467306,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_3",
+              "n_frames": 125,
+              "D_TI_max_mm": 95.15423224982113,
+              "F_sum14_p95_deg": 934.6095919570598,
+              "SPARC_indexPIP": -10.18674062240932,
+              "sparc_status": "ok",
+              "duration_s": 7.5693649999993795,
+              "median_dt_s": 0.05456000000049244,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_4",
+              "n_frames": 129,
+              "D_TI_max_mm": 88.21506961603896,
+              "F_sum14_p95_deg": 980.0715722331087,
+              "SPARC_indexPIP": -8.83455862338063,
+              "sparc_status": "ok",
+              "duration_s": 7.666562000002159,
+              "median_dt_s": 0.05257699999856413,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_5",
+              "n_frames": 132,
+              "D_TI_max_mm": 98.13250033676968,
+              "F_sum14_p95_deg": 991.7141055421197,
+              "SPARC_indexPIP": -9.208854069979719,
+              "sparc_status": "ok",
+              "duration_s": 7.685206000001926,
+              "median_dt_s": 0.05257200000050943,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_6",
+              "n_frames": 128,
+              "D_TI_max_mm": 98.70563364641099,
+              "F_sum14_p95_deg": 940.0610875793874,
+              "SPARC_indexPIP": -8.300301286481659,
+              "sparc_status": "ok",
+              "duration_s": 7.962685999998939,
+              "median_dt_s": 0.053133000001253095,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_7",
+              "n_frames": 99,
+              "D_TI_max_mm": 96.65644523098655,
+              "F_sum14_p95_deg": 992.9846434136845,
+              "SPARC_indexPIP": -6.467775536234752,
+              "sparc_status": "ok",
+              "duration_s": 6.288092000002507,
+              "median_dt_s": 0.05329549999987648,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_8",
+              "n_frames": 106,
+              "D_TI_max_mm": 84.36169019769459,
+              "F_sum14_p95_deg": 955.6374366761368,
+              "SPARC_indexPIP": -6.23430923154992,
+              "sparc_status": "ok",
+              "duration_s": 6.570268999999826,
+              "median_dt_s": 0.055347000001347624,
+              "n_nonpos_dt": 0
+            }
+          ],
+          "ratios": {
+            "M1_D_TI_max": 15.198690259657047,
+            "M2_F_sum14": 6.340550212022854,
+            "M4_SPARC(대체)": 59.339652783523334,
+            "duration": 23.347730839204427
+          },
+          "medians": {
+            "M1_D_TI_max": 95.83149253587821,
+            "M2_F_sum14": 959.9056614582429,
+            "M4_SPARC(대체)": -8.963259479465453,
+            "duration": 7.675884000002043
+          }
+        },
+        "Right": {
+          "side_role": "control",
+          "n_trials": 8,
+          "trials": [
+            {
+              "trial": "Trial_1",
+              "n_frames": 131,
+              "D_TI_max_mm": 104.69368243677027,
+              "F_sum14_p95_deg": 981.7416816674346,
+              "SPARC_indexPIP": -9.208538275146353,
+              "sparc_status": "ok",
+              "duration_s": 7.777008000000933,
+              "median_dt_s": 0.052290999998149346,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_2",
+              "n_frames": 121,
+              "D_TI_max_mm": 90.90046444332451,
+              "F_sum14_p95_deg": 995.467460170397,
+              "SPARC_indexPIP": -11.850622285672337,
+              "sparc_status": "ok",
+              "duration_s": 7.716237999997247,
+              "median_dt_s": 0.054360000000087894,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_3",
+              "n_frames": 124,
+              "D_TI_max_mm": 88.77917164209293,
+              "F_sum14_p95_deg": 981.6086403171724,
+              "SPARC_indexPIP": -9.796798165142503,
+              "sparc_status": "ok",
+              "duration_s": 7.5693649999993795,
+              "median_dt_s": 0.05440199999793549,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_4",
+              "n_frames": 130,
+              "D_TI_max_mm": 88.39151540090599,
+              "F_sum14_p95_deg": 975.1458262489546,
+              "SPARC_indexPIP": -9.238758649902003,
+              "sparc_status": "ok",
+              "duration_s": 7.666562000002159,
+              "median_dt_s": 0.05259899999873596,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_5",
+              "n_frames": 131,
+              "D_TI_max_mm": 87.5827552729246,
+              "F_sum14_p95_deg": 983.9116523042475,
+              "SPARC_indexPIP": -14.296656930670068,
+              "sparc_status": "ok",
+              "duration_s": 7.685206000001926,
+              "median_dt_s": 0.052513500000713975,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_6",
+              "n_frames": 124,
+              "D_TI_max_mm": 90.16159537697689,
+              "F_sum14_p95_deg": 999.2014036967064,
+              "SPARC_indexPIP": -10.979624604241106,
+              "sparc_status": "ok",
+              "duration_s": 7.962685999998939,
+              "median_dt_s": 0.053133000001253095,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_7",
+              "n_frames": 97,
+              "D_TI_max_mm": 114.87686443301106,
+              "F_sum14_p95_deg": 905.4782269079909,
+              "SPARC_indexPIP": -8.941683516690384,
+              "sparc_status": "ok",
+              "duration_s": 6.288092000002507,
+              "median_dt_s": 0.05356249999749707,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_8",
+              "n_frames": 105,
+              "D_TI_max_mm": 92.26540358077723,
+              "F_sum14_p95_deg": 893.5982172259421,
+              "SPARC_indexPIP": -8.172676721449479,
+              "sparc_status": "ok",
+              "duration_s": 6.570268999999826,
+              "median_dt_s": 0.055521000000226195,
+              "n_nonpos_dt": 0
+            }
+          ],
+          "ratios": {
+            "M1_D_TI_max": 28.70745849965804,
+            "M2_F_sum14": 11.776133088242316,
+            "M4_SPARC(대체)": 53.555094999334955,
+            "duration": 23.095978919939782
+          },
+          "medians": {
+            "M1_D_TI_max": 90.53102991015069,
+            "M2_F_sum14": 981.6751609923035,
+            "M4_SPARC(대체)": -9.517778407522254,
+            "duration": 7.675884000002043
+          }
+        }
+      }
+    },
+    "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본": {
+      "meta": {
+        "group": "Patient",
+        "age": 62,
+        "affected": "좌측 (Left Hand)",
+        "meta_fps": 23.054565702458536,
+        "meta_frames": 33038
+      },
+      "hands": {
+        "Left": {
+          "side_role": "affected",
+          "n_trials": 7,
+          "trials": [
+            {
+              "trial": "Trial_1",
+              "n_frames": 135,
+              "D_TI_max_mm": 103.09294894238839,
+              "F_sum14_p95_deg": 1006.5584300409388,
+              "SPARC_indexPIP": -25.842128039547465,
+              "sparc_status": "ok",
+              "duration_s": 10.808399999979883,
+              "median_dt_s": 0.07755049999104813,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_2",
+              "n_frames": 91,
+              "D_TI_max_mm": 90.39342894068184,
+              "F_sum14_p95_deg": 931.2894956106151,
+              "SPARC_indexPIP": -7.735965183650848,
+              "sparc_status": "ok",
+              "duration_s": 6.564569999987725,
+              "median_dt_s": 0.06862599999294616,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_3",
+              "n_frames": 66,
+              "D_TI_max_mm": 86.39846831914731,
+              "F_sum14_p95_deg": 919.6309165616302,
+              "SPARC_indexPIP": -7.608150060085446,
+              "sparc_status": "ok",
+              "duration_s": 4.9486939999624155,
+              "median_dt_s": 0.07162399997469038,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_4",
+              "n_frames": 55,
+              "D_TI_max_mm": 78.36581609079943,
+              "F_sum14_p95_deg": 894.8994327991576,
+              "SPARC_indexPIP": -9.064625038628094,
+              "sparc_status": "ok",
+              "duration_s": 4.281721999985166,
+              "median_dt_s": 0.07527450000634417,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_6",
+              "n_frames": 67,
+              "D_TI_max_mm": 83.89801702871767,
+              "F_sum14_p95_deg": 864.6688414077682,
+              "SPARC_indexPIP": -9.801685515709618,
+              "sparc_status": "ok",
+              "duration_s": 5.172971000021789,
+              "median_dt_s": 0.07600000000093132,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_7",
+              "n_frames": 65,
+              "D_TI_max_mm": 88.00890488743624,
+              "F_sum14_p95_deg": 876.9105801447208,
+              "SPARC_indexPIP": -8.175215020277816,
+              "sparc_status": "ok",
+              "duration_s": 5.076197999995202,
+              "median_dt_s": 0.07736699999077246,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_8",
+              "n_frames": 65,
+              "D_TI_max_mm": 81.72539865325282,
+              "F_sum14_p95_deg": 904.9479590818298,
+              "SPARC_indexPIP": -9.014341261282018,
+              "sparc_status": "ok",
+              "duration_s": 5.188839000009466,
+              "median_dt_s": 0.07971200000611134,
+              "n_nonpos_dt": 0
+            }
+          ],
+          "ratios": {
+            "M1_D_TI_max": 25.324741429360337,
+            "M2_F_sum14": 14.197408761744823,
+            "M4_SPARC(대체)": 165.2128735058842,
+            "duration": 102.66875152156847
+          },
+          "medians": {
+            "M1_D_TI_max": 86.39846831914731,
+            "M2_F_sum14": 904.9479590818298,
+            "M4_SPARC(대체)": -9.014341261282018,
+            "duration": 5.172971000021789
+          }
+        },
+        "Right": {
+          "side_role": "unaffected",
+          "n_trials": 7,
+          "trials": [
+            {
+              "trial": "Trial_1",
+              "n_frames": 135,
+              "D_TI_max_mm": 116.75557120726188,
+              "F_sum14_p95_deg": 935.9694359374043,
+              "SPARC_indexPIP": -26.23160358339542,
+              "sparc_status": "ok",
+              "duration_s": 10.808399999979883,
+              "median_dt_s": 0.07755049999104813,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_2",
+              "n_frames": 91,
+              "D_TI_max_mm": 108.29030095694259,
+              "F_sum14_p95_deg": 921.6381494920531,
+              "SPARC_indexPIP": -12.49188556965731,
+              "sparc_status": "ok",
+              "duration_s": 6.564569999987725,
+              "median_dt_s": 0.06862599999294616,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_3",
+              "n_frames": 66,
+              "D_TI_max_mm": 105.77003390321003,
+              "F_sum14_p95_deg": 886.2021079391517,
+              "SPARC_indexPIP": -6.280753898247287,
+              "sparc_status": "ok",
+              "duration_s": 4.9486939999624155,
+              "median_dt_s": 0.07162399997469038,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_4",
+              "n_frames": 55,
+              "D_TI_max_mm": 100.30046277582024,
+              "F_sum14_p95_deg": 871.4826569167183,
+              "SPARC_indexPIP": -12.0711497595239,
+              "sparc_status": "ok",
+              "duration_s": 4.281721999985166,
+              "median_dt_s": 0.07527450000634417,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_6",
+              "n_frames": 67,
+              "D_TI_max_mm": 101.05295909032945,
+              "F_sum14_p95_deg": 897.0281230632794,
+              "SPARC_indexPIP": -16.537484691962128,
+              "sparc_status": "ok",
+              "duration_s": 5.172971000021789,
+              "median_dt_s": 0.07600000000093132,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_7",
+              "n_frames": 65,
+              "D_TI_max_mm": 97.62583452193071,
+              "F_sum14_p95_deg": 891.8539952044243,
+              "SPARC_indexPIP": -11.47501825757943,
+              "sparc_status": "ok",
+              "duration_s": 5.076197999995202,
+              "median_dt_s": 0.07736699999077246,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_8",
+              "n_frames": 65,
+              "D_TI_max_mm": 101.32627101764972,
+              "F_sum14_p95_deg": 880.9667903652582,
+              "SPARC_indexPIP": -11.614512777554538,
+              "sparc_status": "ok",
+              "duration_s": 5.188839000009466,
+              "median_dt_s": 0.07971200000611134,
+              "n_nonpos_dt": 0
+            }
+          ],
+          "ratios": {
+            "M1_D_TI_max": 17.233228961586246,
+            "M2_F_sum14": 7.097636016122146,
+            "M4_SPARC(대체)": 125.15860061452409,
+            "duration": 102.66875152156847
+          },
+          "medians": {
+            "M1_D_TI_max": 101.32627101764972,
+            "M2_F_sum14": 891.8539952044243,
+            "M4_SPARC(대체)": -12.0711497595239,
+            "duration": 5.172971000021789
+          }
+        }
+      }
+    },
+    "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본": {
+      "meta": {
+        "group": "Patient",
+        "age": 62,
+        "affected": "좌측 (Left Hand)",
+        "meta_fps": 13.377130815672016,
+        "meta_frames": 1031
+      },
+      "hands": {
+        "Left": {
+          "side_role": "affected",
+          "n_trials": 8,
+          "trials": [
+            {
+              "trial": "Trial_1",
+              "n_frames": 74,
+              "D_TI_max_mm": 100.33050500763315,
+              "F_sum14_p95_deg": 963.1111318085761,
+              "SPARC_indexPIP": -8.33416960920092,
+              "sparc_status": "ok",
+              "duration_s": 5.621826999995392,
+              "median_dt_s": 0.07409500004723668,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_2",
+              "n_frames": 50,
+              "D_TI_max_mm": 94.37699646452147,
+              "F_sum14_p95_deg": 932.0650889205301,
+              "SPARC_indexPIP": -9.215392429524123,
+              "sparc_status": "ok",
+              "duration_s": 3.6590330000035465,
+              "median_dt_s": 0.07032900000922382,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_4",
+              "n_frames": 62,
+              "D_TI_max_mm": 100.50802248766165,
+              "F_sum14_p95_deg": 938.8889224046335,
+              "SPARC_indexPIP": -9.934484008068415,
+              "sparc_status": "ok",
+              "duration_s": 4.426620999991428,
+              "median_dt_s": 0.07057499996153638,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_5",
+              "n_frames": 51,
+              "D_TI_max_mm": 100.11284559197087,
+              "F_sum14_p95_deg": 937.4691236353879,
+              "SPARC_indexPIP": -8.58290002611507,
+              "sparc_status": "ok",
+              "duration_s": 3.663403999991715,
+              "median_dt_s": 0.06998749999911524,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_6",
+              "n_frames": 73,
+              "D_TI_max_mm": 99.76104166545726,
+              "F_sum14_p95_deg": 942.5260107714383,
+              "SPARC_indexPIP": -11.619345942573634,
+              "sparc_status": "ok",
+              "duration_s": 5.236153000034392,
+              "median_dt_s": 0.06911449998733588,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_7",
+              "n_frames": 62,
+              "D_TI_max_mm": 96.06630289098774,
+              "F_sum14_p95_deg": 937.7184472935204,
+              "SPARC_indexPIP": -12.775419825378636,
+              "sparc_status": "ok",
+              "duration_s": 4.581938999996055,
+              "median_dt_s": 0.07343499996932223,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_8",
+              "n_frames": 52,
+              "D_TI_max_mm": 95.29433450039515,
+              "F_sum14_p95_deg": 933.311975288225,
+              "SPARC_indexPIP": -10.030068359299975,
+              "sparc_status": "ok",
+              "duration_s": 4.826251000049524,
+              "median_dt_s": 0.09556600003270432,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_9",
+              "n_frames": 69,
+              "D_TI_max_mm": 86.9396104307933,
+              "F_sum14_p95_deg": 934.4040343027343,
+              "SPARC_indexPIP": -10.13535783225618,
+              "sparc_status": "ok",
+              "duration_s": 4.742634999973234,
+              "median_dt_s": 0.06639700001687743,
+              "n_nonpos_dt": 0
+            }
+          ],
+          "ratios": {
+            "M1_D_TI_max": 13.349134125299948,
+            "M2_F_sum14": 2.9327743871870475,
+            "M4_SPARC(대체)": 41.18679441750047,
+            "duration": 41.50327653850571
+          },
+          "medians": {
+            "M1_D_TI_max": 97.91367227822249,
+            "M2_F_sum14": 937.5937854644542,
+            "M4_SPARC(대체)": -9.982276183684196,
+            "duration": 4.662286999984644
+          }
+        },
+        "Right": {
+          "side_role": "unaffected",
+          "n_trials": 8,
+          "trials": [
+            {
+              "trial": "Trial_1",
+              "n_frames": 74,
+              "D_TI_max_mm": 107.44511570625676,
+              "F_sum14_p95_deg": 891.2836663361206,
+              "SPARC_indexPIP": -12.172390620434605,
+              "sparc_status": "ok",
+              "duration_s": 5.621826999995392,
+              "median_dt_s": 0.07409500004723668,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_2",
+              "n_frames": 50,
+              "D_TI_max_mm": 109.46113278796771,
+              "F_sum14_p95_deg": 906.3689904717177,
+              "SPARC_indexPIP": -12.905842501595089,
+              "sparc_status": "ok",
+              "duration_s": 3.6590330000035465,
+              "median_dt_s": 0.07032900000922382,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_4",
+              "n_frames": 62,
+              "D_TI_max_mm": 109.54166916074678,
+              "F_sum14_p95_deg": 925.1822254482116,
+              "SPARC_indexPIP": -16.66097978521683,
+              "sparc_status": "ok",
+              "duration_s": 4.426620999991428,
+              "median_dt_s": 0.07057499996153638,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_5",
+              "n_frames": 51,
+              "D_TI_max_mm": 109.80345772507029,
+              "F_sum14_p95_deg": 920.0243833054784,
+              "SPARC_indexPIP": -17.805709104136742,
+              "sparc_status": "ok",
+              "duration_s": 3.663403999991715,
+              "median_dt_s": 0.06998749999911524,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_6",
+              "n_frames": 73,
+              "D_TI_max_mm": 115.19732842098291,
+              "F_sum14_p95_deg": 913.676263753135,
+              "SPARC_indexPIP": -23.443239720122566,
+              "sparc_status": "ok",
+              "duration_s": 5.236153000034392,
+              "median_dt_s": 0.06911449998733588,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_7",
+              "n_frames": 62,
+              "D_TI_max_mm": 107.4756440054257,
+              "F_sum14_p95_deg": 918.8575769946202,
+              "SPARC_indexPIP": -15.619001872951074,
+              "sparc_status": "ok",
+              "duration_s": 4.581938999996055,
+              "median_dt_s": 0.07343499996932223,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_8",
+              "n_frames": 52,
+              "D_TI_max_mm": 106.24241472217581,
+              "F_sum14_p95_deg": 915.56052123279,
+              "SPARC_indexPIP": -13.008767150272693,
+              "sparc_status": "ok",
+              "duration_s": 4.826251000049524,
+              "median_dt_s": 0.09556600003270432,
+              "n_nonpos_dt": 0
+            },
+            {
+              "trial": "Trial_9",
+              "n_frames": 69,
+              "D_TI_max_mm": 105.99633337787868,
+              "F_sum14_p95_deg": 922.0506942694509,
+              "SPARC_indexPIP": -14.083800808447712,
+              "sparc_status": "ok",
+              "duration_s": 4.742634999973234,
+              "median_dt_s": 0.06639700001687743,
+              "n_nonpos_dt": 0
+            }
+          ],
+          "ratios": {
+            "M1_D_TI_max": 7.50415767199106,
+            "M2_F_sum14": 3.2947119163411887,
+            "M4_SPARC(대체)": 65.13475024423218,
+            "duration": 41.50327653850571
+          },
+          "medians": {
+            "M1_D_TI_max": 108.46838839669671,
+            "M2_F_sum14": 917.2090491137051,
+            "M4_SPARC(대체)": -14.851401340699393,
+            "duration": 4.662286999984644
+          }
+        }
+      }
+    }
+  },
+  "pooled_ratios": {
+    "Healthy|control": {
+      "M1_D_TI_max": 22.31254282696364,
+      "M2_F_sum14": 9.137032090294202,
+      "M4_SPARC(대체)": 58.90226168038429,
+      "duration": 22.436147534871846
+    },
+    "Patient|affected": {
+      "M1_D_TI_max": 23.451030795605824,
+      "M2_F_sum14": 10.203130454916899,
+      "M4_SPARC(대체)": 117.49892683175392,
+      "duration": 89.67727867126906
+    },
+    "Patient|unaffected": {
+      "M1_D_TI_max": 13.656401210309005,
+      "M2_F_sum14": 5.768852964705387,
+      "M4_SPARC(대체)": 92.44486836508015,
+      "duration": 89.67727867126906
+    }
+  },
+  "pooled_n": {
+    "Healthy|control": 16,
+    "Patient|affected": 15,
+    "Patient|unaffected": 15
+  }
+}

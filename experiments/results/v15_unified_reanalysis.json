@@ -1,0 +1,666 @@
+{
+  "provenance": {
+    "time_axis": "capture_monotonic_s (distance_comparison.csv), Frame_ID·Hand 로 결합",
+    "excluded_columns": [
+      "Flex_Speed_deg_s",
+      "Ext_Speed_deg_s",
+      "Duration_s",
+      "Valid_Duration_s",
+      "Cycle_Period_s"
+    ],
+    "note": "앱 요약 속도열은 중복 시각 때문에 사용 불가(비장애 16/16 이 2,000도/초 초과). 집단 검정·치료효과 추론 없음. 시행 수준 기술통계만."
+  },
+  "sessions": {
+    "20260915_비장애인_test_26세_남": {
+      "meta": {
+        "group": "Healthy",
+        "age": 26,
+        "affected": null,
+        "meta_fps": 16.933905014606836,
+        "frames_written": 1825
+      },
+      "hands": {
+        "Left": {
+          "side_role": "n/a",
+          "n_trials": 8,
+          "trials": [
+            {
+              "trial": "Trial_1",
+              "n_frames": 133,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.052201500000592205,
+              "fps_from_mono": 19.15653764716829,
+              "vmax_dps": 386.22396722501685,
+              "v_p95_dps": 212.8818778014705,
+              "sparc": -7.548760013761768,
+              "sparc_status": "ok",
+              "sparc_fs": 19.03045489987695
+            },
+            {
+              "trial": "Trial_2",
+              "n_frames": 116,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.054093000002467306,
+              "fps_from_mono": 18.486680345966903,
+              "vmax_dps": 389.51225098114134,
+              "v_p95_dps": 194.14669252806397,
+              "sparc": -7.041654514294448,
+              "sparc_status": "ok",
+              "sparc_fs": 18.43496611230736
+            },
+            {
+              "trial": "Trial_3",
+              "n_frames": 125,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.05456000000049244,
+              "fps_from_mono": 18.32844574763516,
+              "vmax_dps": 329.80091167795126,
+              "v_p95_dps": 173.53935567309136,
+              "sparc": -8.457932745773222,
+              "sparc_status": "ok",
+              "sparc_fs": 18.23138400645382
+            },
+            {
+              "trial": "Trial_4",
+              "n_frames": 129,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.05257699999856413,
+              "fps_from_mono": 19.019723453740415,
+              "vmax_dps": 427.98677427583476,
+              "v_p95_dps": 213.4792904261251,
+              "sparc": -8.430853297416213,
+              "sparc_status": "ok",
+              "sparc_fs": 18.91330168593943
+            },
+            {
+              "trial": "Trial_5",
+              "n_frames": 132,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.05257200000050943,
+              "fps_from_mono": 19.021532374463778,
+              "vmax_dps": 331.9986653516121,
+              "v_p95_dps": 218.41958009450002,
+              "sparc": -7.098061003392029,
+              "sparc_status": "ok",
+              "sparc_fs": 18.997538907865763
+            },
+            {
+              "trial": "Trial_6",
+              "n_frames": 128,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.053133000001253095,
+              "fps_from_mono": 18.820695236038166,
+              "vmax_dps": 350.8735440896609,
+              "v_p95_dps": 178.75445347558613,
+              "sparc": -6.323583149122836,
+              "sparc_status": "ok",
+              "sparc_fs": 18.712278746144186
+            },
+            {
+              "trial": "Trial_7",
+              "n_frames": 99,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.05329549999987648,
+              "fps_from_mono": 18.76331022323306,
+              "vmax_dps": 368.64952119288216,
+              "v_p95_dps": 235.67469896276592,
+              "sparc": -5.727028787459446,
+              "sparc_status": "ok",
+              "sparc_fs": 18.606597995060085
+            },
+            {
+              "trial": "Trial_8",
+              "n_frames": 106,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.055347000001347624,
+              "fps_from_mono": 18.06782662069582,
+              "vmax_dps": 296.0697293223891,
+              "v_p95_dps": 141.7990483814456,
+              "sparc": -5.565061529610567,
+              "sparc_status": "ok",
+              "sparc_fs": 17.959690843708703
+            }
+          ],
+          "median_fps_from_mono": 18.792002729635612,
+          "median_vmax_dps": 359.7615326412715,
+          "median_v_p95_dps": 203.51428516476722,
+          "median_sparc": -7.069857758843239,
+          "n_nonpos_dt_total": 0
+        },
+        "Right": {
+          "side_role": "n/a",
+          "n_trials": 8,
+          "trials": [
+            {
+              "trial": "Trial_1",
+              "n_frames": 131,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.052290999998149346,
+              "fps_from_mono": 19.12374978553463,
+              "vmax_dps": 380.46261522773773,
+              "v_p95_dps": 254.44543474532412,
+              "sparc": -7.3446229342932146,
+              "sparc_status": "ok",
+              "sparc_fs": 19.03045489987695
+            },
+            {
+              "trial": "Trial_2",
+              "n_frames": 121,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.054360000000087894,
+              "fps_from_mono": 18.395879323001896,
+              "vmax_dps": 388.4807026581465,
+              "v_p95_dps": 289.1178696635999,
+              "sparc": -9.006774257615517,
+              "sparc_status": "ok",
+              "sparc_fs": 18.27315331642833
+            },
+            {
+              "trial": "Trial_3",
+              "n_frames": 124,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.05440199999793549,
+              "fps_from_mono": 18.381677144920207,
+              "vmax_dps": 370.057376703884,
+              "v_p95_dps": 287.75084413767314,
+              "sparc": -7.833008073201201,
+              "sparc_status": "ok",
+              "sparc_fs": 18.363495484761454
+            },
+            {
+              "trial": "Trial_4",
+              "n_frames": 130,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.05259899999873596,
+              "fps_from_mono": 19.01176828502503,
+              "vmax_dps": 401.5260491704557,
+              "v_p95_dps": 201.3364711032743,
+              "sparc": -8.312679459461036,
+              "sparc_status": "ok",
+              "sparc_fs": 18.91330168593943
+            },
+            {
+              "trial": "Trial_5",
+              "n_frames": 131,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.052513500000713975,
+              "fps_from_mono": 19.042722347327906,
+              "vmax_dps": 374.3728290192872,
+              "v_p95_dps": 280.8246305742284,
+              "sparc": -9.838092075291161,
+              "sparc_status": "ok",
+              "sparc_fs": 18.997538907865763
+            },
+            {
+              "trial": "Trial_6",
+              "n_frames": 124,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.053133000001253095,
+              "fps_from_mono": 18.820695236038166,
+              "vmax_dps": 401.4452790900376,
+              "v_p95_dps": 267.7658145184925,
+              "sparc": -8.467067501820178,
+              "sparc_status": "ok",
+              "sparc_fs": 18.712278746144186
+            },
+            {
+              "trial": "Trial_7",
+              "n_frames": 97,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.05356249999749707,
+              "fps_from_mono": 18.669778297255153,
+              "vmax_dps": 374.3423261956447,
+              "v_p95_dps": 292.72842502854036,
+              "sparc": -5.617144158669465,
+              "sparc_status": "ok",
+              "sparc_fs": 18.606597995060085
+            },
+            {
+              "trial": "Trial_8",
+              "n_frames": 105,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.055521000000226195,
+              "fps_from_mono": 18.01120296817287,
+              "vmax_dps": 356.8429890887678,
+              "v_p95_dps": 230.3158781177377,
+              "sparc": -7.542747250762266,
+              "sparc_status": "ok",
+              "sparc_fs": 17.959690843708703
+            }
+          ],
+          "median_fps_from_mono": 18.74523676664666,
+          "median_vmax_dps": 377.4177221235125,
+          "median_v_p95_dps": 274.2952225463605,
+          "median_sparc": -8.072843766331118,
+          "n_nonpos_dt_total": 0
+        }
+      }
+    },
+    "20260929_환자_권미사_62세_여_FMA11_BRS1 - 복사본": {
+      "meta": {
+        "group": "Patient",
+        "age": 62,
+        "affected": "좌측 (Left Hand)",
+        "meta_fps": 23.054565702458536,
+        "frames_written": 33038
+      },
+      "hands": {
+        "Left": {
+          "side_role": "affected",
+          "n_trials": 7,
+          "trials": [
+            {
+              "trial": "Trial_1",
+              "n_frames": 135,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07755049999104813,
+              "fps_from_mono": 12.894823374645332,
+              "vmax_dps": 246.692885170766,
+              "v_p95_dps": 76.98538733145095,
+              "sparc": -23.16416810698621,
+              "sparc_status": "ok",
+              "sparc_fs": 12.860367862057169
+            },
+            {
+              "trial": "Trial_2",
+              "n_frames": 91,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.06862599999294616,
+              "fps_from_mono": 14.571736661072869,
+              "vmax_dps": 260.7034349181467,
+              "v_p95_dps": 118.7514381040295,
+              "sparc": -8.366662748934953,
+              "sparc_status": "ok",
+              "sparc_fs": 14.471625711992962
+            },
+            {
+              "trial": "Trial_3",
+              "n_frames": 66,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07162399997469038,
+              "fps_from_mono": 13.96180051872791,
+              "vmax_dps": 258.3756416687958,
+              "v_p95_dps": 200.9702479765608,
+              "sparc": -7.624256531590872,
+              "sparc_status": "ok",
+              "sparc_fs": 13.943072657255438
+            },
+            {
+              "trial": "Trial_4",
+              "n_frames": 55,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07527450000634417,
+              "fps_from_mono": 13.284711288892249,
+              "vmax_dps": 255.6594059796088,
+              "v_p95_dps": 172.85226902399114,
+              "sparc": -7.5353585023118175,
+              "sparc_status": "ok",
+              "sparc_fs": 13.078850051496573
+            },
+            {
+              "trial": "Trial_6",
+              "n_frames": 67,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07600000000093132,
+              "fps_from_mono": 13.157894736680865,
+              "vmax_dps": 224.6058261135393,
+              "v_p95_dps": 160.3417050043784,
+              "sparc": -8.755580539336108,
+              "sparc_status": "ok",
+              "sparc_fs": 13.145250572584608
+            },
+            {
+              "trial": "Trial_7",
+              "n_frames": 65,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07736699999077246,
+              "fps_from_mono": 12.92540747501221,
+              "vmax_dps": 297.6699796101357,
+              "v_p95_dps": 198.2457973411364,
+              "sparc": -8.379578028891432,
+              "sparc_status": "ok",
+              "sparc_fs": 12.804859069733181
+            },
+            {
+              "trial": "Trial_8",
+              "n_frames": 65,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07971200000611134,
+              "fps_from_mono": 12.545162584345297,
+              "vmax_dps": 297.01069290174104,
+              "v_p95_dps": 206.97481121135252,
+              "sparc": -8.405244619396928,
+              "sparc_status": "ok",
+              "sparc_fs": 12.526887035786121
+            }
+          ],
+          "median_fps_from_mono": 13.157894736680865,
+          "median_vmax_dps": 258.3756416687958,
+          "median_v_p95_dps": 172.85226902399114,
+          "median_sparc": -8.379578028891432,
+          "n_nonpos_dt_total": 0
+        },
+        "Right": {
+          "side_role": "unaffected",
+          "n_trials": 7,
+          "trials": [
+            {
+              "trial": "Trial_1",
+              "n_frames": 135,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07755049999104813,
+              "fps_from_mono": 12.894823374645332,
+              "vmax_dps": 275.29495881375334,
+              "v_p95_dps": 179.25147958265825,
+              "sparc": -18.89960529930542,
+              "sparc_status": "ok",
+              "sparc_fs": 12.860367862057169
+            },
+            {
+              "trial": "Trial_2",
+              "n_frames": 91,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.06862599999294616,
+              "fps_from_mono": 14.571736661072869,
+              "vmax_dps": 298.3983729404255,
+              "v_p95_dps": 186.1457622187531,
+              "sparc": -9.42489497027004,
+              "sparc_status": "ok",
+              "sparc_fs": 14.471625711992962
+            },
+            {
+              "trial": "Trial_3",
+              "n_frames": 66,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07162399997469038,
+              "fps_from_mono": 13.96180051872791,
+              "vmax_dps": 272.94197505242255,
+              "v_p95_dps": 182.98873409628584,
+              "sparc": -5.6961564862900715,
+              "sparc_status": "ok",
+              "sparc_fs": 13.943072657255438
+            },
+            {
+              "trial": "Trial_4",
+              "n_frames": 55,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07527450000634417,
+              "fps_from_mono": 13.284711288892249,
+              "vmax_dps": 259.1635096930725,
+              "v_p95_dps": 227.50591706646316,
+              "sparc": -10.01744118035577,
+              "sparc_status": "ok",
+              "sparc_fs": 13.078850051496573
+            },
+            {
+              "trial": "Trial_6",
+              "n_frames": 67,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07600000000093132,
+              "fps_from_mono": 13.157894736680865,
+              "vmax_dps": 344.78941828789374,
+              "v_p95_dps": 209.27799158751807,
+              "sparc": -12.776228653747015,
+              "sparc_status": "ok",
+              "sparc_fs": 13.145250572584608
+            },
+            {
+              "trial": "Trial_7",
+              "n_frames": 65,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07736699999077246,
+              "fps_from_mono": 12.92540747501221,
+              "vmax_dps": 270.8841481989895,
+              "v_p95_dps": 225.11770908184366,
+              "sparc": -9.986320508500983,
+              "sparc_status": "ok",
+              "sparc_fs": 12.804859069733181
+            },
+            {
+              "trial": "Trial_8",
+              "n_frames": 65,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07971200000611134,
+              "fps_from_mono": 12.545162584345297,
+              "vmax_dps": 256.07870335045214,
+              "v_p95_dps": 201.32980824409734,
+              "sparc": -9.230338337036823,
+              "sparc_status": "ok",
+              "sparc_fs": 12.526887035786121
+            }
+          ],
+          "median_fps_from_mono": 13.157894736680865,
+          "median_vmax_dps": 272.94197505242255,
+          "median_v_p95_dps": 201.32980824409734,
+          "median_sparc": -9.986320508500983,
+          "n_nonpos_dt_total": 0
+        }
+      }
+    },
+    "20260929_환자_권미사애프터_62세_여_FMA11_BRS1 - 복사본": {
+      "meta": {
+        "group": "Patient",
+        "age": 62,
+        "affected": "좌측 (Left Hand)",
+        "meta_fps": 13.377130815672016,
+        "frames_written": 1031
+      },
+      "hands": {
+        "Left": {
+          "side_role": "affected",
+          "n_trials": 8,
+          "trials": [
+            {
+              "trial": "Trial_1",
+              "n_frames": 74,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07409500004723668,
+              "fps_from_mono": 13.496187318476077,
+              "vmax_dps": 260.28964548757585,
+              "v_p95_dps": 227.78998305740686,
+              "sparc": -8.650156798837259,
+              "sparc_status": "ok",
+              "sparc_fs": 13.340858763541013
+            },
+            {
+              "trial": "Trial_2",
+              "n_frames": 50,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07032900000922382,
+              "fps_from_mono": 14.218885521887808,
+              "vmax_dps": 321.7033460903751,
+              "v_p95_dps": 253.35038720941972,
+              "sparc": -9.016377644409085,
+              "sparc_status": "ok",
+              "sparc_fs": 14.21140503514169
+            },
+            {
+              "trial": "Trial_4",
+              "n_frames": 62,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07057499996153638,
+              "fps_from_mono": 14.169323422529274,
+              "vmax_dps": 300.72848409372335,
+              "v_p95_dps": 251.97356345027316,
+              "sparc": -8.991662357698052,
+              "sparc_status": "ok",
+              "sparc_fs": 14.006168587760294
+            },
+            {
+              "trial": "Trial_5",
+              "n_frames": 51,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.06998749999911524,
+              "fps_from_mono": 14.288265761923796,
+              "vmax_dps": 298.272255754959,
+              "v_p95_dps": 255.2751203047344,
+              "sparc": -8.98514379916993,
+              "sparc_status": "ok",
+              "sparc_fs": 14.194448660349119
+            },
+            {
+              "trial": "Trial_6",
+              "n_frames": 73,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.06911449998733588,
+              "fps_from_mono": 14.468743898649834,
+              "vmax_dps": 302.969096957497,
+              "v_p95_dps": 219.67707358177515,
+              "sparc": -10.275955653937206,
+              "sparc_status": "ok",
+              "sparc_fs": 14.323492839018911
+            },
+            {
+              "trial": "Trial_7",
+              "n_frames": 62,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07343499996932223,
+              "fps_from_mono": 13.617484856236862,
+              "vmax_dps": 304.38754161988606,
+              "v_p95_dps": 252.43853423641445,
+              "sparc": -9.293608950762474,
+              "sparc_status": "ok",
+              "sparc_fs": 13.531389221910938
+            },
+            {
+              "trial": "Trial_8",
+              "n_frames": 52,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.09556600003270432,
+              "fps_from_mono": 10.463972538955097,
+              "vmax_dps": 276.4266859769274,
+              "v_p95_dps": 234.669154622457,
+              "sparc": -8.172416200689693,
+              "sparc_status": "ok",
+              "sparc_fs": 10.360008213308204
+            },
+            {
+              "trial": "Trial_9",
+              "n_frames": 69,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.06639700001687743,
+              "fps_from_mono": 15.060921423344585,
+              "vmax_dps": 301.9830856113627,
+              "v_p95_dps": 208.79628108080922,
+              "sparc": -9.119538667072277,
+              "sparc_status": "ok",
+              "sparc_fs": 14.970580700475729
+            }
+          ],
+          "median_fps_from_mono": 14.19410447220854,
+          "median_vmax_dps": 301.355784852543,
+          "median_v_p95_dps": 243.3213590363651,
+          "median_sparc": -9.004020001053568,
+          "n_nonpos_dt_total": 0
+        },
+        "Right": {
+          "side_role": "unaffected",
+          "n_trials": 8,
+          "trials": [
+            {
+              "trial": "Trial_1",
+              "n_frames": 74,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07409500004723668,
+              "fps_from_mono": 13.496187318476077,
+              "vmax_dps": 287.685060601982,
+              "v_p95_dps": 229.00088454434993,
+              "sparc": -10.461026302318176,
+              "sparc_status": "ok",
+              "sparc_fs": 13.340858763541013
+            },
+            {
+              "trial": "Trial_2",
+              "n_frames": 50,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07032900000922382,
+              "fps_from_mono": 14.218885521887808,
+              "vmax_dps": 349.43639316713126,
+              "v_p95_dps": 254.93826262231008,
+              "sparc": -9.742198788722206,
+              "sparc_status": "ok",
+              "sparc_fs": 14.21140503514169
+            },
+            {
+              "trial": "Trial_4",
+              "n_frames": 62,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07057499996153638,
+              "fps_from_mono": 14.169323422529274,
+              "vmax_dps": 323.97408207297,
+              "v_p95_dps": 240.53644233402866,
+              "sparc": -9.73859519386508,
+              "sparc_status": "ok",
+              "sparc_fs": 14.006168587760294
+            },
+            {
+              "trial": "Trial_5",
+              "n_frames": 51,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.06998749999911524,
+              "fps_from_mono": 14.288265761923796,
+              "vmax_dps": 281.1065524063363,
+              "v_p95_dps": 266.21749729957355,
+              "sparc": -9.775945589774208,
+              "sparc_status": "ok",
+              "sparc_fs": 14.194448660349119
+            },
+            {
+              "trial": "Trial_6",
+              "n_frames": 73,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.06911449998733588,
+              "fps_from_mono": 14.468743898649834,
+              "vmax_dps": 313.8449106944333,
+              "v_p95_dps": 234.49035000521187,
+              "sparc": -12.36116196978798,
+              "sparc_status": "ok",
+              "sparc_fs": 14.323492839018911
+            },
+            {
+              "trial": "Trial_7",
+              "n_frames": 62,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.07343499996932223,
+              "fps_from_mono": 13.617484856236862,
+              "vmax_dps": 307.5884086652769,
+              "v_p95_dps": 241.3578324501798,
+              "sparc": -9.104133762303155,
+              "sparc_status": "ok",
+              "sparc_fs": 13.531389221910938
+            },
+            {
+              "trial": "Trial_8",
+              "n_frames": 52,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.09556600003270432,
+              "fps_from_mono": 10.463972538955097,
+              "vmax_dps": 279.37452266693845,
+              "v_p95_dps": 232.95478218534788,
+              "sparc": -9.238567502572351,
+              "sparc_status": "ok",
+              "sparc_fs": 10.360008213308204
+            },
+            {
+              "trial": "Trial_9",
+              "n_frames": 69,
+              "n_nonpos_dt": 0,
+              "median_dt_s": 0.06639700001687743,
+              "fps_from_mono": 15.060921423344585,
+              "vmax_dps": 280.111207473806,
+              "v_p95_dps": 227.31188796160643,
+              "sparc": -8.85510643582252,
+              "sparc_status": "ok",
+              "sparc_fs": 14.970580700475729
+            }
+          ],
+          "median_fps_from_mono": 14.19410447220854,
+          "median_vmax_dps": 297.63673463362943,
+          "median_v_p95_dps": 237.51339616962025,
+          "median_sparc": -9.740396991293643,
+          "n_nonpos_dt_total": 0
+        }
+      }
+    }
+  }
+}
