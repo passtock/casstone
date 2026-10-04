@@ -1,0 +1,32 @@
+{
+  "id": "session-20261004133520-805af0",
+  "projectId": "interdisciplinary-evidence-map",
+  "title": "Interdisciplinary evidence map",
+  "createdAt": "2026-10-04T13:35:20.111Z",
+  "updatedAt": "2026-10-04T13:35:20.634Z",
+  "status": "complete",
+  "config": {
+    "delegation": false,
+    "autoReview": false,
+    "memory": true,
+    "specialist": "verifier",
+    "compute": "off",
+    "model": ""
+  },
+  "piSession": {
+    "id": "feynman-workbench-session-20261004133520-805af0",
+    "status": "pending",
+    "messageCount": 0,
+    "userMessages": 0,
+    "assistantMessages": 0,
+    "toolResults": 0,
+    "toolCalls": 0,
+    "bashExecutions": 0,
+    "customMessages": 0,
+    "branchCount": 0,
+    "timeline": [],
+    "tools": []
+  },
+  "attachments": [],
+  "messages": []
+}
