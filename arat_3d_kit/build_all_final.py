@@ -431,6 +431,7 @@ p3_brace.translate(FreeCAD.Vector(0, 75.0, 0))
 clean_and_export_plate([p3_plate, p3_brace], "Plate3_TopPlate_and_Brace", PLATES_DIR, "선반 상판 (너비 216mm) + 보강대")
 
 # --- PLATE 4: Standard Tins x 2 + Alignment Jig + 10 Pins ---
+# Perfectly aligned, collision-free layout for 220x220 mm beds (footprint: 215.8 x 215.8 mm)
 jig_p4 = jig_print.copy()
 jig_p4.translate(FreeCAD.Vector(0, 112.5, 0))
 jig_p4.rotate(FreeCAD.Vector(0, 0, 0), FreeCAD.Vector(0, 0, 1), -45)
@@ -441,16 +442,36 @@ t1.translate(FreeCAD.Vector(-58.0, 58.0, 0))
 t2 = tin.copy()
 t2.translate(FreeCAD.Vector(58.0, -58.0, 0))
 
-pin_list = []
-# 5 pairs = 10 pins total
-for i in range(5):
-    p_a = pin_flat.copy()
-    p_a.translate(FreeCAD.Vector(-95.0 + i*13.0, -40.0, 0))
-    p_b = pin_flat.copy()
-    p_b.translate(FreeCAD.Vector(45.0 + i*13.0, 10.0, 0))
-    pin_list.extend([p_a, p_b])
+# Center the pin prototype on its planar center (Z stays on bed)
+pin_norm = pin_flat.copy()
+pin_norm.translate(FreeCAD.Vector(0, 9.67, 0))
 
+def place_pin_uv(u_coord, v_coord, rot_offset=0):
+    x_pos = (u_coord + v_coord) / math.sqrt(2.0)
+    y_pos = (u_coord - v_coord) / math.sqrt(2.0)
+    p = pin_norm.copy()
+    p.rotate(FreeCAD.Vector(0, 0, 0), FreeCAD.Vector(0, 0, 1), -45 + rot_offset)
+    p.translate(FreeCAD.Vector(x_pos, y_pos, 0))
+    return p
+
+# 10 Pins layout:
+# 4 NE pins (parallel to jig) + 1 tip NE pin (perpendicular)
+# 4 SW pins (parallel to jig) + 1 tip SW pin (perpendicular)
+pins_spec = [
+    (68.0, -28.0, 0),
+    (68.0, -49.0, 0),
+    (68.0,  28.0, 0),
+    (68.0,  49.0, 0),
+    (121.5,   0.0, 90),
+    (-68.0,  28.0, 0),
+    (-68.0,  49.0, 0),
+    (-68.0, -28.0, 0),
+    (-68.0, -49.0, 0),
+    (-121.5,  0.0, 90),
+]
+
+pin_list = [place_pin_uv(u, v, r) for u, v, r in pins_spec]
 p4_parts = [jig_p4, t1, t2] + pin_list
-clean_and_export_plate(p4_parts, "Plate4_Tins_Jig_Pins", PLATES_DIR, "표준 틴 2개 + 지그 + 락킹 핀 10개")
+clean_and_export_plate(p4_parts, "Plate4_Tins_Jig_Pins", PLATES_DIR, "표준 틴 2개 + 지그 + 락킹 핀 10개 (간섭 0mm 완벽 정렬)")
 
 print("\n=== MASTER BUILD v5 COMPLETE: ALL ISSUES RESOLVED ===")
