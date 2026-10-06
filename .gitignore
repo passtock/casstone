@@ -4,3 +4,5 @@ scratch/
 *미리보기*/
 __pycache__/
 *.pyc
+
+machineartlab/
