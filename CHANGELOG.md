@@ -3244,3 +3244,25 @@ E1 시행 단위를 창으로 정의(48→24, 군집 처리) · E2 비환측 대
 **결정 요청 5개:** ①5초 정보 처리 ②T3 유지/교체 ③몸통 정답(등받이 센서) ④T2 손가락 지표 ⑤컴퓨트 경로.
 
 **정직:** 이 문서는 문제 목록 + 제안이며, **계획서·코드를 수정하지 않았다.** 반영 시 계획서 해시가 갱신된다.
+
+## 2026-10-08 — 조사문헌 아틀라스 v2→v3 확장 (사용자 지시: `rgbd-grasp-vlm-protocol-analysis.md`)
+
+**요청(원문):** "이거 파일 이미 있는것도 쉬운설명 더 자세하게 추가해주고 논문들도 fma, arat 편마비 정상인의 파지분석 이런것들 더 넓게 가져가서 조사한것들을 추가해줘."
+
+**대상 파일:** `outputs/01-조사문헌/rgbd-grasp-vlm-protocol-analysis.md` (**1,390 → 2,270줄**, v2→v3)
+
+**변경 1 — 쉬운 설명 심화(기존 항목 보강):**
+- **§0-4 신설** 「심화 해설 — 왜 이 숫자가 중요한가」 총 **16개 소절**(0-4-1~0-4-16): FMA vs ARAT 정보중복 · 바닥/천장효과 · ICC vs r · MDC vs MCID · **서열척도 합산 함정(Geed 2021)** · SPARC · PAp/TPAp/TAPV · 체간보상 · 정상 파지 차원(2 vs 12) · 개인 고유성 · 무마커 지표별 표 · **96 mm vs 15 mm 구슬** · VLM flatlining · 지식증강 임계값 · LOSO vs hold-out · 회복 2단계 이론.
+- 헤더에 **v3 확장 범위·검증 원칙** 명시.
+
+**변경 2 — 논문 범위 확대(신규 34편, 총 80편+).** 모두 **PubMed E-utilities(efetch 초록) · Crossref · OpenAlex로 서지·초록 직접 확인**:
+- **§A(임상계량학) A-6~A-19:** Fugl-Meyer 1975 · Lyle 1981 · Gladstone 2002 · Platz 2005 · Woodbury 2007 · Chen 2012 · Geed 2021(ICARE) · van der Lee 2001 · Rabadi 2006 · Beebe&Lang 2009 · Lundquist 2017 · Huynh 2023 · Thrane 2019 · CAULIN 2021
+- **§B(편마비·보상) B-12~B-18:** Cirstea&Levin 2000 · Levin 2002 · Michaelsen 2004 · Lang 2006 · Jo 2016 · Balasubramanian 2015 · Alt Murphy 2013
+- **§C(자동채점) C-9~C-11:** Weikert 2025 · Cai 2020 · Zhi 2017
+- **§E(정상 파지 기초) E-5~E-14:** Jeannerod 1984 · Jakobson&Goodale 1991 · Santello 1998/2002 · Mason 2001 · Gracia-Ibáñez 2020 · Feix 2016 · Stival 2019 · Pratap 2024 · Smeets&Brenner 1999
+- **§F(데이터셋) F-9:** Lucchetti 2025
+- **§2 비교표**에 신규 행 추가, **§3-1 공백 ⑧⑨⑩ 추가**(서열왜곡·고령 참조 부재·카메라 보상검출 synthetic→real), **§3-3 금지주장 6개 추가**, **§3-4 착수순서 7~9 추가**, **Sources 48–82 추가**, **미명시 표 확장**.
+
+**핵심 신규 발견(정직):** ① FMA-UE 만점자도 운동학 결손(Thrane 2019) ② FMA/ARAT 총점 서열 왜곡이 최대 8.4점(Geed 2021) ③ 카메라 보상검출 **건강인 F1 0.82 → 뇌졸중 0.17**(Zhi 2017) vs 압력센서 F1>0.95(Cai 2020) ④ 정상 파지 참조값이 **≤50세·평균 26–29세**로 고령 부재(Gracia-Ibáñez 2020 등).
+
+**정직/한계:** 신규 논문 수치는 모두 **인용 논문 초록/원문 값**이며 우리 조건에서 재현된다고 주장하지 않는다. 확인 못 한 세부(Fugl-Meyer 1975 N, Lyle 1981 세부, Levin 2002/Lang 2006 N, Feix 33유형 목록)는 `미명시`/`미확인`으로 남겼다. **ARAT 항목 3·12 특화 Vicon 대조, RGB-D SPARC/TAPV 타당도 검증은 여전히 0편**(공백 유지). 계획서·코드는 수정하지 않았다.

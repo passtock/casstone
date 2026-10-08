@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARAT & 책상 기하 기반 카메라(D455) 시야각(FOV) 시뮬레이터</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --card-bg: rgba(17, 24, 39, 0.85);
+      --card-border: rgba(56, 189, 248, 0.18);
+      --card-border-glow: rgba(56, 189, 248, 0.4);
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --accent-green: #10b981;
+      --accent-yellow: #f59e0b;
+      --accent-red: #f43f5e;
+      --accent-purple: #a855f7;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --panel-width: 440px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+    }
+
+    /* 3D Scene Viewports */
+    #viewport-container {
+      flex: 1;
+      position: relative;
+      height: 100%;
+      background: #020617;
+    }
+
+    #threejs-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Camera Sensor PiP Window (What camera sees) */
+    #camera-pip-window {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      width: 460px;
+      height: 275px; /* ~16:9 aspect + header */
+      background: rgba(11, 15, 25, 0.94);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border-glow);
+      border-radius: 12px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 24px rgba(56, 189, 248, 0.15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 20;
+      transition: all 0.25s ease;
+    }
+
+    #camera-pip-window.expanded {
+      width: 720px;
+      height: 440px;
+    }
+
+    .pip-header {
+      height: 36px;
+      background: rgba(15, 23, 42, 0.95);
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .pip-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pip-badge {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--primary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .pip-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .pip-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-main);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .pip-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--primary);
+    }
+
+    .pip-body {
+      flex: 1;
+      position: relative;
+      background: #000;
+      overflow: hidden;
+    }
+
+    #camera-sensor-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* 2D HUD on Sensor View */
+    #sensor-hud {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    /* Overlays & Alerts on Main View */
+    .viewport-overlay-top {
+      position: absolute;
+      top: 20px;
+      left: 24px;
+      display: flex;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .status-pill {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--card-border);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+    }
+
+    .status-dot.warn {
+      background: var(--accent-yellow);
+      box-shadow: 0 0 8px var(--accent-yellow);
+    }
+
+    .status-dot.danger {
+      background: var(--accent-red);
+      box-shadow: 0 0 8px var(--accent-red);
+    }
+
+    /* Min-Z Warning Banner */
+    #min-z-warning {
+      position: absolute;
+      top: 70px;
+      left: 24px;
+      background: rgba(244, 63, 94, 0.9);
+      border: 1px solid #fda4af;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 25px rgba(244, 63, 94, 0.4);
+      z-index: 15;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(0.99); }
+    }
+
+    /* Right Control Sidebar */
+    #control-sidebar {
+      width: var(--panel-width);
+      height: 100%;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border-left: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      z-index: 30;
+      scrollbar-width: thin;
+      scrollbar-color: #334155 transparent;
+    }
+
+    .sidebar-header {
+      padding: 20px 22px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .app-title {
+      font-size: 17px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+
+    .app-subtitle {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .section-group {
+      padding: 18px 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #7dd3fc;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Preset Quick Buttons */
+    .preset-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .preset-btn {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 10px 10px;
+      color: var(--text-main);
+      font-size: 11.5px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+      line-height: 1.3;
+    }
+
+    .preset-btn:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .preset-btn.active {
+      background: rgba(56, 189, 248, 0.25);
+      border-color: var(--primary);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .preset-desc {
+      font-size: 9.5px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      font-weight: normal;
+    }
+
+    /* Sliders */
+    .param-row {
+      margin-bottom: 12px;
+    }
+
+    .param-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .param-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #e2e8f0;
+    }
+
+    .param-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .slider-input {
+      width: 100%;
+      height: 5px;
+      border-radius: 3px;
+      background: #1e293b;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+      transition: transform 0.1s;
+    }
+
+    .slider-input::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    /* Checklist Table */
+    .checklist-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    .checklist-table th {
+      text-align: left;
+      color: var(--text-muted);
+      padding: 6px 4px;
+      font-weight: 600;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .checklist-table td {
+      padding: 7px 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .badge-status {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .badge-pass {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-green);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .badge-blind {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-yellow);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .badge-out {
+      background: rgba(244, 63, 94, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(244, 63, 94, 0.4);
+    }
+
+    /* Resolution Info Card */
+    .info-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 11.5px;
+      line-height: 1.5;
+    }
+
+    .info-metric {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .info-metric:last-child {
+      margin-bottom: 0;
+    }
+
+    .metric-name {
+      color: var(--text-muted);
+    }
+
+    .metric-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: #f8fafc;
+    }
+
+    /* Animation & Trajectory Control */
+    .anim-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .anim-btn {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .anim-btn:hover {
+      background: var(--primary);
+      color: #000;
+    }
+
+    /* Tooltip / Hint */
+    .legend-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 10.5px;
+      color: var(--text-muted);
+      margin-top: 10px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .legend-chip {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+  </style>
+  <!-- Three.js and OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+  <!-- Main Viewport Area -->
+  <div id="viewport-container">
+    <canvas id="threejs-canvas"></canvas>
+
+    <!-- Top Left Information Overlay -->
+    <div class="viewport-overlay-top">
+      <div class="status-pill">
+        <span class="status-dot" id="global-status-dot"></span>
+        <span id="global-status-text">시야각 분석 정상 (D455 RGB 90°×65°)</span>
+      </div>
+      <div class="status-pill">
+        <span style="color: var(--text-muted);">작업거리:</span>
+        <span id="overlay-dist-text" style="font-family:'JetBrains Mono'; font-weight:700; color:var(--primary);">0.85 m</span>
+      </div>
+      <div class="status-pill">
+        <span style="color: var(--text-muted);">센서 높이:</span>
+        <span id="overlay-height-text" style="font-family:'JetBrains Mono'; font-weight:700; color:#34d399;">+55 cm</span>
+      </div>
+    </div>
+
+    <!-- Minimum Z Blindspot Warning -->
+    <div id="min-z-warning">
+      <span>⚠️ <b>심도 데드존(Min-Z) 경고:</b> 신체 또는 선반이 카메라로부터 <b>52 cm</b> 이내로 접근했습니다! RealSense D455의 95mm 베이스라인 특성상 Depth가 누락(Blackout)됩니다. 거리를 0.65m 이상으로 확보하세요.</span>
+    </div>
+
+    <!-- Picture-in-Picture: Camera View (What D455 Sees) -->
+    <div id="camera-pip-window">
+      <div class="pip-header">
+        <div class="pip-title">
+          <span>● REAL-TIME CAMERA POV</span>
+          <span class="pip-badge">D455 COLOR (1280×720)</span>
+        </div>
+        <div class="pip-controls">
+          <button class="pip-btn" id="btn-toggle-grid">그리드</button>
+          <button class="pip-btn" id="btn-toggle-depth">심도모드</button>
+          <button class="pip-btn" id="btn-expand-pip">확대</button>
+        </div>
+      </div>
+      <div class="pip-body">
+        <canvas id="camera-sensor-canvas"></canvas>
+        <canvas id="sensor-hud"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Sidebar Controls -->
+  <div id="control-sidebar">
+    <div class="sidebar-header">
+      <div class="app-title">ARAT & 책상 시야각 시뮬레이터</div>
+      <div class="app-subtitle">
+        책상 76×49×75cm · 선반 37cm · 의자 46cm 규격 기반<br>
+        Intel RealSense D455 단일 카메라 위치 최적화
+      </div>
+    </div>
+
+    <!-- 1. Quick Presets -->
+    <div class="section-group">
+      <div class="section-title">
+        <span>추천 카메라 배치 프리셋</span>
+      </div>
+      <div class="preset-grid">
+        <button class="preset-btn active" id="preset-1" onclick="applyPreset(1)">
+          <div>권장 표준 세팅</div>
+          <div class="preset-desc">거리 0.85m · 전외측 38° · 높이 55cm (T1·T2 최적)</div>
+        </button>
+        <button class="preset-btn" id="preset-2" onclick="applyPreset(2)">
+          <div>전신·정수리 광각</div>
+          <div class="preset-desc">거리 1.10m · 전외측 42° · 높이 68cm (T3 무릎/머리)</div>
+        </button>
+        <button class="preset-btn" id="preset-3" onclick="applyPreset(3)">
+          <div>손/파지 고해상도</div>
+          <div class="preset-desc">거리 0.68m · 전외측 32° · 높이 46cm (Pinch 정밀)</div>
+        </button>
+        <button class="preset-btn" id="preset-4" onclick="applyPreset(4)">
+          <div>수직 준-탑다운</div>
+          <div class="preset-desc">거리 0.90m · 중앙 10° · 높이 88cm · 하향 55°</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- 2. Camera Parameters Slider -->
+    <div class="section-group">
+      <div class="section-title">
+        <span>카메라 6자유도 기하 파라미터</span>
+        <span style="font-size: 10px; color: var(--text-muted);">실시간 연동</span>
+      </div>
+
+      <!-- Distance -->
+      <div class="param-row">
+        <div class="param-header">
+          <span class="param-label">작업거리 (Distance)</span>
+          <span class="param-val" id="val-dist">0.85 m</span>
+        </div>
+        <input type="range" class="slider-input" id="slider-dist" min="0.50" max="1.50" step="0.01" value="0.85">
+      </div>
+
+      <!-- Azimuth Angle -->
+      <div class="param-row">
+        <div class="param-header">
+          <span class="param-label">전외측 편각 (Azimuth, θ)</span>
+          <span class="param-val" id="val-azimuth">+38° (환측)</span>
+        </div>
+        <input type="range" class="slider-input" id="slider-azimuth" min="-60" max="60" step="1" value="38">
+      </div>
+
+      <!-- Height above desk -->
+      <div class="param-row">
+        <div class="param-header">
+          <span class="param-label">탁자 위 카메라 높이 (Height)</span>
+          <span class="param-val" id="val-height">+55 cm</span>
+        </div>
+        <input type="range" class="slider-input" id="slider-height" min="20" max="110" step="1" value="55">
+      </div>
+
+      <!-- Downward Pitch Angle -->
+      <div class="param-row">
+        <div class="param-header">
+          <span class="param-label">하향 틸트 각도 (Pitch Tilt, φ)</span>
+          <span class="param-val" id="val-pitch">36°</span>
+        </div>
+        <input type="range" class="slider-input" id="slider-pitch" min="15" max="65" step="1" value="36">
+      </div>
+
+      <!-- Target Center Y -->
+      <div class="param-row">
+        <div class="param-header">
+          <span class="param-label">카메라 조준 중심 (Look-At Y)</span>
+          <span class="param-val" id="val-looky">+15 cm</span>
+        </div>
+        <input type="range" class="slider-input" id="slider-looky" min="0" max="35" step="1" value="15">
+      </div>
+
+      <!-- Sensor Spec Selection -->
+      <div class="param-row" style="margin-top: 14px;">
+        <div class="param-header">
+          <span class="param-label">센서 시야각(FOV) 프로파일</span>
+        </div>
+        <select id="sensor-profile" style="width:100%; background:#1e293b; border:1px solid #334155; color:#fff; padding:6px 10px; border-radius:6px; font-size:11.5px;">
+          <option value="d455_rgb" selected>Intel RealSense D455 RGB (H 90° × V 65°)</option>
+          <option value="d455_depth">Intel RealSense D455 Depth (H 86° × V 57°)</option>
+          <option value="d435">Intel RealSense D435 (H 69° × V 42°)</option>
+          <option value="webcam">표준 웹캠 1080p (H 70° × V 43°)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 3. Task & Dynamic Motion -->
+    <div class="section-group">
+      <div class="section-title">
+        <span>동적 과제 궤적 시뮬레이션</span>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="pip-btn" id="task-t1" style="flex:1; padding:6px 0;" onclick="selectTask('T1')">T1 (5cm 블록)</button>
+        <button class="pip-btn" id="task-t2" style="flex:1; padding:6px 0;" onclick="selectTask('T2')">T2 (구슬 뚜껑)</button>
+        <button class="pip-btn" id="task-t3" style="flex:1; padding:6px 0;" onclick="selectTask('T3')">T3 (정수리 손올리기)</button>
+      </div>
+      <div class="anim-bar">
+        <button class="anim-btn" id="btn-anim-play" onclick="toggleAnimation()">▶ 동작 재생</button>
+        <input type="range" class="slider-input" id="slider-anim-progress" min="0" max="100" value="0" style="flex:1;" oninput="onAnimProgress(this.value)">
+      </div>
+    </div>
+
+    <!-- 4. Clinical Visibility Checklist -->
+    <div class="section-group">
+      <div class="section-title">
+        <span>임상 필수 지점 관측 및 데드존 판정</span>
+        <span id="pass-ratio-badge" class="badge-status badge-pass">11 / 11 통과</span>
+      </div>
+      <table class="checklist-table">
+        <thead>
+          <tr>
+            <th>관측 랜드마크</th>
+            <th>필수과제</th>
+            <th>거리(Z)</th>
+            <th style="text-align:right;">화면 판정</th>
+          </tr>
+        </thead>
+        <tbody id="checklist-tbody">
+          <!-- Dynamically populated -->
+        </tbody>
+      </table>
+
+      <!-- Spatial Resolution Card -->
+      <div class="info-card">
+        <div class="info-metric">
+          <span class="metric-name">손바닥 가로 픽셀 해상도:</span>
+          <span class="metric-value" id="metric-hand-px">148 px (우수)</span>
+        </div>
+        <div class="info-metric">
+          <span class="metric-name">5cm 목재 블록 픽셀 폭:</span>
+          <span class="metric-value" id="metric-block-px">46 px (인식 가능)</span>
+        </div>
+        <div class="info-metric">
+          <span class="metric-name">1.6cm 유리구슬 픽셀 폭:</span>
+          <span class="metric-value" id="metric-marble-px">14 px (경계 주의)</span>
+        </div>
+        <div class="info-metric">
+          <span class="metric-name">최단 심도 거리 (Min Depth):</span>
+          <span class="metric-value" id="metric-min-depth">0.64 m (안전)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="section-group">
+      <div class="section-title"><span>시뮬레이션 범례</span></div>
+      <div class="legend-row">
+        <div class="legend-item"><div class="legend-chip" style="background:#10b981;"></div><span>화면 정상 포함</span></div>
+        <div class="legend-item"><div class="legend-chip" style="background:#f59e0b;"></div><span>심도 데드존 (&lt;52cm)</span></div>
+        <div class="legend-item"><div class="legend-chip" style="background:#f43f5e;"></div><span>화면 이탈 (잘림)</span></div>
+        <div class="legend-item"><div class="legend-chip" style="background:#38bdf8;"></div><span>카메라 FOV 절두체</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================================
+       ARAT & Desk 3D Geometry Simulation Engine
+       Coordinate System (meters):
+       - Origin (0,0,0): Desk Proximal Front Edge Center (Desk surface Z = 0)
+       - +X: Right (Patient's affected arm side)
+       - +Y: Forward (Towards ARAT shelf)
+       - +Z: Upward (Above desk surface)
+       ========================================================================= */
+
+    // Constants
+    const DESK_W = 0.76;       // 76 cm
+    const DESK_D = 0.49;       // 49 cm
+    const DESK_H = 0.75;       // 75 cm above floor (Floor Z = -0.75)
+    const SHELF_W = 0.22;      // 22 cm width
+    const SHELF_D = 0.15;      // 15 cm depth
+    const SHELF_H = 0.37;      // 37 cm height from desk
+    const SHELF_Y_START = 0.20;// 20 cm from desk front edge
+    const CHAIR_H = 0.46;      // 46 cm from floor -> Z = -0.29 from desk
+
+    const MIN_DEPTH_D455 = 0.52; // RealSense D455 Min-Z: 0.52m
+
+    // Landmark Definitions
+    const LANDMARKS = [
+      { id: "T1_block", name: "T1 시작 (5cm 블록)", pos: [0.15, 0.10, 0.025], task: "T1", isCrit: true },
+      { id: "T1_shelf", name: "T1 목표 (선반 37cm)", pos: [0.06, 0.25, 0.37 + 0.025], task: "T1", isCrit: true },
+      { id: "T2_lower_tin", name: "T2 시작 (하부 뚜껑 5cm)", pos: [-0.055, 0.095, 0.006], task: "T2", isCrit: true },
+      { id: "T2_upper_tin", name: "T2 목표 (선반 위 뚜껑)", pos: [-0.055, 0.246, 0.37 + 0.006], task: "T2", isCrit: true },
+      { id: "hand_rest", name: "환측 손 (대기/휴지)", pos: [0.15, 0.05, 0.05], task: "T1, T2", isCrit: true },
+      { id: "elbow", name: "환측 팔꿈치 (도달중)", pos: [0.22, -0.05, 0.22], task: "T1, T2", isCrit: false },
+      { id: "shoulder_r", name: "환측 어깨 (우측)", pos: [0.18, -0.25, 0.25], task: "전체", isCrit: true },
+      { id: "shoulder_l", name: "건측 어깨 (좌측)", pos: [-0.18, -0.25, 0.25], task: "전체", isCrit: false },
+      { id: "trunk", name: "체간 (등받이 접촉부)", pos: [0.00, -0.30, 0.12], task: "전체", isCrit: true },
+      { id: "head_top", name: "정수리 (T3 목표)", pos: [0.00, -0.25, 0.58], task: "T3", isCrit: true },
+      { id: "knee_r", name: "환측 무릎 (T3 시작)", pos: [0.12, -0.10, -0.25], task: "T3", isCrit: true }
+    ];
+
+    // FOV specs
+    const SENSOR_SPECS = {
+      "d455_rgb": { hfov: 90.0, vfov: 65.0, name: "D455 RGB (90°×65°)", resW: 1280, resH: 720 },
+      "d455_depth": { hfov: 86.0, vfov: 57.0, name: "D455 Depth (86°×57°)", resW: 1280, resH: 720 },
+      "d435": { hfov: 69.0, vfov: 42.0, name: "D435 (69°×42°)", resW: 1280, resH: 720 },
+      "webcam": { hfov: 70.0, vfov: 43.0, name: "웹캠 1080p (70°×43°)", resW: 1280, resH: 720 }
+    };
+
+    // Current State
+    let state = {
+      dist: 0.85,
+      azimuthDeg: 38.0,
+      heightCm: 55.0,
+      pitchDeg: 36.0,
+      lookYCm: 15.0,
+      sensor: "d455_rgb",
+      currentTask: "T1",
+      animProgress: 0,
+      isAnimating: false,
+      showGrid: true,
+      depthMode: false,
+      pipExpanded: false
+    };
+
+    // Three.js instances
+    let scene, cameraMain, rendererMain, controlsMain;
+    let cameraSim, rendererSim;
+    let frustumMesh, minDepthPlane, cameraBodyGroup;
+    let animatedHandMesh;
+
+    // DOM Elements
+    const canvasMain = document.getElementById("threejs-canvas");
+    const canvasSim = document.getElementById("camera-sensor-canvas");
+    const hudCanvas = document.getElementById("sensor-hud");
+    const hudCtx = hudCanvas.getContext("2d");
+
+    // Initialize Simulation
+    function init() {
+      initThreeScene();
+      initSimCamera();
+      buildLaboratoryEnvironment();
+      setupEventListeners();
+      updateCameraPosition();
+      animate();
+    }
+
+    function initThreeScene() {
+      // Main 3D Viewport
+      const container = document.getElementById("viewport-container");
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x060913);
+      scene.fog = new THREE.FogExp2(0x060913, 0.25);
+
+      cameraMain = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 20);
+      cameraMain.position.set(1.4, -1.2, 1.1);
+      cameraMain.up.set(0, 0, 1); // Z is UP
+
+      rendererMain = new THREE.WebGLRenderer({ canvas: canvasMain, antialias: true, alpha: true });
+      rendererMain.setSize(container.clientWidth, container.clientHeight);
+      rendererMain.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      rendererMain.shadowMap.enabled = true;
+
+      controlsMain = new THREE.OrbitControls(cameraMain, rendererMain.domElement);
+      controlsMain.target.set(0, 0.1, 0.2);
+      controlsMain.enableDamping = true;
+      controlsMain.dampingFactor = 0.05;
+      controlsMain.maxPolarAngle = Math.PI / 2 + 0.1;
+
+      // Lights
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+      scene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
+      dirLight.position.set(1.5, -1.0, 2.5);
+      dirLight.castShadow = true;
+      scene.add(dirLight);
+
+      const pointLight = new THREE.PointLight(0x38bdf8, 0.5, 5);
+      pointLight.position.set(-0.5, 0.5, 1.0);
+      scene.add(pointLight);
+
+      // Floor Grid
+      const grid = new THREE.GridHelper(3.0, 30, 0x1e293b, 0x0f172a);
+      grid.rotation.x = Math.PI / 2;
+      grid.position.z = -DESK_H;
+      scene.add(grid);
+
+      window.addEventListener('resize', onWindowResize);
+    }
+
+    function initSimCamera() {
+      // D455 Camera Sim
+      const spec = SENSOR_SPECS[state.sensor];
+      cameraSim = new THREE.PerspectiveCamera(spec.vfov, 16 / 9, 0.05, 10.0);
+      cameraSim.up.set(0, 0, 1);
+
+      const pipBody = document.querySelector(".pip-body");
+      rendererSim = new THREE.WebGLRenderer({ canvas: canvasSim, antialias: true });
+      rendererSim.setSize(pipBody.clientWidth, pipBody.clientHeight);
+      rendererSim.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      hudCanvas.width = pipBody.clientWidth;
+      hudCanvas.height = pipBody.clientHeight;
+    }
+
+    function buildLaboratoryEnvironment() {
+      // 1. Desk (76 x 49 x 75 cm)
+      const deskMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4, metalness: 0.1 });
+      const deskTopGeo = new THREE.BoxGeometry(DESK_W, DESK_D, 0.03);
+      const deskTop = new THREE.Mesh(deskTopGeo, deskMat);
+      deskTop.position.set(0, DESK_D / 2, -0.015);
+      scene.add(deskTop);
+
+      // Desk frame border highlight
+      const edgeGeo = new THREE.EdgesGeometry(deskTopGeo);
+      const edgeMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 1.5 });
+      const deskEdge = new THREE.LineSegments(edgeGeo, edgeMat);
+      deskTop.add(deskEdge);
+
+      // Desk Legs
+      const legMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7 });
+      const legGeo = new THREE.BoxGeometry(0.04, 0.04, DESK_H - 0.03);
+      const legX = DESK_W / 2 - 0.03;
+      const legY = [0.03, DESK_D - 0.03];
+      for (let x of [-legX, legX]) {
+        for (let y of legY) {
+          const leg = new THREE.Mesh(legGeo, legMat);
+          leg.position.set(x, y, -(DESK_H - 0.03) / 2 - 0.03);
+          scene.add(leg);
+        }
+      }
+
+      // 2. ARAT Shelf (37cm Height)
+      const shelfMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.3, metalness: 0.2 });
+      const shelfTopGeo = new THREE.BoxGeometry(SHELF_W, SHELF_D, 0.015);
+      const shelfTop = new THREE.Mesh(shelfTopGeo, shelfMat);
+      shelfTop.position.set(0, SHELF_Y_START + SHELF_D / 2, SHELF_H - 0.0075);
+      scene.add(shelfTop);
+
+      // Shelf Bilateral Tin Pockets (Left & Right 9cm circles)
+      const pocketMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+      const pocketGeo = new THREE.CylinderGeometry(0.046, 0.046, 0.003, 24);
+      pocketGeo.rotateX(Math.PI / 2);
+      const leftPocket = new THREE.Mesh(pocketGeo, pocketMat);
+      leftPocket.position.set(-0.055, SHELF_Y_START + 0.046, SHELF_H);
+      scene.add(leftPocket);
+      const rightPocket = new THREE.Mesh(pocketGeo, pocketMat);
+      rightPocket.position.set(0.055, SHELF_Y_START + 0.046, SHELF_H);
+      scene.add(rightPocket);
+
+      // Shelf Columns (37cm)
+      const colMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, metalness: 0.4 });
+      const colGeo = new THREE.BoxGeometry(0.03, 0.03, SHELF_H - 0.015);
+      for (let cx of [-0.07, 0.07]) {
+        const col = new THREE.Mesh(colGeo, colMat);
+        col.position.set(cx, SHELF_Y_START + SHELF_D / 2, (SHELF_H - 0.015) / 2);
+        scene.add(col);
+      }
+
+      // Base Feet
+      const footGeo = new THREE.BoxGeometry(0.05, 0.20, 0.012);
+      for (let cx of [-0.07, 0.07]) {
+        const foot = new THREE.Mesh(footGeo, colMat);
+        foot.position.set(cx, SHELF_Y_START + SHELF_D / 2, 0.006);
+        scene.add(foot);
+      }
+
+      // 3. ARAT Testing Objects
+      // T1: 5cm Wood Cube Block (Orange/Wood)
+      const blockMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.5 });
+      const blockGeo = new THREE.BoxGeometry(0.05, 0.05, 0.05);
+      const blockMesh = new THREE.Mesh(blockGeo, blockMat);
+      blockMesh.position.set(0.15, 0.10, 0.025);
+      scene.add(blockMesh);
+
+      // T2: Lower Tin Lid (9cm dia, 1.2cm h, Table +5cm from edge)
+      const tinMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.8, roughness: 0.2 });
+      const tinGeo = new THREE.CylinderGeometry(0.045, 0.045, 0.0125, 32);
+      tinGeo.rotateX(Math.PI / 2);
+      const lowerTin = new THREE.Mesh(tinGeo, tinMat);
+      lowerTin.position.set(-0.055, 0.095, 0.006);
+      scene.add(lowerTin);
+
+      // T2: Upper Tin Lid on Shelf Pocket
+      const upperTin = new THREE.Mesh(tinGeo, tinMat);
+      upperTin.position.set(-0.055, SHELF_Y_START + 0.046, SHELF_H + 0.006);
+      scene.add(upperTin);
+
+      // 4. Chair & Seated Patient Mannequin
+      buildPatientMannequin();
+
+      // 5. Camera Frustum & Tripod Representation
+      buildCameraFrustumVisualizer();
+
+      // 6. Dynamic Hand Model for Animation
+      const handMat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.3 });
+      const handGeo = new THREE.SphereGeometry(0.04, 16, 16);
+      animatedHandMesh = new THREE.Mesh(handGeo, handMat);
+      animatedHandMesh.position.set(0.15, 0.05, 0.05);
+      scene.add(animatedHandMesh);
+    }
+
+    function buildPatientMannequin() {
+      const skinMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.6 });
+      const clothMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.8 });
+
+      // Chair Seat (Z = -0.29)
+      const seatGeo = new THREE.BoxGeometry(0.44, 0.40, 0.04);
+      const seat = new THREE.Mesh(seatGeo, clothMat);
+      seat.position.set(0, -0.25, -0.31);
+      scene.add(seat);
+
+      // Chair Backrest
+      const backGeo = new THREE.BoxGeometry(0.40, 0.03, 0.50);
+      const back = new THREE.Mesh(backGeo, clothMat);
+      back.position.set(0, -0.42, -0.05);
+      scene.add(back);
+
+      // Torso / Spine
+      const torsoGeo = new THREE.CylinderGeometry(0.14, 0.12, 0.45, 16);
+      torsoGeo.rotateX(Math.PI / 2);
+      const torso = new THREE.Mesh(torsoGeo, clothMat);
+      torso.position.set(0, -0.28, 0.05);
+      scene.add(torso);
+
+      // Head
+      const headGeo = new THREE.SphereGeometry(0.10, 24, 24);
+      const head = new THREE.Mesh(headGeo, skinMat);
+      head.position.set(0, -0.25, 0.48);
+      scene.add(head);
+
+      // Vertex/Hat Point (T3 target)
+      const vertexGeo = new THREE.SphereGeometry(0.02, 12, 12);
+      const vertex = new THREE.Mesh(vertexGeo, new THREE.MeshBasicMaterial({ color: 0xf43f5e }));
+      vertex.position.set(0, -0.25, 0.58);
+      scene.add(vertex);
+
+      // Shoulders Bar
+      const shGeo = new THREE.CylinderGeometry(0.035, 0.035, 0.38, 12);
+      shGeo.rotateZ(Math.PI / 2);
+      const shoulders = new THREE.Mesh(shGeo, clothMat);
+      shoulders.position.set(0, -0.25, 0.25);
+      scene.add(shoulders);
+
+      // Knees (T3 start)
+      const kneeGeo = new THREE.SphereGeometry(0.045, 12, 12);
+      const rKnee = new THREE.Mesh(kneeGeo, clothMat);
+      rKnee.position.set(0.12, -0.10, -0.25);
+      scene.add(rKnee);
+      const lKnee = new THREE.Mesh(kneeGeo, clothMat);
+      lKnee.position.set(-0.12, -0.10, -0.25);
+      scene.add(lKnee);
+
+      // Arm Path Lines
+      const armCurve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(0.18, -0.25, 0.25), // Shoulder
+        new THREE.Vector3(0.22, -0.05, 0.22), // Elbow
+        new THREE.Vector3(0.15, 0.05, 0.05)   // Hand
+      ]);
+      const armGeo = new THREE.TubeGeometry(armCurve, 20, 0.03, 8, false);
+      const armMesh = new THREE.Mesh(armGeo, skinMat);
+      scene.add(armMesh);
+    }
+
+    function buildCameraFrustumVisualizer() {
+      cameraBodyGroup = new THREE.Group();
+
+      // D455 Camera Body (12.4 x 2.6 x 2.9 cm)
+      const camBodyGeo = new THREE.BoxGeometry(0.124, 0.029, 0.026);
+      const camBodyMat = new THREE.MeshStandardMaterial({ color: 0xef4444, metalness: 0.8, roughness: 0.2 });
+      const camBody = new THREE.Mesh(camBodyGeo, camBodyMat);
+      cameraBodyGroup.add(camBody);
+
+      // Lens L & R (95mm stereo baseline!)
+      const lensGeo = new THREE.CylinderGeometry(0.009, 0.009, 0.005, 16);
+      lensGeo.rotateX(Math.PI / 2);
+      const lensMat = new THREE.MeshBasicMaterial({ color: 0x111827 });
+      const lensL = new THREE.Mesh(lensGeo, lensMat);
+      lensL.position.set(-0.0475, 0.015, 0);
+      cameraBodyGroup.add(lensL);
+      const lensR = new THREE.Mesh(lensGeo, lensMat);
+      lensR.position.set(0.0475, 0.015, 0);
+      cameraBodyGroup.add(lensR);
+
+      // Frustum Wireframe Cone
+      const frustumLinesMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.65 });
+      const frustumGeo = new THREE.BufferGeometry();
+      frustumMesh = new THREE.LineSegments(frustumGeo, frustumLinesMat);
+      cameraBodyGroup.add(frustumMesh);
+
+      // Min-Depth Plane (0.52m Deadzone Warning Sheet)
+      const minDepthGeo = new THREE.PlaneGeometry(1, 1);
+      const minDepthMat = new THREE.MeshBasicMaterial({ color: 0xf43f5e, transparent: true, opacity: 0.15, side: THREE.DoubleSide });
+      minDepthPlane = new THREE.Mesh(minDepthGeo, minDepthMat);
+      cameraBodyGroup.add(minDepthPlane);
+
+      scene.add(cameraBodyGroup);
+    }
+
+    function updateCameraPosition() {
+      const radAzimuth = THREE.MathUtils.degToRad(state.azimuthDeg);
+      const radPitch = THREE.MathUtils.degToRad(state.pitchDeg);
+
+      // Spherical to Cartesian relative to look target
+      const lookTarget = new THREE.Vector3(0.05, state.lookYCm / 100, 0.18);
+
+      const d = state.dist;
+      // Cam Position:
+      // X: d * sin(azimuth)
+      // Y: -d * cos(azimuth) * cos(pitch) + lookTarget.y
+      // Z: state.heightCm / 100
+      const camX = d * Math.sin(radAzimuth);
+      const camY = -d * Math.cos(radAzimuth) * 0.7 + lookTarget.y - 0.2;
+      const camZ = state.heightCm / 100;
+
+      const camPos = new THREE.Vector3(camX, camY, camZ);
+      cameraSim.position.copy(camPos);
+      cameraSim.lookAt(lookTarget);
+      cameraSim.updateMatrixWorld();
+
+      // Update Camera Body Visualizer
+      cameraBodyGroup.position.copy(camPos);
+      cameraBodyGroup.lookAt(lookTarget);
+
+      // Update Frustum Geometry based on FOV
+      const spec = SENSOR_SPECS[state.sensor];
+      cameraSim.fov = spec.vfov;
+      cameraSim.aspect = 16 / 9;
+      cameraSim.updateProjectionMatrix();
+
+      updateFrustumMesh(spec.hfov, spec.vfov);
+      updateEvaluationAndHUD();
+    }
+
+    function updateFrustumMesh(hfovDeg, vfovDeg) {
+      const maxDist = 1.35;
+      const tanH = Math.tan(THREE.MathUtils.degToRad(hfovDeg / 2));
+      const tanV = Math.tan(THREE.MathUtils.degToRad(vfovDeg / 2));
+
+      // 4 corners at maxDist in camera local coords (looking along +Z or -Z)
+      // In Three.js default lookAt, forward is -Z
+      const xFar = tanH * maxDist;
+      const yFar = tanV * maxDist;
+      const zFar = -maxDist;
+
+      const p0 = [0, 0, 0];
+      const pTL = [-xFar,  yFar, zFar];
+      const pTR = [ xFar,  yFar, zFar];
+      const pBR = [ xFar, -yFar, zFar];
+      const pBL = [-xFar, -yFar, zFar];
+
+      const vertices = new Float32Array([
+        // 4 rays from origin
+        ...p0, ...pTL,
+        ...p0, ...pTR,
+        ...p0, ...pBR,
+        ...p0, ...pBL,
+        // Far rectangle
+        ...pTL, ...pTR,
+        ...pTR, ...pBR,
+        ...pBR, ...pBL,
+        ...pBL, ...pTL
+      ]);
+
+      frustumMesh.geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+
+      // Min Depth Plane (at z = -0.52m)
+      const xMin = tanH * MIN_DEPTH_D455;
+      const yMin = tanV * MIN_DEPTH_D455;
+      minDepthPlane.scale.set(xMin * 2, yMin * 2, 1);
+      minDepthPlane.position.set(0, 0, -MIN_DEPTH_D455);
+    }
+
+    function projectToScreen(worldPos) {
+      const v = new THREE.Vector3(...worldPos);
+      // Distance from camera plane
+      const camSpace = v.clone().applyMatrix4(cameraSim.matrixWorldInverse);
+      const zDepth = -camSpace.z; // positive in front
+
+      // Projected normalized device coordinates (-1 to 1)
+      v.project(cameraSim);
+
+      const inFov = (v.x >= -1.0 && v.x <= 1.0 && v.y >= -1.0 && v.y <= 1.0 && zDepth > 0);
+      const isMinZViolated = (zDepth > 0 && zDepth < MIN_DEPTH_D455);
+
+      return {
+        ndcX: v.x,
+        ndcY: v.y,
+        zDepth: zDepth,
+        inFov: inFov,
+        isMinZViolated: isMinZViolated,
+        // Screen pixel coordinates in HUD
+        pxX: ((v.x + 1) / 2) * hudCanvas.width,
+        pxY: ((-v.y + 1) / 2) * hudCanvas.height
+      };
+    }
+
+    function updateEvaluationAndHUD() {
+      hudCtx.clearRect(0, 0, hudCanvas.width, hudCanvas.height);
+
+      // Safe Margin Guidelines (10% inward)
+      if (state.showGrid) {
+        hudCtx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+        hudCtx.lineWidth = 1;
+        // Crosshair
+        hudCtx.beginPath();
+        hudCtx.moveTo(hudCanvas.width / 2, 0);
+        hudCtx.lineTo(hudCanvas.width / 2, hudCanvas.height);
+        hudCtx.moveTo(0, hudCanvas.height / 2);
+        hudCtx.lineTo(hudCanvas.width, hudCanvas.height / 2);
+        hudCtx.stroke();
+
+        // 10% Margin Box
+        hudCtx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+        hudCtx.setLineDash([4, 4]);
+        hudCtx.strokeRect(hudCanvas.width * 0.08, hudCanvas.height * 0.08, hudCanvas.width * 0.84, hudCanvas.height * 0.84);
+        hudCtx.setLineDash([]);
+      }
+
+      let passCount = 0;
+      let minDepthObserved = 99.0;
+      let minZViolatedGlobal = false;
+      const tbody = document.getElementById("checklist-tbody");
+      tbody.innerHTML = "";
+
+      LANDMARKS.forEach((lm) => {
+        const proj = projectToScreen(lm.pos);
+        if (proj.zDepth > 0 && proj.zDepth < minDepthObserved) {
+          minDepthObserved = proj.zDepth;
+        }
+        if (proj.isMinZViolated) {
+          minZViolatedGlobal = true;
+        }
+
+        let badgeClass = "badge-pass";
+        let statusText = "정상 포함";
+        let colorHex = "#10b981";
+
+        if (!proj.inFov) {
+          badgeClass = "badge-out";
+          statusText = "화면 이탈";
+          colorHex = "#f43f5e";
+        } else if (proj.isMinZViolated) {
+          badgeClass = "badge-blind";
+          statusText = "데드존 (<52cm)";
+          colorHex = "#f59e0b";
+        } else {
+          passCount++;
+        }
+
+        // Draw Marker on Sensor HUD Canvas
+        if (proj.zDepth > 0 && Math.abs(proj.ndcX) < 1.3 && Math.abs(proj.ndcY) < 1.3) {
+          hudCtx.fillStyle = colorHex;
+          hudCtx.beginPath();
+          hudCtx.arc(proj.pxX, proj.pxY, 5, 0, Math.PI * 2);
+          hudCtx.fill();
+          hudCtx.strokeStyle = '#fff';
+          hudCtx.lineWidth = 1.5;
+          hudCtx.stroke();
+
+          // Label
+          hudCtx.font = '600 10px Pretendard, sans-serif';
+          hudCtx.fillStyle = colorHex;
+          hudCtx.fillText(`${lm.name.split(' ')[0]} (${proj.zDepth.toFixed(2)}m)`, proj.pxX + 8, proj.pxY + 3);
+        }
+
+        // Populate Table Row
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td style="font-weight:600;">${lm.name}</td>
+          <td style="color:var(--text-muted);">${lm.task}</td>
+          <td style="font-family:'JetBrains Mono';">${proj.zDepth > 0 ? proj.zDepth.toFixed(2) + 'm' : '뒤쪽'}</td>
+          <td style="text-align:right;"><span class="badge-status ${badgeClass}">${statusText}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Update Pass Ratio Badge
+      const passBadge = document.getElementById("pass-ratio-badge");
+      passBadge.textContent = `${passCount} / ${LANDMARKS.length} 통과`;
+      if (passCount === LANDMARKS.length && !minZViolatedGlobal) {
+        passBadge.className = "badge-status badge-pass";
+      } else if (minZViolatedGlobal) {
+        passBadge.className = "badge-status badge-blind";
+      } else {
+        passBadge.className = "badge-status badge-out";
+      }
+
+      // Min-Z Warning Banner
+      const warningBanner = document.getElementById("min-z-warning");
+      const globalDot = document.getElementById("global-status-dot");
+      const globalText = document.getElementById("global-status-text");
+
+      if (minZViolatedGlobal) {
+        warningBanner.style.display = "flex";
+        globalDot.className = "status-dot danger";
+        globalText.textContent = "심도 데드존 발생: 거리 52cm 미만 지점 존재!";
+      } else if (passCount < LANDMARKS.length) {
+        warningBanner.style.display = "none";
+        globalDot.className = "status-dot warn";
+        globalText.textContent = `시야각 주의: 필수 지점 ${LANDMARKS.length - passCount}개 이탈`;
+      } else {
+        warningBanner.style.display = "none";
+        globalDot.className = "status-dot";
+        globalText.textContent = "시야각 분석 정상 (모든 핵심 지점 포괄 및 심도 유효)";
+      }
+
+      // Overlays
+      document.getElementById("overlay-dist-text").textContent = state.dist.toFixed(2) + " m";
+      document.getElementById("overlay-height-text").textContent = "+" + state.heightCm + " cm";
+
+      // Metric calculations: Hand resolution at hand distance
+      const handProj = projectToScreen([0.15, 0.05, 0.05]);
+      const spec = SENSOR_SPECS[state.sensor];
+      const tanHalfH = Math.tan(THREE.MathUtils.degToRad(spec.hfov / 2));
+      const handPx = (0.10 / (2 * handProj.zDepth * tanHalfH)) * spec.resW;
+      const blockPx = (0.05 / (2 * handProj.zDepth * tanHalfH)) * spec.resW;
+      const marblePx = (0.016 / (2 * handProj.zDepth * tanHalfH)) * spec.resW;
+
+      document.getElementById("metric-hand-px").textContent = `${Math.round(handPx)} px (${handPx > 110 ? '우수' : '보통'})`;
+      document.getElementById("metric-block-px").textContent = `${Math.round(blockPx)} px (${blockPx > 35 ? '인식 양호' : '작음'})`;
+      document.getElementById("metric-marble-px").textContent = `${Math.round(marblePx)} px (${marblePx > 12 ? '식별 가능' : '해상도 저하 위험'})`;
+      document.getElementById("metric-min-depth").textContent = `${minDepthObserved.toFixed(2)} m (${minDepthObserved >= MIN_DEPTH_D455 ? '안전' : '데드존!'})`;
+    }
+
+    // Trajectory Interpolation for Hand Movement Animation
+    function getTaskTrajectory(task, t) {
+      if (task === "T1") {
+        // 5cm Block to Shelf (0.15, 0.10, 0.05) -> (0.06, 0.25, 0.395)
+        const pStart = new THREE.Vector3(0.15, 0.10, 0.05);
+        const pMid = new THREE.Vector3(0.20, 0.18, 0.42); // Arc apex
+        const pEnd = new THREE.Vector3(0.06, 0.25, 0.395);
+        // Quadratic bezier
+        const q0 = pStart.clone().lerp(pMid, t);
+        const q1 = pMid.clone().lerp(pEnd, t);
+        return q0.lerp(q1, t);
+      } else if (task === "T2") {
+        // Lower Tin to Upper Tin (-0.055, 0.095, 0.04) -> (-0.055, 0.246, 0.395)
+        const pStart = new THREE.Vector3(-0.055, 0.095, 0.04);
+        const pMid = new THREE.Vector3(-0.02, 0.16, 0.44);
+        const pEnd = new THREE.Vector3(-0.055, 0.246, 0.395);
+        const q0 = pStart.clone().lerp(pMid, t);
+        const q1 = pMid.clone().lerp(pEnd, t);
+        return q0.lerp(q1, t);
+      } else {
+        // T3: Knee to Top of Head (0.12, -0.10, -0.25) -> (0.00, -0.25, 0.58)
+        const pStart = new THREE.Vector3(0.12, -0.10, -0.25);
+        const pMid = new THREE.Vector3(0.28, -0.15, 0.25);
+        const pEnd = new THREE.Vector3(0.00, -0.25, 0.58);
+        const q0 = pStart.clone().lerp(pMid, t);
+        const q1 = pMid.clone().lerp(pEnd, t);
+        return q0.lerp(q1, t);
+      }
+    }
+
+    function toggleAnimation() {
+      state.isAnimating = !state.isAnimating;
+      document.getElementById("btn-anim-play").textContent = state.isAnimating ? "⏸ 일시정지" : "▶ 동작 재생";
+    }
+
+    function onAnimProgress(val) {
+      state.animProgress = val / 100;
+      updateHandPosition();
+    }
+
+    function updateHandPosition() {
+      const pos = getTaskTrajectory(state.currentTask, state.animProgress);
+      animatedHandMesh.position.copy(pos);
+      updateEvaluationAndHUD();
+    }
+
+    function selectTask(task) {
+      state.currentTask = task;
+      state.animProgress = 0;
+      document.getElementById("slider-anim-progress").value = 0;
+      document.querySelectorAll("[id^='task-t']").forEach(btn => btn.style.borderColor = "rgba(255,255,255,0.12)");
+      document.getElementById(`task-${task.toLowerCase()}`).style.borderColor = "var(--primary)";
+      updateHandPosition();
+    }
+
+    // Presets
+    function applyPreset(id) {
+      document.querySelectorAll(".preset-btn").forEach(btn => btn.classList.remove("active"));
+      document.getElementById(`preset-${id}`).classList.add("active");
+
+      if (id === 1) {
+        // Standard Protocol Recommendation: Distance 0.85m, Angle 38 deg, Height 55cm, Pitch 36 deg
+        setParams(0.85, 38, 55, 36, 15);
+      } else if (id === 2) {
+        // Wide Body T3: Distance 1.10m, Angle 42 deg, Height 68cm, Pitch 28 deg
+        setParams(1.10, 42, 68, 28, 12);
+        selectTask("T3");
+      } else if (id === 3) {
+        // Close Pinch: Distance 0.68m, Angle 32 deg, Height 46cm, Pitch 40 deg
+        setParams(0.68, 32, 46, 40, 14);
+        selectTask("T2");
+      } else if (id === 4) {
+        // Top-Down: Distance 0.90m, Angle 10 deg, Height 88cm, Pitch 55 deg
+        setParams(0.90, 10, 88, 55, 20);
+      }
+    }
+
+    function setParams(dist, az, h, pitch, looky) {
+      state.dist = dist;
+      state.azimuthDeg = az;
+      state.heightCm = h;
+      state.pitchDeg = pitch;
+      state.lookYCm = looky;
+
+      document.getElementById("slider-dist").value = dist;
+      document.getElementById("slider-azimuth").value = az;
+      document.getElementById("slider-height").value = h;
+      document.getElementById("slider-pitch").value = pitch;
+      document.getElementById("slider-looky").value = looky;
+
+      document.getElementById("val-dist").textContent = dist.toFixed(2) + " m";
+      document.getElementById("val-azimuth").textContent = (az > 0 ? "+" : "") + az + "°" + (az > 0 ? " (환측)" : " (건측)");
+      document.getElementById("val-height").textContent = "+" + h + " cm";
+      document.getElementById("val-pitch").textContent = pitch + "°";
+      document.getElementById("val-looky").textContent = "+" + looky + " cm";
+
+      updateCameraPosition();
+    }
+
+    function setupEventListeners() {
+      // Sliders
+      document.getElementById("slider-dist").addEventListener("input", (e) => {
+        state.dist = parseFloat(e.target.value);
+        document.getElementById("val-dist").textContent = state.dist.toFixed(2) + " m";
+        updateCameraPosition();
+      });
+
+      document.getElementById("slider-azimuth").addEventListener("input", (e) => {
+        state.azimuthDeg = parseFloat(e.target.value);
+        document.getElementById("val-azimuth").textContent = (state.azimuthDeg > 0 ? "+" : "") + state.azimuthDeg + "°" + (state.azimuthDeg > 0 ? " (환측)" : " (건측)");
+        updateCameraPosition();
+      });
+
+      document.getElementById("slider-height").addEventListener("input", (e) => {
+        state.heightCm = parseFloat(e.target.value);
+        document.getElementById("val-height").textContent = "+" + state.heightCm + " cm";
+        updateCameraPosition();
+      });
+
+      document.getElementById("slider-pitch").addEventListener("input", (e) => {
+        state.pitchDeg = parseFloat(e.target.value);
+        document.getElementById("val-pitch").textContent = state.pitchDeg + "°";
+        updateCameraPosition();
+      });
+
+      document.getElementById("slider-looky").addEventListener("input", (e) => {
+        state.lookYCm = parseFloat(e.target.value);
+        document.getElementById("val-looky").textContent = "+" + state.lookYCm + " cm";
+        updateCameraPosition();
+      });
+
+      document.getElementById("sensor-profile").addEventListener("change", (e) => {
+        state.sensor = e.target.value;
+        updateCameraPosition();
+      });
+
+      // PiP Window Controls
+      document.getElementById("btn-toggle-grid").addEventListener("click", () => {
+        state.showGrid = !state.showGrid;
+        updateEvaluationAndHUD();
+      });
+
+      document.getElementById("btn-toggle-depth").addEventListener("click", () => {
+        state.depthMode = !state.depthMode;
+        rendererSim.setClearColor(state.depthMode ? 0x1e1b4b : 0x000000, 1);
+        updateEvaluationAndHUD();
+      });
+
+      document.getElementById("btn-expand-pip").addEventListener("click", () => {
+        const pip = document.getElementById("camera-pip-window");
+        state.pipExpanded = !state.pipExpanded;
+        pip.classList.toggle("expanded", state.pipExpanded);
+        document.getElementById("btn-expand-pip").textContent = state.pipExpanded ? "축소" : "확대";
+        setTimeout(() => {
+          const pipBody = document.querySelector(".pip-body");
+          rendererSim.setSize(pipBody.clientWidth, pipBody.clientHeight);
+          hudCanvas.width = pipBody.clientWidth;
+          hudCanvas.height = pipBody.clientHeight;
+          updateEvaluationAndHUD();
+        }, 300);
+      });
+    }
+
+    function onWindowResize() {
+      const container = document.getElementById("viewport-container");
+      cameraMain.aspect = container.clientWidth / container.clientHeight;
+      cameraMain.updateProjectionMatrix();
+      rendererMain.setSize(container.clientWidth, container.clientHeight);
+
+      const pipBody = document.querySelector(".pip-body");
+      rendererSim.setSize(pipBody.clientWidth, pipBody.clientHeight);
+      hudCanvas.width = pipBody.clientWidth;
+      hudCanvas.height = pipBody.clientHeight;
+      updateEvaluationAndHUD();
+    }
+
+    // Animation Render Loop
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Handle Task Motion Playback
+      if (state.isAnimating) {
+        state.animProgress += 0.008;
+        if (state.animProgress > 1.0) {
+          state.animProgress = 0;
+        }
+        document.getElementById("slider-anim-progress").value = state.animProgress * 100;
+        updateHandPosition();
+      }
+
+      controlsMain.update();
+      rendererMain.render(scene, cameraMain);
+      rendererSim.render(scene, cameraSim);
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
