@@ -6,3 +6,5 @@ __pycache__/
 *.pyc
 
 machineartlab/
+*.tmp
+*.temp
